@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { EB_Garamond, Montserrat } from "next/font/google";
+import SmoothScroll from "@/components/SmoothScroll";
 import "./globals.css";
 
 const ebGaramond = EB_Garamond({
@@ -31,7 +32,7 @@ export default function RootLayout({
       <body
         className={`${ebGaramond.variable} ${montserrat.variable} antialiased`}
       >
-        {children}
+        <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
   );
