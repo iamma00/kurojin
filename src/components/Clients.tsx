@@ -1,6 +1,12 @@
 import Image from "next/image";
 
-const row1 = [
+interface Logo {
+  src: string;
+  alt: string;
+  blend?: boolean;
+}
+
+const row1: Logo[] = [
   { src: "/images/logo-01.png", alt: "Client 1" },
   { src: "/images/logo-02.png", alt: "Client 2" },
   { src: "/images/logo-03.png", alt: "Client 3" },
@@ -11,7 +17,7 @@ const row1 = [
   { src: "/images/logo-07.png", alt: "Client 7" },
 ];
 
-const row2 = [
+const row2: Logo[] = [
   { src: "/images/logo-08.png", alt: "Client 8" },
   { src: "/images/logo-10.png", alt: "Client 10" },
   { src: "/images/logo-11.png", alt: "Client 11" },
