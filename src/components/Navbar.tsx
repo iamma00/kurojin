@@ -40,11 +40,16 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed left-1/2 -translate-x-1/2 z-50 rounded-[45px] bg-black/0 backdrop-blur-md shadow-[12px_16px_24px_-2px_rgba(0,0,0,0.3)] border border-white/10 flex items-center justify-between transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${
-        scrolled
-          ? "top-[62px] w-[1140px] max-w-[90vw] h-[66px] px-10 gap-8"
-          : "top-[30px] w-[720px] max-w-[85vw] h-[50px] px-6 gap-4"
-      }`}
+      className="fixed left-1/2 -translate-x-1/2 z-50 rounded-[45px] bg-white/[0.04] backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-white/[0.08] flex items-center justify-between transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"
+      style={{
+        top: scrolled ? 62 : 30,
+        width: scrolled ? 1140 : 780,
+        maxWidth: scrolled ? "92vw" : "90vw",
+        height: scrolled ? 66 : 50,
+        paddingLeft: scrolled ? 12 : 8,
+        paddingRight: scrolled ? 12 : 8,
+        gap: scrolled ? 32 : 24,
+      }}
     >
       {/* Logo */}
       <span
@@ -78,7 +83,7 @@ export default function Navbar() {
 
       {/* CTA Button */}
       <button
-        className={`bg-white text-bg rounded-[55px] font-montserrat font-extrabold italic uppercase overflow-hidden relative group cursor-pointer shrink-0 transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${
+        className={`bg-white text-bg rounded-[55px] font-montserrat font-extrabold italic uppercase overflow-hidden relative group cursor-pointer shrink-0 transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] hover:bg-[#00c853] hover:text-white ${
           scrolled ? "h-[32px] px-5 text-[14px]" : "h-[28px] px-4 text-[12px]"
         }`}
       >
