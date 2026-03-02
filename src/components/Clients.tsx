@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-const logos = [
+const row1 = [
   { src: "/images/logo-01.png", alt: "Client 1" },
   { src: "/images/logo-02.png", alt: "Client 2" },
   { src: "/images/logo-03.png", alt: "Client 3" },
@@ -9,6 +9,9 @@ const logos = [
   { src: "/images/logo-05.png", alt: "Client 5" },
   { src: "/images/logo-06.png", alt: "Client 6" },
   { src: "/images/logo-07.png", alt: "Client 7" },
+];
+
+const row2 = [
   { src: "/images/logo-08.png", alt: "Client 8" },
   { src: "/images/logo-10.png", alt: "Client 10" },
   { src: "/images/logo-11.png", alt: "Client 11" },
@@ -32,7 +35,7 @@ export default function Clients() {
       </div>
 
       {/* Title */}
-      <p className="absolute top-[162px] left-[calc(50%-767px)] text-[40px] font-garamond text-white tracking-[-0.8px] blur-[4px]">
+      <p className="absolute top-[14%] left-[8%] text-[30px] xl:text-[40px] font-garamond text-white tracking-[-0.8px] z-10">
         <span className="leading-[0.84]">Because</span>{" "}
         <span className="font-bold italic uppercase leading-[0.84]">
           &quot;good enough&quot;{" "}
@@ -42,7 +45,7 @@ export default function Clients() {
 
       {/* Description */}
       <div
-        className="absolute top-[277px] left-[calc(50%-767px)] text-[20px] font-light text-white leading-[1.4] w-[788px] blur-[0.5px] mix-blend-difference whitespace-pre-wrap"
+        className="absolute top-[22%] left-[8%] text-[16px] xl:text-[20px] font-light text-white leading-[1.4] max-w-[600px] mix-blend-difference z-10"
         style={{
           textShadow: "0px 0px 33px rgba(255,255,255,0.3)",
         }}
@@ -56,18 +59,28 @@ export default function Clients() {
         </p>
       </div>
 
-      {/* Logo grid container */}
-      <div className="absolute top-[454px] left-1/2 -translate-x-1/2 w-[1533px] h-[626px] bg-black/88 border border-black overflow-hidden">
-        {/* Side fades */}
-        <div className="absolute top-0 left-0 w-[274px] h-[547px] bg-bg blur-[25px] z-10" />
-        <div className="absolute top-0 right-0 w-[274px] h-[547px] bg-bg blur-[25px] z-10" />
+      {/* Decorative side image */}
+      <div className="absolute top-[18%] right-[8%] w-[78px] h-[264px] -rotate-90 origin-center mix-blend-color-dodge opacity-90 z-10">
+        <Image
+          src="/images/decor-clients.png"
+          alt=""
+          fill
+          className="object-cover"
+        />
+      </div>
 
-        {/* Logo grid */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-wrap items-center justify-center gap-x-[71px] gap-y-[44px] w-[1918px]">
-          {logos.map((logo, i) => (
+      {/* Logo grid container — full width, centered vertically in lower portion */}
+      <div className="absolute top-[35%] left-1/2 -translate-x-1/2 w-[80%] bg-black/88 border border-black overflow-hidden py-8 xl:py-12 z-10">
+        {/* Side fades */}
+        <div className="absolute top-0 left-0 w-[12%] h-full bg-bg blur-[25px] z-10" />
+        <div className="absolute top-0 right-0 w-[12%] h-full bg-bg blur-[25px] z-10" />
+
+        {/* Row 1 */}
+        <div className="relative z-0 flex items-center justify-center gap-x-6 xl:gap-x-12 2xl:gap-x-16 mb-6 xl:mb-10 px-[8%]">
+          {row1.map((logo, i) => (
             <div
               key={i}
-              className={`relative w-[150px] h-[150px] shrink-0 ${
+              className={`relative w-[80px] h-[80px] xl:w-[120px] xl:h-[120px] 2xl:w-[150px] 2xl:h-[150px] shrink-0 ${
                 logo.blend ? "mix-blend-plus-lighter" : ""
               }`}
             >
@@ -75,21 +88,30 @@ export default function Clients() {
                 src={logo.src}
                 alt={logo.alt}
                 fill
-                className="object-cover"
+                className="object-contain"
               />
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Decorative side image */}
-      <div className="absolute top-[358px] right-[calc(50%-781px)] w-[78px] h-[264px] -rotate-90 origin-center mix-blend-color-dodge opacity-90">
-        <Image
-          src="/images/decor-clients.png"
-          alt=""
-          fill
-          className="object-cover"
-        />
+        {/* Row 2 */}
+        <div className="relative z-0 flex items-center justify-center gap-x-6 xl:gap-x-12 2xl:gap-x-16 px-[8%]">
+          {row2.map((logo, i) => (
+            <div
+              key={i}
+              className={`relative w-[80px] h-[80px] xl:w-[120px] xl:h-[120px] 2xl:w-[150px] 2xl:h-[150px] shrink-0 ${
+                logo.blend ? "mix-blend-plus-lighter" : ""
+              }`}
+            >
+              <Image
+                src={logo.src}
+                alt={logo.alt}
+                fill
+                className="object-contain"
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
