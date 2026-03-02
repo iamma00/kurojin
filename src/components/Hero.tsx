@@ -9,15 +9,15 @@ export default function Hero() {
           src="/images/hero-bg.png"
           alt=""
           fill
-          className="object-cover"
+          className="object-cover rotate-180"
           priority
         />
 
         {/* ── Middle row: three branding items ── */}
-        <div className="absolute top-[42%] left-0 right-0 flex items-center justify-between px-[8%] z-10">
+        <div className="absolute top-[40%] left-40 right-40 flex items-center justify-between px-[8%] z-10">
           {/* Left — KUROJIN. studio */}
           <div
-            className="whitespace-nowrap"
+            className="whitespace-nowrap flex items-baseline gap-2"
             style={{
               textShadow:
                 "0px 0px 25px rgba(255,189,136,0.37), -0.8px 0.8px 2.8px rgba(255,0,4,0.5), 0.8px -1.7px 1.7px rgba(0,178,255,0.53)",
@@ -54,15 +54,13 @@ export default function Hero() {
 
           {/* Right — Ordinary isn't in our VOCABULARY. */}
           <p
-            className="text-white text-[24px] xl:text-[32px] font-garamond tracking-[-0.64px] max-w-[415px] text-right"
+            className="text-white text-[24px] xl:text-[32px] font-garamond tracking-[-0.64px] text-right whitespace-nowrap"
             style={{
               textShadow:
                 "0px 0px 30.4px rgba(255,189,136,0.37), -1px 1px 3.4px rgba(255,0,4,0.5), 1px -2px 2px rgba(0,178,255,0.53)",
             }}
           >
-            <span className="italic leading-[1.4]">
-              Ordinary isn&apos;t in our{" "}
-            </span>
+            <span className="font-normal">Ordinary isn&apos;t in our </span>
             <span className="font-bold italic uppercase leading-[1.4]">
               vocabulary.
             </span>
@@ -85,7 +83,7 @@ export default function Hero() {
               src="/images/decor-hero.png"
               alt=""
               fill
-              className="object-cover"
+              className="object-cover "
             />
           </div>
         </div>

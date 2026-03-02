@@ -130,7 +130,7 @@ export default function Navbar() {
             scrolled ? "h-[28px] px-4 text-[12px]" : "h-[32px] px-5 text-[14px]"
           }`}
         >
-          <span className="block transition-transform duration-300 group-hover:-translate-y-full">
+          <span className="inset-0 flex items-center justify-center transition-transform duration-300 group-hover:-translate-y-full">
             LET&apos;s TALK
           </span>
           <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 translate-y-full group-hover:translate-y-0">
