@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import GlassSurface from "./GlassSurface";
 
 const navLinks = [
   { label: "Home", href: "#" },
@@ -21,12 +22,13 @@ export default function Navbar() {
       if (!ticking) {
         requestAnimationFrame(() => {
           const y = window.scrollY;
-          // Shrink when scrolling down past 80px, expand when near top or scrolling up
+
           if (y > 80 && y > lastY) {
             setScrolled(true);
           } else if (y < lastY || y <= 80) {
             setScrolled(false);
           }
+
           lastY = y;
           ticking = false;
         });
@@ -39,105 +41,84 @@ export default function Navbar() {
   }, []);
 
   return (
-    <>
-      {/* SVG filter for liquid glass distortion */}
-      <svg className="absolute w-0 h-0" aria-hidden="true">
-        <defs>
-          <filter id="liquid-glass">
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.015"
-              numOctaves="3"
-              seed="2"
-              result="noise"
-            />
-            <feDisplacementMap
-              in="SourceGraphic"
-              in2="noise"
-              scale="6"
-              xChannelSelector="R"
-              yChannelSelector="G"
-            />
-          </filter>
-        </defs>
-      </svg>
-
-      <nav
-        className="fixed left-1/2 -translate-x-1/2 z-50 rounded-[45px] flex items-center justify-between transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] overflow-hidden"
-        style={{
-          top: scrolled ? 30 : 62,
-          width: scrolled ? 780 : 1140,
-          maxWidth: scrolled ? "90vw" : "92vw",
-          height: scrolled ? 50 : 66,
-          paddingLeft: scrolled ? 12 : 42,
-          paddingRight: scrolled ? 10 : 22,
-          gap: scrolled ? 24 : 32,
-        }}
+    <nav
+      className="fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"
+      style={{
+        top: scrolled ? 30 : 62,
+        width: scrolled ? 780 : 1140,
+        maxWidth: scrolled ? "90vw" : "92vw",
+        height: scrolled ? 50 : 66,
+      }}
+    >
+      <GlassSurface
+        width="100%"
+        height="100%"
+        borderRadius={45}
+        displace={0.5}
+        distortionScale={-180}
+        redOffset={0}
+        greenOffset={10}
+        blueOffset={20}
+        brightness={50}
+        opacity={0.93}
+        mixBlendMode="screen"
+        className="flex items-center justify-between w-full h-full"
       >
-        {/* Liquid glass background layers */}
-        <div className="absolute inset-0 rounded-[45px] overflow-hidden pointer-events-none">
-          {/* Base blur layer */}
-          <div
-            className="absolute inset-0 backdrop-blur-2xl"
-            style={{ filter: "url(#liquid-glass)" }}
-          />
-          {/* Tinted overlay */}
-          <div className="absolute inset-0 bg-white/[0.04]" />
-          {/* Specular highlight - top edge */}
-          <div className="absolute inset-x-0 top-0 h-[50%] bg-gradient-to-b from-white/[0.12] to-transparent" />
-          {/* Inner glow ring */}
-          <div className="absolute inset-[1px] rounded-[44px] border border-white/[0.1]" />
-          {/* Subtle color refraction */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/[0.03] via-transparent to-purple-500/[0.03]" />
-        </div>
-
-        {/* Outer border + shadow */}
-        <div className="absolute inset-0 rounded-[45px] border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)] pointer-events-none" />
-
-        {/* Logo */}
-        <span
-          className={`relative z-10 font-garamond font-bold italic text-white uppercase tracking-[-0.4px] transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] whitespace-nowrap ${
-            scrolled ? "text-[16px]" : "text-[20px]"
-          }`}
-        >
-          Kurojin.
-        </span>
-
-        {/* Nav Links */}
+        {/* inner container with proper padding for logo and CTA spacing */}
         <div
-          className={`relative z-10 flex items-center transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] overflow-hidden ${
-            scrolled
-              ? "gap-6 opacity-100 max-w-[400px]"
-              : "gap-20 opacity-100 max-w-[700px]"
-          }`}
+          className="flex items-center justify-between w-full h-full"
+          style={{
+            paddingLeft: scrolled ? "24px" : "32px",
+            paddingRight: scrolled ? "24px" : "32px",
+            transition: "padding 0.5s ease-[cubic-bezier(0.76,0,0.24,1)]",
+          }}
         >
-          {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              className={`font-garamond text-white tracking-[-0.32px] hover:opacity-80 transition-all duration-500 whitespace-nowrap ${
-                scrolled ? "text-[14px]" : "text-[16px]"
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
+          {/* Logo */}
+          <span
+            className={` relative z-10  font-garamond font-bold italic text-white uppercase tracking-[-0.4px] transition-all duration-500 whitespace-nowrap shrink-0 ${
+              scrolled ? "text-[16px]" : "text-[20px]"
+            }`}
+          >
+            KUROJIN.
+          </span>
 
-        {/* CTA Button */}
-        <button
-          className={`relative z-10 bg-white text-bg rounded-[55px] font-montserrat font-extrabold italic uppercase overflow-hidden group cursor-pointer shrink-0 transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] hover:bg-gradient-to-r hover:from-[#00ff91] hover:to-[#00fee0] hover:text-black ${
-            scrolled ? "h-[28px] px-4 text-[12px]" : "h-[32px] px-5 text-[14px]"
-          }`}
-        >
-          <span className="inset-0 flex items-center justify-center transition-transform duration-300 group-hover:-translate-y-full">
-            LET&apos;s TALK
-          </span>
-          <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 translate-y-full group-hover:translate-y-0">
-            LET&apos;S GO
-          </span>
-        </button>
-      </nav>
-    </>
+          {/* Nav Links */}
+          <div
+            className={`flex items-center justify-center flex-1 transition-all duration-500 ${
+              scrolled ? "gap-6" : "gap-16"
+            }`}
+          >
+            {navLinks.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className={`font-garamond text-white tracking-[-0.32px] hover:opacity-80 transition-all whitespace-nowrap ${
+                  scrolled ? "text-[14px]" : "text-[16px]"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <button
+            className={`relative z-10 bg-white text-black rounded-[55px] font-montserrat font-extrabold italic uppercase overflow-hidden group cursor-pointer shrink-0 transition-all duration-500 hover:bg-gradient-to-r hover:from-[#00ff91] hover:to-[#00fee0] hover:text-black hover:shadow-[0_0_30px_rgba(0,255,145,0.8),0_0_60px_rgba(0,254,224,0.5)] ${
+              scrolled
+                ? "h-[28px] px-9 text-[12px] tracking-[0.5px]"
+                : "h-[32px] px-10 text-[14px] tracking-[0.8px] "
+            }`}
+          >
+            <span className="flex items-center justify-center transition-transform duration-300 group-hover:-translate-y-full">
+              LET&apos;S TALK
+            </span>
+
+            <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 translate-y-full group-hover:translate-y-0">
+              LET&apos;S GO
+            </span>
+          </button>
+        </div>
+      </GlassSurface>
+    </nav>
   );
 }

@@ -1,4 +1,8 @@
+"use client";
+
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import Shuffle from './Shuffle';
 
 interface Logo {
   src: string;
@@ -27,7 +31,126 @@ const row2: Logo[] = [
   { src: "/images/logo-15.png", alt: "Client 15" },
 ];
 
+const row3 = [...row1];
+const row4 = [...row2];
+
 export default function Clients() {
+  const rows = [
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+    useRef<HTMLDivElement>(null),
+  ];
+
+  const [hoveredRow, setHoveredRow] = useState<number | null>(null);
+  const [hoveredLogo, setHoveredLogo] = useState<string | null>(null);
+  const positions = useRef([0, 0, 0, 0]);
+  const scrollVelocity = useRef(0);
+
+  useEffect(() => {
+    let lastY = 0;
+    let animationFrameId: number;
+
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      scrollVelocity.current = currentY - lastY;
+      lastY = currentY;
+    };
+
+    const animate = () => {
+      rows.forEach((row, i) => {
+        if (!row.current) return;
+
+        // Base alternating direction
+        const baseDir = i % 2 === 0 ? 1 : -1;
+
+        // Apply scroll direction - reverse when scrolling opposite
+        const scrollDir = scrollVelocity.current > 0 ? 1 : -1;
+        const direction = baseDir * scrollDir;
+
+        // Calculate movement: base speed + scroll velocity bonus
+        const speed = 0.8 + Math.abs(scrollVelocity.current) * 0.15;
+        positions.current[i] += speed * direction;
+
+        // Infinite loop wrapping
+        const containerWidth = row.current.scrollWidth / 2;
+
+        if (positions.current[i] > containerWidth) {
+          positions.current[i] -= containerWidth;
+        } else if (positions.current[i] < -containerWidth) {
+          positions.current[i] += containerWidth;
+        }
+
+        row.current.style.transform = `translateX(${positions.current[i]}px)`;
+      });
+
+      // Dampen velocity over time
+      scrollVelocity.current *= 0.85;
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    animate();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  const renderRow = (logos: Logo[], ref: any, rowIndex: number) => {
+    const items = [...logos, ...logos];
+
+    return (
+      <div
+        className="overflow-hidden"
+        onMouseEnter={() => setHoveredRow(rowIndex)}
+        onMouseLeave={() => {
+          setHoveredRow(null);
+          setHoveredLogo(null);
+        }}
+      >
+        <div ref={ref} className="flex w-max">
+          {items.map((logo, i) => (
+            <div
+              key={i}
+              className={`relative w-[90px] h-[90px] md:w-[110px] md:h-[110px] lg:w-[140px] lg:h-[140px] xl:w-[160px] xl:h-[160px] shrink-0 transition-all duration-300 cursor-pointer ${
+                i % 2 === 0 ? "mx-4 md:mx-6 lg:mx-8 xl:mx-10" : "mx-5 md:mx-7 lg:mx-9 xl:mx-12"
+              } ${logo.blend ? "mix-blend-plus-lighter" : ""} ${
+                hoveredRow === rowIndex && hoveredLogo !== `${rowIndex}-${i}`
+                  ? "opacity-40 scale-95"
+                  : "opacity-100 scale-100"
+              }`}
+              onMouseEnter={() => setHoveredLogo(`${rowIndex}-${i}`)}
+              onMouseLeave={() => setHoveredLogo(null)}
+            >
+              <div className="relative w-full h-full group">
+                <Image
+                  src={logo.src}
+                  alt={logo.alt}
+                  fill
+                  className={`object-contain transition-all duration-300 ${
+                    hoveredLogo === `${rowIndex}-${i}`
+                      ? "brightness-150 drop-shadow-[0_0_15px_rgba(0,255,145,0.4)]"
+                      : "brightness-100"
+                  }`}
+                />
+                {/* Hover glow background */}
+                <div
+                  className={`absolute inset-0 rounded-full blur-xl transition-opacity duration-300 ${
+                    hoveredLogo === `${rowIndex}-${i}`
+                      ? "opacity-100 bg-gradient-to-r from-[#ff0000]/20 to-[#fdcf58]/20"
+                      : "opacity-0"
+                  }`}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <section className="relative w-full h-screen bg-bg overflow-hidden">
       {/* Background */}
@@ -41,31 +164,69 @@ export default function Clients() {
       </div>
 
       {/* Title */}
+      
       <p className="absolute top-[14%] left-[8%] text-[30px] xl:text-[40px] font-garamond text-white tracking-[-0.8px] z-10">
-        <span className="leading-[0.84]">Because</span>{" "}
-        <span className="font-bold italic uppercase leading-[0.84]">
-          &quot;good enough&quot;{" "}
-        </span>
-        <span className="leading-[0.84]">was never the plan.</span>
+        <Shuffle
+          text="Because &quot;good enough&quot; was never the plan."
+          shuffleDirection="up"
+          duration={0.55}
+          animationMode="evenodd"
+          shuffleTimes={1}
+          ease="back.out(1.1)"
+          stagger={0.03}
+          threshold={0.1}
+          triggerOnce={true}
+          triggerOnHover
+          respectReducedMotion={true}
+          loop={false}
+          loopDelay={0}
+        />
       </p>
 
       {/* Description */}
-      <div
-        className="absolute top-[22%] left-[8%] text-[16px] xl:text-[20px] font-light text-white leading-[1.4] max-w-[600px] mix-blend-difference z-10"
-        style={{
-          textShadow: "0px 0px 33px rgba(255,255,255,0.3)",
-        }}
-      >
-        <p>
-          Brands that trusted Kurojin.studio to shape how the world sees them.
-        </p>
-        <p>
-          From startups to established names, we build with those who value
-          craft.
-        </p>
-      </div>
 
-      {/* Decorative side image */}
+<div
+  className="absolute top-[22%] left-[8%] text-[16px] xl:text-[20px] font-light text-white leading-[1.4] max-w-[600px] mix-blend-difference z-10"
+  style={{ textShadow: "0px 0px 33px rgba(255,255,255,0.3)" }}
+>
+  <p>
+    <Shuffle
+      text="Brands that trusted Kurojin.studio to shape how the world sees them."
+      shuffleDirection="down"
+      duration={0.35}
+      animationMode="evenodd"
+      shuffleTimes={1}
+      ease="back.out(1.1)"
+      stagger={0.03}
+      threshold={0.1}
+      triggerOnce={true}
+      triggerOnHover
+      respectReducedMotion={true}
+      loop={false}
+      loopDelay={0}
+    />
+  </p>
+
+  <p>
+    <Shuffle
+      text="From startups to established names, we build with those who value craft."
+      shuffleDirection="down"
+      duration={0.35}
+      animationMode="evenodd"
+      shuffleTimes={1}
+      ease="back.out(1.1)"
+      stagger={0.03}
+      threshold={0.1}
+      triggerOnce={true}
+      triggerOnHover
+      respectReducedMotion={true}
+      loop={false}
+      loopDelay={0}
+    />
+  </p>
+</div>
+
+      {/* Decorative */}
       <div className="absolute top-[18%] right-[8%] w-[78px] h-[264px] -rotate-90 origin-center mix-blend-color-dodge opacity-90 z-10">
         <Image
           src="/images/decor-clients.png"
@@ -75,48 +236,18 @@ export default function Clients() {
         />
       </div>
 
-      {/* Logo grid container — full width, centered vertically in lower portion */}
-      <div className="absolute top-[35%] left-1/2 -translate-x-1/2 w-[80%] bg-black/88 border border-black overflow-hidden py-8 xl:py-12 z-10">
-        {/* Side fades */}
-        <div className="absolute top-0 left-0 w-[12%] h-full bg-bg blur-[25px] z-10" />
-        <div className="absolute top-0 right-0 w-[12%] h-full bg-bg blur-[25px] z-10" />
+      {/* Carousel */}
+      <div className="absolute bottom-0 top-[35%] left-1/2 -translate-x-1/2 w-full bg-black border border-black overflow-hidden py-8 md:py-10 lg:py-12 xl:py-14 z-10">
+        {/* Edge fade gradients */}
+        <div className="absolute top-0 left-0 w-[10%] md:w-[12%] lg:w-[15%] h-full bg-gradient-to-r from-bg via-bg/70 to-transparent z-20" />
+        <div className="absolute top-0 right-0 w-[10%] md:w-[12%] lg:w-[15%] h-full bg-gradient-to-l from-bg via-bg/70 to-transparent z-20" />
 
-        {/* Row 1 */}
-        <div className="relative z-0 flex items-center justify-center gap-x-6 xl:gap-x-12 2xl:gap-x-16 mb-6 xl:mb-10 px-[8%]">
-          {row1.map((logo, i) => (
-            <div
-              key={i}
-              className={`relative w-[80px] h-[80px] xl:w-[120px] xl:h-[120px] 2xl:w-[150px] 2xl:h-[150px] shrink-0 ${
-                logo.blend ? "mix-blend-plus-lighter" : ""
-              }`}
-            >
-              <Image
-                src={logo.src}
-                alt={logo.alt}
-                fill
-                className="object-contain"
-              />
-            </div>
-          ))}
-        </div>
-
-        {/* Row 2 */}
-        <div className="relative z-0 flex items-center justify-center gap-x-6 xl:gap-x-12 2xl:gap-x-16 px-[8%]">
-          {row2.map((logo, i) => (
-            <div
-              key={i}
-              className={`relative w-[80px] h-[80px] xl:w-[120px] xl:h-[120px] 2xl:w-[150px] 2xl:h-[150px] shrink-0 ${
-                logo.blend ? "mix-blend-plus-lighter" : ""
-              }`}
-            >
-              <Image
-                src={logo.src}
-                alt={logo.alt}
-                fill
-                className="object-contain"
-              />
-            </div>
-          ))}
+        {/* Four rows with proper spacing */}
+        <div className="flex flex-col gap-y-4 md:gap-y-6 lg:gap-y-8 xl:gap-y-10 px-[4%] md:px-[6%] lg:px-[8%] h-full justify-center">
+          {renderRow(row1, rows[0], 0)}
+          {renderRow(row2, rows[1], 1)}
+          {renderRow(row3, rows[2], 2)}
+          {renderRow(row4, rows[3], 3)}
         </div>
       </div>
     </section>

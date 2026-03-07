@@ -158,3 +158,98 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Enhanced CTA Button Styles */
+.cta-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-montserrat);
+  font-weight: 800;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 55px;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  z-index: 10;
+  will-change: transform, box-shadow;
+  transition: all 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+  background: white;
+  color: #000;
+  box-shadow: 0 8px 24px rgba(0, 255, 145, 0.2), 
+              0 0 1px rgba(255, 255, 255, 0.5) inset,
+              0 0 20px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 255, 145, 0.35),
+              0 4px 12px rgba(0, 254, 224, 0.3),
+              0 0 1px rgba(255, 255, 255, 0.6) inset,
+              0 0 25px rgba(0, 0, 0, 0.15);
+}
+
+.cta-button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(0, 255, 145, 0.2),
+              0 0 1px rgba(255, 255, 255, 0.4) inset;
+}
+
+.cta-button-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease-out;
+}
+
+.cta-button:hover .cta-button-text-primary {
+  transform: translateY(-100%);
+}
+
+.cta-button-text-secondary {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease-out;
+  transform: translateY(100%);
+}
+
+.cta-button:hover .cta-button-text-secondary {
+  transform: translateY(0);
+}
+
+/* Responsive CTA Button */
+.cta-button-sm {
+  height: 28px;
+  padding: 0 16px;
+  font-size: 12px;
+}
+
+.cta-button-lg {
+  height: 32px;
+  padding: 0 20px;
+  font-size: 14px;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee 35s linear infinite reverse;
+}
