@@ -7,7 +7,7 @@ export default function Budget() {
       className="relative w-full h-screen bg-bg overflow-hidden"
     >
       {/* Background glow container */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1426px] h-[802px] shadow-[0px_0px_20px_0px_rgba(255,255,255,0.11)]">
+      <div className="absolute top-1/2 left-[8%] right-[8%] -translate-y-1/2 h-[74vh] max-h-[802px] shadow-[0px_0px_20px_0px_rgba(255,255,255,0.11)]">
         {/* Red glow (bottom-right) */}
         <div
           className="absolute inset-0 opacity-20"
@@ -27,24 +27,24 @@ export default function Budget() {
       </div>
 
       {/* Center orb/video placeholder */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[720px] h-[720px] rounded-full mix-blend-screen overflow-hidden">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[37.5vw] max-w-[720px] aspect-square rounded-full mix-blend-screen overflow-hidden">
         <div className="w-full h-full bg-gradient-to-br from-white/5 via-white/2 to-transparent rounded-full" />
       </div>
 
       {/* Text content */}
-      <div className="absolute top-[480px] left-1/2 -translate-x-1/2 text-center w-[768px] z-10">
-        <p className="font-garamond text-[48px] text-near-white uppercase mix-blend-difference leading-[1.08]">
+      <div className="absolute top-[44%] left-1/2 -translate-x-1/2 text-center max-w-[768px] w-[80%] z-10">
+        <p className="font-garamond text-[36px] lg:text-[42px] xl:text-[48px] text-near-white uppercase mix-blend-difference leading-[1.08]">
           <span className="font-normal">Budget Never</span>
           <span className="font-bold italic"> Limits Quality</span>
         </p>
-        <p className="mt-8 text-light-gray text-[15px] font-light leading-[1.4] w-[655px] mx-auto mix-blend-difference">
+        <p className="mt-8 text-light-gray text-[15px] font-light leading-[1.4] max-w-[655px] mx-auto mix-blend-difference">
           Budgets change. Standards don&apos;t. When numbers shift, we refine
           the output not the excellence. You get less volume, never less value.
         </p>
       </div>
 
       {/* CTA Button */}
-      <div className="absolute bottom-[calc(100%-812px)] left-1/2 -translate-x-1/2 z-10">
+      <div className="absolute top-[75%] left-1/2 -translate-x-1/2 z-10">
         <button className="bg-white text-bg rounded-[55px] h-[38px] px-5 w-[139px] font-montserrat font-extrabold italic text-[20px] uppercase overflow-hidden relative group cursor-pointer">
           <span className="block transition-transform duration-300 group-hover:-translate-y-full leading-[1.4]">
             LET&apos;s TALK
@@ -56,7 +56,7 @@ export default function Budget() {
       </div>
 
       {/* Bottom line divider */}
-      <div className="absolute bottom-0 left-[10.1%] right-[10.1%] h-[2px]">
+      <div className="absolute bottom-0 left-[8%] right-[8%] h-[2px]">
         <Image
           src="/images/line-divider.svg"
           alt=""

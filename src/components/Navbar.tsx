@@ -13,6 +13,7 @@ const navLinks = [
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     let lastY = 0;
@@ -40,85 +41,151 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
+
   return (
-    <nav
-      className="fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"
-      style={{
-        top: scrolled ? 30 : 62,
-        width: scrolled ? 780 : 1140,
-        maxWidth: scrolled ? "90vw" : "92vw",
-        height: scrolled ? 50 : 66,
-      }}
-    >
-      <GlassSurface
-        width="100%"
-        height="100%"
-        borderRadius={45}
-        displace={0.5}
-        distortionScale={-180}
-        redOffset={0}
-        greenOffset={10}
-        blueOffset={20}
-        brightness={50}
-        opacity={0.93}
-        mixBlendMode="screen"
-        className="flex items-center justify-between w-full h-full"
+    <>
+      {/* ── Mobile navbar (< md) ── */}
+      <nav
+        className="fixed top-0 left-0 right-0 z-50 flex md:hidden items-center justify-between px-7 transition-all duration-400"
+        style={{
+          height: scrolled ? 52 : 60,
+          background: scrolled ? "rgba(1,1,1,0.85)" : "transparent",
+          backdropFilter: scrolled ? "blur(12px)" : "none",
+        }}
       >
-        {/* inner container with proper padding for logo and CTA spacing */}
-        <div
-          className="flex items-center justify-between w-full h-full"
-          style={{
-            paddingLeft: scrolled ? "24px" : "32px",
-            paddingRight: scrolled ? "24px" : "32px",
-            transition: "padding 0.5s ease-[cubic-bezier(0.76,0,0.24,1)]",
-          }}
+        <span className="font-garamond font-bold italic text-white uppercase text-[16px] tracking-[-0.4px]">
+          KUROJIN.
+        </span>
+
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="relative w-8 h-8 flex flex-col items-center justify-center gap-[5px] z-50"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
         >
-          {/* Logo */}
           <span
-            className={` relative z-10  font-garamond font-bold italic text-white uppercase tracking-[-0.4px] transition-all duration-500 whitespace-nowrap shrink-0 ${
-              scrolled ? "text-[16px]" : "text-[20px]"
+            className={`block w-5 h-[1.5px] bg-white transition-all duration-300 ${
+              menuOpen ? "rotate-45 translate-y-[6.5px]" : ""
             }`}
-          >
-            KUROJIN.
-          </span>
+          />
+          <span
+            className={`block w-5 h-[1.5px] bg-white transition-all duration-300 ${
+              menuOpen ? "opacity-0 scale-0" : ""
+            }`}
+          />
+          <span
+            className={`block w-5 h-[1.5px] bg-white transition-all duration-300 ${
+              menuOpen ? "-rotate-45 -translate-y-[6.5px]" : ""
+            }`}
+          />
+        </button>
+      </nav>
 
-          {/* Nav Links */}
+      {/* Mobile fullscreen overlay menu */}
+      <div
+        className={`fixed inset-0 z-40 bg-bg/95 backdrop-blur-xl flex md:hidden flex-col items-center justify-center gap-8 transition-all duration-500 ${
+          menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        {navLinks.map((link) => (
+          <Link
+            key={link.label}
+            href={link.href}
+            onClick={() => setMenuOpen(false)}
+            className="font-garamond text-white text-[28px] tracking-[-0.5px] uppercase"
+          >
+            {link.label}
+          </Link>
+        ))}
+
+        <button className="mt-4 bg-white text-black rounded-[55px] h-[40px] px-8 font-montserrat font-extrabold italic text-[14px] uppercase">
+          LET&apos;S TALK
+        </button>
+      </div>
+
+      {/* ── Desktop navbar (>= md) ── */}
+      <nav
+        className="fixed left-1/2 -translate-x-1/2 z-50 hidden md:block transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"
+        style={{
+          top: scrolled ? 30 : 62,
+          width: scrolled ? 780 : 1140,
+          maxWidth: scrolled ? "90vw" : "92vw",
+          height: scrolled ? 50 : 66,
+        }}
+      >
+        <GlassSurface
+          width="100%"
+          height="100%"
+          borderRadius={45}
+          displace={0.5}
+          distortionScale={-180}
+          redOffset={0}
+          greenOffset={10}
+          blueOffset={20}
+          brightness={50}
+          opacity={0.93}
+          mixBlendMode="screen"
+          className="flex items-center justify-between w-full h-full"
+        >
           <div
-            className={`flex items-center justify-center flex-1 transition-all duration-500 ${
-              scrolled ? "gap-6" : "gap-16"
-            }`}
+            className="flex items-center justify-between w-full h-full"
+            style={{
+              paddingLeft: scrolled ? "24px" : "32px",
+              paddingRight: scrolled ? "24px" : "32px",
+              transition: "padding 0.5s ease-[cubic-bezier(0.76,0,0.24,1)]",
+            }}
           >
-            {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className={`font-garamond text-white tracking-[-0.32px] hover:opacity-80 transition-all whitespace-nowrap ${
-                  scrolled ? "text-[14px]" : "text-[16px]"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {/* Logo */}
+            <span
+              className={`relative z-10 font-garamond font-bold italic text-white uppercase tracking-[-0.4px] transition-all duration-500 whitespace-nowrap shrink-0 ${
+                scrolled ? "text-[16px]" : "text-[20px]"
+              }`}
+            >
+              KUROJIN.
+            </span>
+
+            {/* Nav Links */}
+            <div
+              className={`flex items-center justify-center flex-1 transition-all duration-500 ${
+                scrolled ? "gap-6" : "gap-16"
+              }`}
+            >
+              {navLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className={`font-garamond text-white tracking-[-0.32px] hover:opacity-80 transition-all whitespace-nowrap ${
+                    scrolled ? "text-[14px]" : "text-[16px]"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <button
+              className={`relative z-10 bg-white text-black rounded-[55px] font-montserrat font-extrabold italic uppercase overflow-hidden group cursor-pointer shrink-0 transition-all duration-500 hover:bg-gradient-to-r hover:from-[#00ff91] hover:to-[#00fee0] hover:text-black hover:shadow-[0_0_30px_rgba(0,255,145,0.8),0_0_60px_rgba(0,254,224,0.5)] ${
+                scrolled
+                  ? "h-[28px] px-9 text-[12px] tracking-[0.5px]"
+                  : "h-[32px] px-10 text-[14px] tracking-[0.8px] "
+              }`}
+            >
+              <span className="flex items-center justify-center transition-transform duration-300 group-hover:-translate-y-full">
+                LET&apos;S TALK
+              </span>
+
+              <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 translate-y-full group-hover:translate-y-0">
+                LET&apos;S GO
+              </span>
+            </button>
           </div>
-
-          {/* CTA */}
-          <button
-            className={`relative z-10 bg-white text-black rounded-[55px] font-montserrat font-extrabold italic uppercase overflow-hidden group cursor-pointer shrink-0 transition-all duration-500 hover:bg-gradient-to-r hover:from-[#00ff91] hover:to-[#00fee0] hover:text-black hover:shadow-[0_0_30px_rgba(0,255,145,0.8),0_0_60px_rgba(0,254,224,0.5)] ${
-              scrolled
-                ? "h-[28px] px-9 text-[12px] tracking-[0.5px]"
-                : "h-[32px] px-10 text-[14px] tracking-[0.8px] "
-            }`}
-          >
-            <span className="flex items-center justify-center transition-transform duration-300 group-hover:-translate-y-full">
-              LET&apos;S TALK
-            </span>
-
-            <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 translate-y-full group-hover:translate-y-0">
-              LET&apos;S GO
-            </span>
-          </button>
-        </div>
-      </GlassSurface>
-    </nav>
+        </GlassSurface>
+      </nav>
+    </>
   );
 }

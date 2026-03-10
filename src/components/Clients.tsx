@@ -35,12 +35,7 @@ const row3 = [...row1];
 const row4 = [...row2];
 
 export default function Clients() {
-  const rows = [
-    useRef<HTMLDivElement>(null),
-    useRef<HTMLDivElement>(null),
-    useRef<HTMLDivElement>(null),
-    useRef<HTMLDivElement>(null),
-  ];
+  const rowEls = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
 
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [hoveredLogo, setHoveredLogo] = useState<string | null>(null);
@@ -58,8 +53,8 @@ export default function Clients() {
     };
 
     const animate = () => {
-      rows.forEach((row, i) => {
-        if (!row.current) return;
+      rowEls.current.forEach((rowEl, i) => {
+        if (!rowEl) return;
 
         // Base alternating direction
         const baseDir = i % 2 === 0 ? 1 : -1;
@@ -73,7 +68,7 @@ export default function Clients() {
         positions.current[i] += speed * direction;
 
         // Infinite loop wrapping
-        const containerWidth = row.current.scrollWidth / 2;
+        const containerWidth = rowEl.scrollWidth / 2;
 
         if (positions.current[i] > containerWidth) {
           positions.current[i] -= containerWidth;
@@ -81,7 +76,7 @@ export default function Clients() {
           positions.current[i] += containerWidth;
         }
 
-        row.current.style.transform = `translateX(${positions.current[i]}px)`;
+        rowEl.style.transform = `translateX(${positions.current[i]}px)`;
       });
 
       // Dampen velocity over time
@@ -98,7 +93,7 @@ export default function Clients() {
     };
   }, []);
 
-  const renderRow = (logos: Logo[], ref: any, rowIndex: number) => {
+  const renderRow = (logos: Logo[], rowIndex: number) => {
     const items = [...logos, ...logos];
 
     return (
@@ -110,7 +105,7 @@ export default function Clients() {
           setHoveredLogo(null);
         }}
       >
-        <div ref={ref} className="flex w-max">
+        <div ref={(el) => { rowEls.current[rowIndex] = el; }} className="flex w-max">
           {items.map((logo, i) => (
             <div
               key={i}
@@ -135,14 +130,6 @@ export default function Clients() {
                       : "brightness-100"
                   }`}
                 />
-                {/* Hover glow background */}
-                <div
-                  className={`absolute inset-0 rounded-full blur-xl transition-opacity duration-300 ${
-                    hoveredLogo === `${rowIndex}-${i}`
-                      ? "opacity-100 bg-gradient-to-r from-[#ff0000]/20 to-[#fdcf58]/20"
-                      : "opacity-0"
-                  }`}
-                />
               </div>
             </div>
           ))}
@@ -165,22 +152,13 @@ export default function Clients() {
 
       {/* Title */}
       
+      
       <p className="absolute top-[14%] left-[8%] text-[30px] xl:text-[40px] font-garamond text-white tracking-[-0.8px] z-10">
-        <Shuffle
-          text="Because &quot;good enough&quot; was never the plan."
-          shuffleDirection="up"
-          duration={0.55}
-          animationMode="evenodd"
-          shuffleTimes={1}
-          ease="back.out(1.1)"
-          stagger={0.03}
-          threshold={0.1}
-          triggerOnce={true}
-          triggerOnHover
-          respectReducedMotion={true}
-          loop={false}
-          loopDelay={0}
-        />
+        <span className="leading-[0.84]">Because</span>{" "}
+        <span className="font-bold italic uppercase leading-[0.84]">
+          &quot;good enough&quot;{" "}
+        </span>
+        <span className="leading-[0.84]">was never the plan.</span>
       </p>
 
       {/* Description */}
@@ -189,7 +167,6 @@ export default function Clients() {
   className="absolute top-[22%] left-[8%] text-[16px] xl:text-[20px] font-light text-white leading-[1.4] max-w-[600px] mix-blend-difference z-10"
   style={{ textShadow: "0px 0px 33px rgba(255,255,255,0.3)" }}
 >
-  <p>
     <Shuffle
       text="Brands that trusted Kurojin.studio to shape how the world sees them."
       shuffleDirection="down"
@@ -205,9 +182,7 @@ export default function Clients() {
       loop={false}
       loopDelay={0}
     />
-  </p>
 
-  <p>
     <Shuffle
       text="From startups to established names, we build with those who value craft."
       shuffleDirection="down"
@@ -223,7 +198,6 @@ export default function Clients() {
       loop={false}
       loopDelay={0}
     />
-  </p>
 </div>
 
       {/* Decorative */}
@@ -244,10 +218,10 @@ export default function Clients() {
 
         {/* Four rows with proper spacing */}
         <div className="flex flex-col gap-y-4 md:gap-y-6 lg:gap-y-8 xl:gap-y-10 px-[4%] md:px-[6%] lg:px-[8%] h-full justify-center">
-          {renderRow(row1, rows[0], 0)}
-          {renderRow(row2, rows[1], 1)}
-          {renderRow(row3, rows[2], 2)}
-          {renderRow(row4, rows[3], 3)}
+          {renderRow(row1, 0)}
+          {renderRow(row2, 1)}
+          {renderRow(row3, 2)}
+          {renderRow(row4, 3)}
         </div>
       </div>
     </section>

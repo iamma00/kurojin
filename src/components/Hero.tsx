@@ -14,7 +14,7 @@ export default function Hero() {
         />
 
         {/* ── Middle row: three branding items ── */}
-        <div className="absolute top-[40%] left-40 right-40 flex items-center justify-between px-[8%] z-10">
+        <div className="absolute top-[40%] left-[8%] right-[8%] flex items-center justify-between z-10">
           {/* Left — KUROJIN. studio */}
           <div
             className="whitespace-nowrap flex items-baseline gap-2"
@@ -23,10 +23,10 @@ export default function Hero() {
                 "0px 0px 25px rgba(255,189,136,0.37), -0.8px 0.8px 2.8px rgba(255,0,4,0.5), 0.8px -1.7px 1.7px rgba(0,178,255,0.53)",
             }}
           >
-            <span className="font-garamond font-bold italic text-[80px] xl:text-[107px] text-white uppercase tracking-[-2.1px]">
+            <span className="font-garamond font-bold italic text-[60px] lg:text-[80px] xl:text-[107px] text-white uppercase tracking-[-2.1px]">
               Kurojin.
             </span>
-            <span className="font-garamond italic text-[22px] xl:text-[30px] text-white align-baseline ml-[-4px]">
+            <span className="font-garamond italic text-[18px] lg:text-[22px] xl:text-[30px] text-white align-baseline ml-[-4px]">
               studio
             </span>
           </div>
@@ -42,7 +42,7 @@ export default function Hero() {
               />
             </div>
             <span
-              className="font-montserrat text-[28px] xl:text-[36px] text-white tracking-[-0.72px]"
+              className="font-montserrat text-[22px] lg:text-[28px] xl:text-[36px] text-white tracking-[-0.72px]"
               style={{
                 textShadow:
                   "0px 0px 30.4px rgba(255,189,136,0.37), -1px 1px 3.4px rgba(255,0,4,0.5), 1px -2px 2px rgba(0,178,255,0.53)",
@@ -54,7 +54,7 @@ export default function Hero() {
 
           {/* Right — Ordinary isn't in our VOCABULARY. */}
           <p
-            className="text-white text-[24px] xl:text-[32px] font-garamond tracking-[-0.64px] text-right whitespace-nowrap"
+            className="text-white text-[18px] lg:text-[24px] xl:text-[32px] font-garamond tracking-[-0.64px] text-right"
             style={{
               textShadow:
                 "0px 0px 30.4px rgba(255,189,136,0.37), -1px 1px 3.4px rgba(255,0,4,0.5), 1px -2px 2px rgba(0,178,255,0.53)",
@@ -70,7 +70,7 @@ export default function Hero() {
         {/* ── Bottom tagline ── */}
         <div className="absolute bottom-[12%] left-1/2 -translate-x-1/2 flex items-center gap-4 z-10">
           <p
-            className="text-white text-[18px] xl:text-[24px] font-light leading-[1.4] text-center"
+            className="text-white text-[16px] lg:text-[18px] xl:text-[24px] font-light leading-[1.4] text-center"
             style={{
               textShadow:
                 "0px 4px 4px rgba(0,0,0,0.25), 0px 0px 12px #ffe0c8, -1px 1px 3.4px rgba(255,0,4,0.5), 1px -1px 2px rgba(0,178,255,0.53)",

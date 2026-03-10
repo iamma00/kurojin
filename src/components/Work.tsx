@@ -7,14 +7,14 @@ export default function Work() {
       className="relative w-full h-screen bg-bg overflow-hidden"
     >
       {/* Background image container */}
-      <div className="absolute top-[139px] left-1/2 -translate-x-1/2 w-[1426px] h-[802px] shadow-[0px_0px_20px_0px_rgba(255,255,255,0.11)] overflow-hidden">
+      <div className="absolute top-[13%] left-[8%] right-[8%] h-[74vh] max-h-[802px] shadow-[0px_0px_20px_0px_rgba(255,255,255,0.11)] overflow-hidden">
         <Image src="/images/work-bg.png" alt="" fill className="object-cover" />
       </div>
 
       {/* Center text */}
-      <div className="absolute top-[442px] left-1/2 -translate-x-1/2 text-center w-[768px] z-10">
+      <div className="absolute top-[41%] left-1/2 -translate-x-1/2 text-center max-w-[768px] w-[80%] z-10">
         <p
-          className="font-garamond text-[48px] text-near-white uppercase"
+          className="font-garamond text-[36px] lg:text-[42px] xl:text-[48px] text-near-white uppercase"
           style={{
             textShadow: "0px 0px 56.7px rgba(255,255,255,0.6)",
           }}
@@ -28,7 +28,7 @@ export default function Work() {
       </div>
 
       {/* CTA Button */}
-      <div className="absolute top-[600px] left-1/2 -translate-x-1/2 z-10">
+      <div className="absolute top-[56%] left-1/2 -translate-x-1/2 z-10">
         <button className="bg-white text-bg rounded-[55px] h-[38px] px-[10px] w-[211px] font-montserrat font-extrabold italic text-[20px] uppercase overflow-hidden relative group cursor-pointer border border-bg">
           <span className="block transition-transform duration-300 group-hover:-translate-y-full leading-[1.4]">
             Our Work

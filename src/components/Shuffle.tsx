@@ -3,7 +3,6 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText as GSAPSplitText } from 'gsap/SplitText';
 import { useGSAP } from '@gsap/react';
-import { JSX } from 'react';
 
 gsap.registerPlugin(ScrollTrigger, GSAPSplitText);
 
@@ -70,9 +69,10 @@ const Shuffle: React.FC<ShuffleProps> = ({
 
   useEffect(() => {
     if ('fonts' in document) {
-      if (document.fonts.status === 'loaded') setFontsLoaded(true);
-      else document.fonts.ready.then(() => setFontsLoaded(true));
-    } else setFontsLoaded(true);
+      document.fonts.ready.then(() => setFontsLoaded(true));
+    } else {
+      queueMicrotask(() => setFontsLoaded(true));
+    }
   }, []);
 
   const scrollTriggerStart = useMemo(() => {
@@ -225,7 +225,7 @@ const Shuffle: React.FC<ShuffleProps> = ({
             inner.setAttribute('data-final-y', String(finalY));
           }
 
-          if (colorFrom) (inner.style as any).color = colorFrom;
+          if (colorFrom) inner.style.color = colorFrom;
           wrappersRef.current.push(wrap);
         });
       };
@@ -288,7 +288,7 @@ const Shuffle: React.FC<ShuffleProps> = ({
         });
 
         const addTween = (targets: HTMLElement[], at: number) => {
-          const vars: any = {
+          const vars: gsap.TweenVars = {
             duration,
             ease,
             force3D: true,
@@ -315,7 +315,7 @@ const Shuffle: React.FC<ShuffleProps> = ({
         } else {
           strips.forEach(strip => {
             const d = Math.random() * maxDelay;
-            const vars: any = {
+            const vars: gsap.TweenVars = {
               duration,
               ease,
               force3D: true
@@ -415,9 +415,9 @@ const Shuffle: React.FC<ShuffleProps> = ({
     () => `${baseTw} ${ready ? 'visible' : 'invisible'} ${className}`.trim(),
     [baseTw, ready, className]
   );
-  const Tag = (tag || 'p') as keyof JSX.IntrinsicElements;
+  const DynamicTag = (tag || 'p') as React.ElementType;
 
-  return React.createElement(Tag, { ref: ref as any, className: classes, style: commonStyle }, text);
+  return <DynamicTag ref={ref} className={classes} style={commonStyle}>{text}</DynamicTag>;
 };
 
 export default Shuffle;
