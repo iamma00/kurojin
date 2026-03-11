@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
-import { EB_Garamond, Montserrat } from "next/font/google";
+import { EB_Garamond, Montserrat, Geist } from "next/font/google";
 import SmoothScroll from "@/components/SmoothScroll";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const ebGaramond = EB_Garamond({
   variable: "--font-eb-garamond",
@@ -28,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={cn("font-sans", geist.variable)}>
       <body
         className={`${ebGaramond.variable} ${montserrat.variable} antialiased`}
       >
