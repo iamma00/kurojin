@@ -24,21 +24,18 @@ export default function Story() {
       </div>
 
       {/* Content */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10 px-[8%]">
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10 px-[8%] gap-y-15">
         <p
-          className="text-off-white text-[40px] font-garamond tracking-[-0.8px] max-w-[468px]"
+          className="text-off-white text-[40px] font-garamond tracking-[-0.8px] whitespace-nowrap"
           style={{
             textShadow: "0px 0px 40.9px rgba(255,236,185,0.6)",
           }}
         >
-          <span className="font-normal leading-[1.4] tracking-[-0.32px]">
-            Your focus is on what
-          </span>{" "}
-          <span className="font-bold italic uppercase">you build.</span>
+          <span className="font-normal leading-[1.4] tracking-[-0.32px]">Your focus is on what </span><span className="font-bold italic uppercase">you build.</span>
         </p>
 
         <p
-          className="mt-8 text-white text-[15px] font-light leading-[1.4] max-w-[683px] blur-[0.5px] mix-blend-difference"
+          className="text-white text-[15px] font-light leading-[1.4] max-w-[683px] blur-[0.5px] mix-blend-difference"
           style={{
             textShadow: "0px 0px 33px rgba(255,255,255,0.3)",
           }}
@@ -51,17 +48,12 @@ export default function Story() {
         </p>
 
         <p
-          className="mt-8 text-white text-[40px] tracking-[-0.8px] uppercase max-w-[554px]"
+          className="text-white text-[40px] tracking-[-0.8px] uppercase whitespace-nowrap"
           style={{
             textShadow: "0px 0px 45.2px rgba(255,236,185,0.28)",
           }}
         >
-          <span className="font-garamond font-light leading-[1.4]">
-            We Care How{" "}
-          </span>
-          <span className="font-garamond font-light italic leading-[1.4]">
-            The World Sees It
-          </span>
+          <span className="font-garamond font-light leading-[1.4]">We Care How </span><span className="font-garamond font-light italic leading-[1.4]">The World Sees It</span>
         </p>
       </div>
 

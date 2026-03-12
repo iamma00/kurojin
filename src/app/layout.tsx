@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { EB_Garamond, Montserrat, Geist } from "next/font/google";
+import { EB_Garamond, Geist } from "next/font/google";
 import SmoothScroll from "@/components/SmoothScroll";
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -13,12 +13,7 @@ const ebGaramond = EB_Garamond({
   style: ["normal", "italic"],
 });
 
-const montserrat = Montserrat({
-  variable: "--font-montserrat",
-  subsets: ["latin"],
-  weight: ["400", "700", "800"],
-  style: ["normal", "italic"],
-});
+const montserrat = { variable: "--font-montserrat" };
 
 export const metadata: Metadata = {
   title: "Kurojin Studios",
