@@ -1,8 +1,8 @@
 "use client";
 
+import { rgba } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import Shuffle from './Shuffle';
 
 interface Logo {
   src: string;
@@ -39,11 +39,12 @@ export default function Clients() {
 
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [hoveredLogo, setHoveredLogo] = useState<string | null>(null);
-  const positions = useRef([0, 0, 0, 0]);
+  const positions = useRef<number[]>([]);
+  const initialized = useRef(false);
   const scrollVelocity = useRef(0);
 
   useEffect(() => {
-    let lastY = 0;
+    let lastY = window.scrollY;
     let animationFrameId: number;
 
     const handleScroll = () => {
@@ -56,30 +57,34 @@ export default function Clients() {
       rowEls.current.forEach((rowEl, i) => {
         if (!rowEl) return;
 
-        // Base alternating direction
-        const baseDir = i % 2 === 0 ? 1 : -1;
+        const cycleWidth = rowEl.scrollWidth / 3;
 
-        // Apply scroll direction - reverse when scrolling opposite
+        // Initialize position to -cycleWidth (start on the middle copy)
+        // so there's a full buffer of content on both sides
+        if (!initialized.current || positions.current.length <= i) {
+          if (positions.current.length <= i) positions.current.push(-cycleWidth);
+          else positions.current[i] = -cycleWidth;
+        }
+
+        const baseDir = i % 2 === 0 ? 1 : -1;
         const scrollDir = scrollVelocity.current > 0 ? 1 : -1;
         const direction = baseDir * scrollDir;
 
-        // Calculate movement: base speed + scroll velocity bonus
         const speed = 0.8 + Math.abs(scrollVelocity.current) * 0.15;
         positions.current[i] += speed * direction;
 
-        // Infinite loop wrapping
-        const containerWidth = rowEl.scrollWidth / 2;
-
-        if (positions.current[i] > containerWidth) {
-          positions.current[i] -= containerWidth;
-        } else if (positions.current[i] < -containerWidth) {
-          positions.current[i] += containerWidth;
+        // Seamless wrap: when we've scrolled a full cycle past the middle copy
+        // in either direction, silently jump back by one cycle
+        if (positions.current[i] > 0) {
+          positions.current[i] -= cycleWidth;
+        } else if (positions.current[i] < -2 * cycleWidth) {
+          positions.current[i] += cycleWidth;
         }
 
         rowEl.style.transform = `translateX(${positions.current[i]}px)`;
       });
 
-      // Dampen velocity over time
+      initialized.current = true;
       scrollVelocity.current *= 0.85;
       animationFrameId = requestAnimationFrame(animate);
     };
@@ -94,7 +99,7 @@ export default function Clients() {
   }, []);
 
   const renderRow = (logos: Logo[], rowIndex: number) => {
-    const items = [...logos, ...logos];
+    const items = [...logos, ...logos, ...logos];
 
     return (
       <div
@@ -105,13 +110,16 @@ export default function Clients() {
           setHoveredLogo(null);
         }}
       >
-        <div ref={(el) => { rowEls.current[rowIndex] = el; }} className="flex w-max">
+        <div
+          ref={(el) => { rowEls.current[rowIndex] = el; }}
+          className="flex w-max gap-x-8 md:gap-x-12 lg:gap-x-16 xl:gap-x-20"
+        >
           {items.map((logo, i) => (
             <div
               key={i}
               className={`relative w-[90px] h-[90px] md:w-[110px] md:h-[110px] lg:w-[140px] lg:h-[140px] xl:w-[160px] xl:h-[160px] shrink-0 transition-all duration-300 cursor-pointer ${
-                i % 2 === 0 ? "mx-4 md:mx-6 lg:mx-8 xl:mx-10" : "mx-5 md:mx-7 lg:mx-9 xl:mx-12"
-              } ${logo.blend ? "mix-blend-plus-lighter" : ""} ${
+                logo.blend ? "mix-blend-plus-lighter" : ""
+              } ${
                 hoveredRow === rowIndex && hoveredLogo !== `${rowIndex}-${i}`
                   ? "opacity-40 scale-95"
                   : "opacity-100 scale-100"
@@ -124,11 +132,7 @@ export default function Clients() {
                   src={logo.src}
                   alt={logo.alt}
                   fill
-                  className={`object-contain transition-all duration-300 ${
-                    hoveredLogo === `${rowIndex}-${i}`
-                      ? "brightness-150 drop-shadow-[0_0_15px_rgba(0,255,145,0.4)]"
-                      : "brightness-100"
-                  }`}
+                  className="object-contain"
                 />
               </div>
             </div>
@@ -151,8 +155,6 @@ export default function Clients() {
       </div>
 
       {/* Title */}
-      
-      
       <p className="absolute top-[14%] left-[8%] text-[30px] xl:text-[40px] font-garamond text-white tracking-[-0.8px] z-10">
         <span className="leading-[0.84]">Because</span>{" "}
         <span className="font-bold italic uppercase leading-[0.84]">
@@ -162,43 +164,13 @@ export default function Clients() {
       </p>
 
       {/* Description */}
-
-<div
-  className="absolute top-[22%] left-[8%] text-[16px] xl:text-[20px] font-light text-white leading-[1.4] max-w-[600px] mix-blend-difference z-10"
-  style={{ textShadow: "0px 0px 33px rgba(255,255,255,0.3)" }}
->
-    <Shuffle
-      text="Brands that trusted Kurojin.studio to shape how the world sees them."
-      shuffleDirection="down"
-      duration={0.35}
-      animationMode="evenodd"
-      shuffleTimes={1}
-      ease="back.out(1.1)"
-      stagger={0.03}
-      threshold={0.1}
-      triggerOnce={true}
-      triggerOnHover
-      respectReducedMotion={true}
-      loop={false}
-      loopDelay={0}
-    />
-
-    <Shuffle
-      text="From startups to established names, we build with those who value craft."
-      shuffleDirection="down"
-      duration={0.35}
-      animationMode="evenodd"
-      shuffleTimes={1}
-      ease="back.out(1.1)"
-      stagger={0.03}
-      threshold={0.1}
-      triggerOnce={true}
-      triggerOnHover
-      respectReducedMotion={true}
-      loop={false}
-      loopDelay={0}
-    />
-</div>
+      <div
+        className=" absolute top-[22%] left-[8%] text-[16px] text-green-900 xl:text-[20px] font-light text-white leading-[1.4] max-w-[600px] z-10"
+      >
+        <p className="opacity-65">
+          Brands that trusted Kurojin.studio to shape how the world sees them.From startups to established names, we build with those who value craft.
+        </p>
+      </div>
 
       {/* Decorative */}
       <div className="absolute top-[18%] right-[8%] w-[78px] h-[264px] -rotate-90 origin-center mix-blend-color-dodge opacity-90 z-10">
@@ -211,10 +183,10 @@ export default function Clients() {
       </div>
 
       {/* Carousel */}
-      <div className="absolute bottom-0 top-[35%] left-1/2 -translate-x-1/2 w-full bg-black border border-black overflow-hidden py-8 md:py-10 lg:py-12 xl:py-14 z-10">
+      <div className="absolute bottom-[5%] top-[35%] left-[4%] right-[4%] bg-black/80 border border-white/5 rounded-2xl overflow-hidden py-8 md:py-10 lg:py-12 xl:py-14 z-10">
         {/* Edge fade gradients */}
-        <div className="absolute top-0 left-0 w-[10%] md:w-[12%] lg:w-[15%] h-full bg-gradient-to-r from-bg via-bg/70 to-transparent z-20" />
-        <div className="absolute top-0 right-0 w-[10%] md:w-[12%] lg:w-[15%] h-full bg-gradient-to-l from-bg via-bg/70 to-transparent z-20" />
+        <div className="absolute top-0 left-0 w-[10%] md:w-[12%] lg:w-[15%] h-full bg-gradient-to-r from-black/80 via-black/50 to-transparent z-20 pointer-events-none rounded-l-2xl" />
+        <div className="absolute top-0 right-0 w-[10%] md:w-[12%] lg:w-[15%] h-full bg-gradient-to-l from-black/80 via-black/50 to-transparent z-20 pointer-events-none rounded-r-2xl" />
 
         {/* Four rows with proper spacing */}
         <div className="flex flex-col gap-y-4 md:gap-y-6 lg:gap-y-8 xl:gap-y-10 px-[4%] md:px-[6%] lg:px-[8%] h-full justify-center">

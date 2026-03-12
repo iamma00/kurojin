@@ -71,16 +71,12 @@ body {
   overflow-x: hidden;
 }
 
-/* Scrollbar styling */
+/* Hide scrollbar globally */
+* {
+  scrollbar-width: none;
+}
 ::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #010101;
-}
-::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 3px;
+  display: none;
 }
 
 :root {
