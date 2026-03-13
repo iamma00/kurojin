@@ -8,19 +8,6 @@ const serviceCategories = [
   "UI UX",
 ];
 
-const servicesList = [
-  "Branding",
-  "3D Production",
-  "Web Design & Dev",
-  "Product/ads Shoot",
-  "Marketing",
-  "Printing Media",
-  "Social Media",
-  "Architectural Viz",
-  "Post-Production",
-  "Software visualization",
-];
-
 export default function Services() {
   return (
     <section
@@ -50,7 +37,7 @@ export default function Services() {
 
       {/* Section heading */}
       <p
-        className="absolute top-[20%] left-[8%] text-[40px] font-garamond italic font-light text-off-white tracking-[-0.8px] uppercase z-10"
+        className="absolute top-[20%] left-1/2 -translate-x-1/2 text-center text-[40px] font-garamond italic font-light text-off-white tracking-[-0.8px] uppercase z-10 whitespace-nowrap"
         style={{
           textShadow: "0px 0px 40.9px rgba(255,236,185,0.6)",
         }}
@@ -59,7 +46,7 @@ export default function Services() {
       </p>
 
       {/* Description */}
-      <p className="absolute top-[36%] left-[8%] text-light-gray text-[15px] font-light leading-[1.4] max-w-[680px] z-10">
+      <p className="absolute top-[34%] left-1/2 -translate-x-1/2 text-center text-light-gray text-[15px] font-light leading-[1.4] max-w-[680px] z-10 px-6">
         Kurojin Studios is built on the idea that creativity shouldn&apos;t live
         in silos. Whether you&apos;re launching a brand, redefining an identity,
         or scaling your digital presence, you shouldn&apos;t have to chase
@@ -68,7 +55,7 @@ export default function Services() {
       </p>
 
       {/* CTA Button */}
-      <div className="absolute top-[57%] left-[8%] z-10">
+      <div className="absolute top-[55%] left-1/2 -translate-x-1/2 z-10">
         <button className="bg-white text-bg rounded-[55px] h-[38px] px-[10px] w-[211px] font-montserrat font-extrabold italic text-[20px] uppercase overflow-hidden relative group cursor-pointer border border-bg">
           <span className="block transition-transform duration-300 group-hover:-translate-y-full leading-[1.4]">
             Our Services
@@ -80,7 +67,7 @@ export default function Services() {
       </div>
 
       {/* Service categories row */}
-      <div className="absolute top-[75%] left-[8%] flex gap-[6vw] z-10">
+      <div className="absolute bottom-[22%] left-1/2 -translate-x-1/2 flex gap-[5vw] z-10 w-[min(85%,1020px)] justify-between">
         {serviceCategories.map((cat, i) => (
           <p
             key={i}
@@ -92,7 +79,7 @@ export default function Services() {
       </div>
 
       {/* Scroll down arrow */}
-      <div className="absolute bottom-[4%] left-[8%] w-[16px] h-[16px] rotate-90 mix-blend-difference z-10">
+      <div className="absolute bottom-[22%] right-[3.8%] w-[16px] h-[16px] mix-blend-difference z-10">
         <Image
           src="/images/down-arrow.svg"
           alt="Scroll down"
@@ -101,26 +88,8 @@ export default function Services() {
         />
       </div>
 
-      {/* Floating services list (right side) */}
-      <div className="absolute top-1/2 -translate-y-1/2 right-[8%] w-[31vw] max-w-[588px] h-[85vh] max-h-[904px] rounded-[35px] overflow-y-auto overflow-x-hidden blur-[2.5px] mix-blend-color-dodge z-10">
-        <div className="pt-[25px] pl-[calc(50%-133px)]">
-          {servicesList.map((service, i) => (
-            <p
-              key={i}
-              className="font-garamond italic text-[36px] uppercase leading-[2.39] bg-clip-text text-transparent"
-              style={{
-                backgroundImage:
-                  "radial-gradient(ellipse at center, rgba(255,255,255,1) 0%, rgba(175,146,128,1) 50%, rgba(94,36,0,1) 100%)",
-              }}
-            >
-              {service}
-            </p>
-          ))}
-        </div>
-      </div>
-
       {/* Decorative flower */}
-      <div className="absolute top-[55%] left-[27%] w-[75px] h-[186px] rotate-90 origin-center mix-blend-lighten z-10">
+      <div className="absolute bottom-[20%] right-[8%] w-[75px] h-[186px] rotate-90 origin-center mix-blend-lighten z-10">
         <Image
           src="/images/decor-flower.png"
           alt=""
