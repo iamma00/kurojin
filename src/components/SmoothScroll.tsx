@@ -1,27 +1,55 @@
 "use client";
 
-import { ReactNode, useEffect } from "react";
-import Lenis from "lenis";
+import { ReactNode, useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export default function SmoothScroll({ children }: { children: ReactNode }) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
-    const lenis = new Lenis({
-      duration: 2.0,
-      easing: (t): number => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-    });
+    gsap.registerPlugin(ScrollTrigger);
+    if (!containerRef.current) return;
 
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
+    let locomotive: any = null;
+    let refreshHandler: (() => void) | null = null;
 
-    requestAnimationFrame(raf);
+    const setup = async () => {
+      const LocomotiveScroll = (await import("locomotive-scroll")).default;
+
+      locomotive = new LocomotiveScroll({
+        lenisOptions: {
+          duration: 0.8,
+          lerp: 0.1,
+          smoothWheel: true,
+          syncTouch: true,
+          wheelMultiplier: 1.25,
+          touchMultiplier: 1.15,
+        },
+        scrollCallback: () => {
+          ScrollTrigger.update();
+        },
+      });
+
+      refreshHandler = () => locomotive?.resize();
+      ScrollTrigger.addEventListener("refresh", refreshHandler);
+      ScrollTrigger.refresh();
+    };
+
+    setup();
 
     return () => {
-      lenis.destroy();
+      if (refreshHandler) {
+        ScrollTrigger.removeEventListener("refresh", refreshHandler);
+      }
+      ScrollTrigger.clearScrollMemory();
+      locomotive?.destroy();
     };
   }, []);
 
-  return <>{children}</>;
+  return (
+    <div ref={containerRef} data-scroll-container>
+      {children}
+    </div>
+  );
 }

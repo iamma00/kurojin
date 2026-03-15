@@ -82,6 +82,8 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   const blueGradId = `blue-grad-${uniqueId}`;
 
   const [svgSupported, setSvgSupported] = useState<boolean>(false);
+  const [backdropFilterSupported, setBackdropFilterSupported] = useState<boolean>(false);
+  const [isHydrated, setIsHydrated] = useState<boolean>(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const feImageRef = useRef<SVGFEImageElement>(null);
@@ -169,6 +171,11 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   ]);
 
   useEffect(() => {
+    setIsHydrated(true);
+    setBackdropFilterSupported(typeof window !== 'undefined' && CSS.supports('backdrop-filter', 'blur(10px)'));
+  }, []);
+
+  useEffect(() => {
     setSvgSupported(supportsSVGFilters());
   }, [supportsSVGFilters]);
 
@@ -190,29 +197,26 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
     setTimeout(updateDisplacementMap, 0);
   }, [updateDisplacementMap, width, height]);
 
-  const supportsBackdropFilter = () => {
-    if (typeof window === 'undefined') return false;
-    return CSS.supports('backdrop-filter', 'blur(10px)');
-  };
-
   const getContainerStyles = (): React.CSSProperties => {
+    const resolvedDarkMode = isHydrated ? isDarkMode : false;
+    const resolvedSvgSupported = isHydrated ? svgSupported : false;
+    const resolvedBackdropFilterSupported = isHydrated ? backdropFilterSupported : false;
+
     const baseStyles: React.CSSProperties = {
       ...style,
       width: typeof width === 'number' ? `${width}px` : width,
       height: typeof height === 'number' ? `${height}px` : height,
       borderRadius: `${borderRadius}px`,
-      '--glass-frost': backgroundOpacity,
-      '--glass-saturation': saturation
+      '--glass-frost': `${backgroundOpacity}`,
+      '--glass-saturation': `${saturation}`,
     } as React.CSSProperties;
 
-    const backdropFilterSupported = supportsBackdropFilter();
-
-    if (svgSupported) {
+    if (resolvedSvgSupported) {
       return {
         ...baseStyles,
-        background: isDarkMode ? `hsl(0 0% 0% / ${backgroundOpacity})` : `hsl(0 0% 100% / ${backgroundOpacity})`,
+        background: resolvedDarkMode ? `hsl(0 0% 0% / ${backgroundOpacity})` : `hsl(0 0% 100% / ${backgroundOpacity})`,
         backdropFilter: `url(#${filterId}) saturate(${saturation})`,
-        boxShadow: isDarkMode
+        boxShadow: resolvedDarkMode
           ? `0 0 2px 1px color-mix(in oklch, white, transparent 65%) inset,
              0 0 10px 4px color-mix(in oklch, white, transparent 85%) inset,
              0px 4px 16px rgba(17, 17, 26, 0.05),
@@ -231,8 +235,8 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
              0px 16px 56px rgba(17, 17, 26, 0.05) inset`
       };
     } else {
-      if (isDarkMode) {
-        if (!backdropFilterSupported) {
+      if (resolvedDarkMode) {
+        if (!resolvedBackdropFilterSupported) {
           return {
             ...baseStyles,
             background: 'rgba(0, 0, 0, 0.4)',
@@ -252,7 +256,7 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
           };
         }
       } else {
-        if (!backdropFilterSupported) {
+        if (!resolvedBackdropFilterSupported) {
           return {
             ...baseStyles,
             background: 'rgba(255, 255, 255, 0.4)',

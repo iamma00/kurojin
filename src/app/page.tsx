@@ -15,6 +15,7 @@ import Work from "@/components/Work";
 import WorkMobile from "@/components/mobile/Work.mobile";
 import Budget from "@/components/Budget";
 import BudgetMobile from "@/components/mobile/Budget.mobile";
+import Footer from "@/components/Footer";
 import Watermark from "@/components/Watermark";
 
 export default function Home() {
@@ -23,13 +24,71 @@ export default function Home() {
   return (
     <main className="relative">
       <Navbar />
-      <Watermark />
-      {isMobile ? <HeroMobile /> : <Hero />}
-      {isMobile ? <ClientsMobile /> : <Clients />}
-      {isMobile ? <StoryMobile /> : <Story />}
-      {isMobile ? <ServicesMobile /> : <Services />}
-      {isMobile ? <WorkMobile /> : <Work />}
-      {isMobile ? <BudgetMobile /> : <Budget />}
+      {!isMobile ? <Watermark /> : null}
+      {isMobile ? (
+        <>
+          <div data-scroll-section>
+            <HeroMobile />
+          </div>
+
+          <div data-scroll-section>
+            <ClientsMobile />
+          </div>
+
+          <div data-scroll-section>
+            <StoryMobile />
+          </div>
+
+          <div data-scroll-section>
+            <ServicesMobile />
+          </div>
+
+          <div data-scroll-section>
+            <WorkMobile />
+          </div>
+
+          <div data-scroll-section>
+            <BudgetMobile />
+          </div>
+        </>
+      ) : (
+        <>
+          <div data-scroll-section>
+            <Hero />
+          </div>
+
+          <div className="section-stack" data-scroll-section>
+            <div className="section-step section-z-10">
+              <div className="section-sticky">
+                <Clients />
+              </div>
+            </div>
+
+            <div className="section-step section-z-20">
+              <div className="section-sticky">
+                <Story />
+              </div>
+            </div>
+
+            <div className="section-step section-z-30">
+              <div className="section-sticky">
+                <Services />
+              </div>
+            </div>
+
+            <div className="section-step section-z-40">
+              <div className="section-sticky">
+                <Work />
+              </div>
+            </div>
+          </div>
+
+          <div data-scroll-section>
+            <Budget />
+          </div>
+        </>
+      )}
+      <Footer />
     </main>
   );
 }

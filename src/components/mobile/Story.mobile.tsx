@@ -65,21 +65,10 @@ export default function StoryMobile() {
         />
       </div>
 
-      <p
-        className={`pointer-events-none absolute inset-x-0 top-[16%] z-[6] text-center font-garamond text-[clamp(2.7rem,18vw,6rem)] font-semibold uppercase tracking-[-0.05em] text-[#dcdcdc]/35 transition-all duration-1000 ease-out ${
-          startSequence ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
-        style={{
-          textShadow: "0px 0px 32px rgba(255,236,185,0.18)",
-        }}
-      >
-        KUROJIN
-      </p>
-
       {/* Text content */}
-      <div className="relative z-10 mt-auto mb-auto px-7 py-16 flex flex-col items-center text-center gap-5">
+      <div className="relative z-10 mt-auto mb-auto px-6 py-16 flex flex-col items-center text-center gap-6">
         <p
-          className={`text-off-white text-[26px] font-garamond tracking-[-0.6px] transition-all duration-500 ease-out ${
+          className={`text-off-white text-[clamp(24px,7.2vw,33px)] font-garamond tracking-[-0.6px] transition-all duration-500 ease-out max-w-[330px] ${
             startSequence ? "opacity-100 translate-y-0 blur-0" : "opacity-0 translate-y-6 blur-sm"
           }`}
           style={{ textShadow: "0px 0px 40.9px rgba(255,236,185,0.6)" }}
@@ -88,7 +77,7 @@ export default function StoryMobile() {
           <span className="font-bold italic uppercase">you build.</span>
         </p>
 
-        <div className="min-h-[164px] max-w-[340px]">
+        <div className="min-h-[176px] max-w-[336px]">
           {showBody ? (
             <BlurText
               text={storyBodyText}
@@ -96,14 +85,14 @@ export default function StoryMobile() {
               animateBy="words"
               direction="top"
               stepDuration={0.18}
-              className="text-white/85 text-[13px] font-light leading-[1.7]"
+              className="text-white/82 text-[13px] font-light leading-[1.72]"
               onAnimationComplete={() => setShowBottom(true)}
             />
           ) : null}
         </div>
 
         <p
-          className="text-white text-[22px] tracking-[-0.5px] uppercase mt-1 min-h-[60px]"
+          className="text-white text-[clamp(20px,6.3vw,28px)] tracking-[-0.55px] uppercase mt-1 min-h-[68px] max-w-[330px]"
           style={{ textShadow: "0px 0px 45.2px rgba(255,236,185,0.28)" }}
         >
           <TextType

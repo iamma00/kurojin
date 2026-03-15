@@ -48,10 +48,8 @@ export default function Story() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: "+=100%",
+          end: "+=70%",
           scrub: 0.55,
-          pin: true,
-          anticipatePin: 1,
         },
       });
 

@@ -4,34 +4,33 @@ import Image from "next/image";
 
 export default function HeroMobile() {
   return (
-    <section className="relative w-full min-h-svh flex flex-col overflow-hidden bg-[#0c0c0c]">
+    <section className="relative w-full min-h-svh flex flex-col overflow-hidden bg-[#080808]">
       {/* Background image */}
       <div className="absolute inset-0">
         <Image
           src="/images/hero-bg.png"
           alt=""
           fill
-          className="object-cover rotate-180"
+          className="object-cover rotate-180 scale-[1.05]"
           priority
         />
-        {/* Darkened overlay for better text legibility on mobile */}
-        <div className="absolute inset-0 bg-black/30" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_28%_18%,rgba(129,196,255,0.18),transparent_34%),radial-gradient(circle_at_78%_20%,rgba(255,102,102,0.16),transparent_36%),linear-gradient(180deg,rgba(0,0,0,0.62)_0%,rgba(0,0,0,0.22)_42%,rgba(0,0,0,0.72)_100%)]" />
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-7 gap-4">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pt-[max(env(safe-area-inset-top),28px)] gap-5">
         {/* KUROJIN. studio — mobile-first dramatic sizing */}
         <div
-          className="flex items-baseline gap-1 animate-[fadeSlideUp_0.8s_ease-out_both]"
+          className="flex items-baseline gap-1.5 animate-[fadeSlideUp_0.8s_ease-out_both]"
           style={{
             textShadow:
               "0px 0px 25px rgba(255,189,136,0.37), -0.8px 0.8px 2.8px rgba(255,0,4,0.5), 0.8px -1.7px 1.7px rgba(0,178,255,0.53)",
           }}
         >
-          <span className="font-garamond font-bold italic text-[50px] text-white uppercase tracking-[-2px] leading-none">
+          <span className="font-garamond font-bold italic text-[clamp(46px,14vw,62px)] text-white uppercase tracking-[-2.2px] leading-none">
             Kurojin.
           </span>
-          <span className="font-garamond italic text-[15px] text-white/80 ml-[-2px]">
+          <span className="font-garamond italic text-[15px] text-white/82 ml-[-1px]">
             studio
           </span>
         </div>
@@ -59,7 +58,7 @@ export default function HeroMobile() {
 
         {/* Tagline */}
         <p
-          className="text-white text-[17px] font-garamond tracking-[-0.3px] text-center leading-[1.5] animate-[fadeSlideUp_0.8s_ease-out_0.4s_both]"
+          className="text-white text-[clamp(16px,4.6vw,20px)] font-garamond tracking-[-0.34px] text-center leading-[1.5] max-w-[320px] animate-[fadeSlideUp_0.8s_ease-out_0.4s_both]"
           style={{
             textShadow:
               "0px 0px 30.4px rgba(255,189,136,0.37), -1px 1px 3.4px rgba(255,0,4,0.5), 1px -2px 2px rgba(0,178,255,0.53)",
@@ -71,9 +70,9 @@ export default function HeroMobile() {
       </div>
 
       {/* Bottom section — pinned to bottom with safe area */}
-      <div className="relative z-10 pb-[max(env(safe-area-inset-bottom),22px)] px-7 flex flex-col items-center gap-3 animate-[fadeSlideUp_0.8s_ease-out_0.5s_both]">
+      <div className="relative z-10 pb-[max(env(safe-area-inset-bottom),22px)] px-6 flex flex-col items-center gap-3 animate-[fadeSlideUp_0.8s_ease-out_0.5s_both]">
         <p
-          className="text-white/90 text-[13px] font-light leading-[1.6] text-center max-w-[280px]"
+          className="text-white/88 text-[13px] font-light leading-[1.6] text-center max-w-[292px]"
           style={{
             textShadow:
               "0px 4px 4px rgba(0,0,0,0.25), 0px 0px 12px #ffe0c8",

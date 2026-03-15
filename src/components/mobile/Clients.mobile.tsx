@@ -31,16 +31,7 @@ const row2: Logo[] = [
   { src: "/images/logo-14.png", alt: "Client 14" },
   { src: "/images/logo-15.png", alt: "Client 15" },
 ];
-
-const row3: Logo[] = [
-  { src: "/images/logo-03.png", alt: "Client 3" },
-  { src: "/images/logo-07.png", alt: "Client 7" },
-  { src: "/images/logo-11.png", alt: "Client 11" },
-  { src: "/images/logo-01.png", alt: "Client 1" },
-  { src: "/images/logo-14.png", alt: "Client 14" },
-  { src: "/images/logo-05.png", alt: "Client 5" },
-  { src: "/images/logo-09.png", alt: "Client 9" },
-];
+const row3 = [...row1];
 const titleTypingSpeed = 19;
 const titleSegments = [
   { text: "Because ", initialDelay: 0 },
@@ -184,14 +175,9 @@ export default function ClientsMobile() {
 
       {/* Text content — fade-in on scroll */}
       <div
-        className="relative z-10 px-7 pt-24 pb-6"
+        className="relative z-10 px-6 pt-22 pb-6"
       >
-        {/* Small label */}
-        <span className="inline-block text-[10px] uppercase tracking-[3px] text-white/40 font-montserrat mb-4">
-          Our Clients
-        </span>
-
-        <p ref={titleRef} className="text-[24px] font-garamond text-white tracking-[-0.5px] leading-[1.25] min-h-[62px]">
+        <p ref={titleRef} className="text-[clamp(24px,7.4vw,32px)] font-garamond text-white tracking-[-0.55px] leading-[1.23] min-h-[74px] max-w-[330px]">
           <TextType
             text={startTitleAnimation ? "Because " : ""}
             as="span"
@@ -232,25 +218,19 @@ export default function ClientsMobile() {
           />
         </p>
 
-        <div className="mt-4 min-h-[84px] max-w-[320px]">
+        <div className="mt-4 min-h-[96px] max-w-[330px]">
           {showDescription ? (
             <BlurText
               text="Brands that trusted Kurojin.studio to shape how the world sees them. From startups to established names, we build with those who value craft."
               delay={40}
               animateBy="words"
               direction="top"
-              className="text-[13px] font-light text-white/85 leading-[1.65]"
+              className="text-[13px] font-light text-white/82 leading-[1.65]"
             />
           ) : null}
         </div>
 
-        {/* Accent dashes — mobile-only decorative */}
-        <div className="flex gap-1.5 mt-5">
-          <div className="w-6 h-px bg-white/50" />
-          <div className="w-3 h-px bg-white/25" />
-        </div>
-
-        <div className="absolute top-22 right-7 w-[42px] h-[140px] -rotate-90 origin-center mix-blend-color-dodge opacity-85 z-10">
+        <div className="absolute top-[92px] right-6 w-[38px] h-[124px] -rotate-90 origin-center mix-blend-color-dodge opacity-80 z-10 pointer-events-none">
           <Image
             src="/images/decor-clients.png"
             alt=""
@@ -261,7 +241,7 @@ export default function ClientsMobile() {
       </div>
 
       {/* Logo carousel — 3 rows with edge fades */}
-      <div className="relative z-10 mt-auto mb-8 mx-4 rounded-2xl border border-white/8 bg-black/75 px-2 py-5 overflow-hidden">
+      <div className="relative z-10 mt-auto mb-8 mx-4 rounded-[22px] border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.02)_100%)] backdrop-blur-[6px] px-2 py-5 overflow-hidden shadow-[0_18px_60px_rgba(0,0,0,0.35)]">
         <div className="absolute top-0 left-0 w-[14%] h-full bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10 pointer-events-none" />
         <div className="absolute top-0 right-0 w-[14%] h-full bg-gradient-to-l from-black/80 via-black/40 to-transparent z-10 pointer-events-none" />
 

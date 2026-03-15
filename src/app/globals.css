@@ -2,6 +2,7 @@
 @import "../../node_modules/tw-animate-css/dist/tw-animate.css";
 @import "shadcn/tailwind.css";
 @import "tw-animate-css";
+@import "locomotive-scroll/dist/locomotive-scroll.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -69,6 +70,10 @@ body {
   color: #fff;
   font-family: var(--font-helvetica);
   overflow-x: hidden;
+}
+
+[data-scroll-container] {
+  min-height: 100vh;
 }
 
 /* Hide scrollbar globally */
@@ -276,4 +281,45 @@ body {
 
 .animate-marquee-reverse {
   animation: marquee 35s linear infinite reverse;
+}
+
+@media (max-width: 767.98px) {
+  [data-scroll-section] {
+    position: relative;
+  }
+}
+
+/* Desktop section lift stack */
+@media (min-width: 768px) {
+  .section-stack {
+    position: relative;
+  }
+
+  .section-step {
+    position: relative;
+    min-height: 170svh;
+  }
+
+  .section-sticky {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  .section-z-10 {
+    z-index: 10;
+  }
+
+  .section-z-20 {
+    z-index: 20;
+  }
+
+  .section-z-30 {
+    z-index: 30;
+  }
+
+  .section-z-40 {
+    z-index: 40;
+  }
 }

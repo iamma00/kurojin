@@ -89,20 +89,20 @@ export default function ServicesMobile() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 px-6 pt-18 pb-10 flex flex-col min-h-svh">
+      <div className="relative z-10 px-5 pt-20 pb-10 flex flex-col min-h-svh">
         {/* Heading block */}
         <div
           ref={headingRef}
           className="mx-auto mt-8 flex w-full max-w-[360px] flex-col items-center gap-4 text-center opacity-0 translate-y-6 transition-all duration-700 ease-out"
         >
           <p
-            className="text-[28px] font-garamond italic font-light text-off-white tracking-[-0.6px] uppercase leading-[1.2]"
+            className="text-[clamp(25px,7vw,34px)] font-garamond italic font-light text-off-white tracking-[-0.6px] uppercase leading-[1.16]"
             style={{ textShadow: "0px 0px 40.9px rgba(255,236,185,0.6)" }}
           >
             One core, All dimensions.
           </p>
 
-          <p className="text-light-gray/85 text-[13px] font-light leading-[1.7] max-w-[340px]">
+          <p className="text-light-gray/82 text-[13px] font-light leading-[1.72] max-w-[336px]">
             Kurojin Studios is built on the idea that creativity shouldn&apos;t live in
             silos. Whether you&apos;re launching a brand, redefining an identity, or
             scaling your digital presence, you shouldn&apos;t have to chase multiple
@@ -110,7 +110,7 @@ export default function ServicesMobile() {
           </p>
 
           {/* CTA */}
-          <button className="bg-white text-bg rounded-[55px] h-[40px] w-[180px] font-montserrat font-extrabold italic text-[15px] uppercase overflow-hidden relative group cursor-pointer border border-bg active:scale-95 transition-transform">
+          <button className="bg-white text-bg rounded-[55px] h-[42px] w-[186px] font-montserrat font-extrabold italic text-[15px] uppercase overflow-hidden relative group cursor-pointer border border-bg active:scale-95 transition-transform shadow-[0_10px_30px_rgba(255,255,255,0.15)]">
             <span className="block transition-transform duration-300 group-hover:-translate-y-full leading-[1.4]">
               Our Services
             </span>
@@ -123,7 +123,7 @@ export default function ServicesMobile() {
         {/* Services categories */}
         <div
           ref={listRef}
-          className="mt-auto mb-14 flex flex-wrap justify-center gap-x-6 gap-y-4 opacity-0 translate-y-6 transition-all duration-700 ease-out delay-200"
+          className="mt-auto mb-14 mx-auto max-w-[360px] flex flex-wrap justify-center gap-x-4 gap-y-3 opacity-0 translate-y-6 transition-all duration-700 ease-out delay-200"
         >
           {servicesList.map((service, i) => (
             <div
@@ -133,7 +133,7 @@ export default function ServicesMobile() {
               className="opacity-0 translate-y-4 transition-all duration-500 ease-out"
             >
               <p
-                className="text-light-gray text-[12px] font-medium leading-none uppercase whitespace-nowrap"
+                className="text-light-gray text-[11px] font-medium leading-none uppercase whitespace-nowrap"
               >
                 {service}
               </p>
@@ -142,7 +142,7 @@ export default function ServicesMobile() {
         </div>
 
         {/* Scroll down arrow */}
-        <div className="absolute bottom-8 right-6 w-[14px] h-[14px] mix-blend-difference z-10">
+        <div className="absolute bottom-8 right-5 w-[14px] h-[14px] mix-blend-difference z-10">
           <Image
             src="/images/down-arrow.svg"
             alt="Scroll down"
@@ -152,7 +152,7 @@ export default function ServicesMobile() {
         </div>
 
         {/* Decorative flower */}
-        <div className="absolute bottom-10 right-12 w-[52px] h-[130px] rotate-90 origin-center mix-blend-lighten z-10">
+        <div className="absolute bottom-10 right-10 w-[48px] h-[120px] rotate-90 origin-center mix-blend-lighten z-10">
           <Image
             src="/images/decor-flower.png"
             alt=""

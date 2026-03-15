@@ -34,7 +34,7 @@ export default function BudgetMobile() {
       className="relative w-full min-h-svh bg-bg overflow-hidden"
     >
       {/* Background glows */}
-      <div className="absolute top-1/2 left-[8%] right-[8%] -translate-y-1/2 h-[74svh] shadow-[0px_0px_24px_0px_rgba(255,255,255,0.09)]">
+      <div className="absolute top-1/2 left-[6%] right-[6%] -translate-y-1/2 h-[74svh] rounded-[16px] shadow-[0px_0px_30px_0px_rgba(255,255,255,0.12)] overflow-hidden">
         <div
           className="absolute inset-0 opacity-20"
           style={{
@@ -62,21 +62,21 @@ export default function BudgetMobile() {
       {/* Text — fade up on view */}
       <div
         ref={contentRef}
-        className="absolute top-[43%] left-1/2 -translate-x-1/2 z-10 text-center w-[82%] max-w-[360px] flex flex-col items-center gap-5 opacity-0 translate-y-6 transition-all duration-700 ease-out delay-200 [&.is-visible]:opacity-100 [&.is-visible]:translate-y-0"
+        className="absolute top-[43%] left-1/2 -translate-x-1/2 z-10 text-center w-[84%] max-w-[350px] flex flex-col items-center gap-6 opacity-0 translate-y-6 transition-all duration-700 ease-out delay-200 [&.is-visible]:opacity-100 [&.is-visible]:translate-y-0"
       >
-        <p className="font-garamond text-[28px] text-near-white uppercase mix-blend-difference leading-[1.15]">
+        <p className="font-garamond text-[clamp(27px,7.2vw,34px)] text-near-white uppercase mix-blend-difference leading-[1.14]">
           <span className="font-normal">Budget Never</span>
           <br />
           <span className="font-bold italic">Limits Quality</span>
         </p>
 
-        <p className="text-light-gray/85 text-[13px] font-light leading-[1.7] max-w-[300px] mx-auto mix-blend-difference">
+        <p className="text-light-gray/83 text-[13px] font-light leading-[1.72] max-w-[306px] mx-auto mix-blend-difference">
           Budgets change. Standards don&apos;t. When numbers shift, we refine the
           output not the excellence. You get less volume, never less value.
         </p>
 
         {/* CTA — tap feedback */}
-        <button className="mt-2 bg-white text-bg rounded-[55px] h-[40px] px-5 w-[150px] font-montserrat font-extrabold italic text-[15px] uppercase overflow-hidden relative group cursor-pointer active:scale-95 transition-transform">
+        <button className="mt-2 bg-white text-bg rounded-[55px] h-[42px] px-5 w-[160px] font-montserrat font-extrabold italic text-[15px] uppercase overflow-hidden relative group cursor-pointer active:scale-95 transition-transform shadow-[0_10px_30px_rgba(255,255,255,0.16)]">
           <span className="block transition-transform duration-300 group-hover:-translate-y-full leading-[1.4]">
             LET&apos;S TALK
           </span>

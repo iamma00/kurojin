@@ -50,20 +50,22 @@ export default function Navbar() {
     <>
       {/* ── Mobile navbar (< md) ── */}
       <nav
-        className="fixed top-0 left-0 right-0 z-50 flex md:hidden items-center justify-between px-7 transition-all duration-400"
+        className="fixed top-0 left-0 right-0 z-50 flex md:hidden items-center justify-between px-5 transition-all duration-400"
         style={{
-          height: scrolled ? 52 : 60,
-          background: scrolled ? "rgba(1,1,1,0.85)" : "transparent",
-          backdropFilter: scrolled ? "blur(12px)" : "none",
+          height: scrolled ? 58 : 66,
+          paddingTop: "max(env(safe-area-inset-top), 8px)",
+          background: scrolled ? "rgba(1,1,1,0.76)" : "linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 100%)",
+          backdropFilter: scrolled ? "blur(14px)" : "blur(4px)",
+          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.12)" : "1px solid rgba(255,255,255,0)",
         }}
       >
-        <span className="font-garamond font-bold italic text-white uppercase text-[16px] tracking-[-0.4px]">
+        <span className="font-garamond font-bold italic text-white uppercase text-[18px] tracking-[-0.55px] drop-shadow-[0_0_14px_rgba(255,255,255,0.18)]">
           KUROJIN.
         </span>
 
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="relative w-8 h-8 flex flex-col items-center justify-center gap-[5px] z-50"
+          className="relative w-10 h-10 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm flex flex-col items-center justify-center gap-[5px] z-50"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
         >
           <span
@@ -86,24 +88,27 @@ export default function Navbar() {
 
       {/* Mobile fullscreen overlay menu */}
       <div
-        className={`fixed inset-0 z-40 bg-bg/95 backdrop-blur-xl flex md:hidden flex-col items-center justify-center gap-8 transition-all duration-500 ${
+        className={`fixed inset-0 z-40 bg-[radial-gradient(circle_at_20%_15%,rgba(53,168,255,0.2),transparent_38%),radial-gradient(circle_at_82%_22%,rgba(255,92,92,0.2),transparent_36%),linear-gradient(180deg,#020202_0%,#000_100%)] backdrop-blur-xl flex md:hidden flex-col items-center justify-center transition-all duration-500 ${
           menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
       >
-        {navLinks.map((link) => (
-          <Link
-            key={link.label}
-            href={link.href}
-            onClick={() => setMenuOpen(false)}
-            className="font-garamond text-white text-[28px] tracking-[-0.5px] uppercase"
-          >
-            {link.label}
-          </Link>
-        ))}
+        <div className="w-[86%] max-w-[360px] rounded-[28px] border border-white/14 bg-white/[0.04] px-6 py-8 flex flex-col items-center gap-7 shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+          {navLinks.map((link, index) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              onClick={() => setMenuOpen(false)}
+              className="font-garamond text-white text-[31px] leading-none tracking-[-0.65px] uppercase transition-all duration-300 hover:scale-[1.04]"
+              style={{ transitionDelay: menuOpen ? `${index * 45}ms` : "0ms" }}
+            >
+              {link.label}
+            </Link>
+          ))}
 
-        <button className="mt-4 bg-white text-black rounded-[55px] h-[40px] px-8 font-montserrat font-extrabold italic text-[14px] uppercase">
-          LET&apos;S TALK
-        </button>
+          <button className="mt-1 bg-white text-black rounded-[55px] h-[42px] px-9 font-montserrat font-extrabold italic text-[14px] uppercase shadow-[0_8px_30px_rgba(255,255,255,0.18)] active:scale-95 transition-transform">
+            LET&apos;S TALK
+          </button>
+        </div>
       </div>
 
       {/* ── Desktop navbar (>= md) ── */}
