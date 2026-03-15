@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
-import BlurText from "../BlurText";
-import TextType from "../TextType";
+import { useCallback, useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 interface Logo {
   src: string;
@@ -32,57 +32,93 @@ const row2: Logo[] = [
   { src: "/images/logo-15.png", alt: "Client 15" },
 ];
 const row3 = [...row1];
-const titleTypingSpeed = 19;
-const titleSegments = [
-  { text: "Because ", initialDelay: 0 },
-  { text: '"good enough" ', initialDelay: 150 },
-  { text: "was never the plan.", initialDelay: 438 },
-];
-const titleAnimationDuration =
-  Math.max(...titleSegments.map((segment) => segment.initialDelay + segment.text.length * titleTypingSpeed)) + 60;
+const titleLead = "Because ";
+const titleMiddle = '"good enough" ';
+const titleTail = "was never the plan.";
+const descriptionText =
+  "Brands that trusted Kurojin.studio to shape how the world sees them. From startups to established names, we build with those who value craft.";
 
 export default function ClientsMobile() {
   const rowEls = useRef<(HTMLDivElement | null)[]>([null, null, null]);
   const positions = useRef([0, 0, 0]);
   const scrollVelocity = useRef(0);
-  const sectionRef = useRef<HTMLElement>(null);
-  const titleRef = useRef<HTMLParagraphElement>(null);
-  const descriptionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [startTitleAnimation, setStartTitleAnimation] = useState(false);
-  const [showDescription, setShowDescription] = useState(false);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const bgRef = useRef<HTMLDivElement | null>(null);
+  const titleRef = useRef<HTMLParagraphElement | null>(null);
+  const titleCharRefs = useRef<HTMLSpanElement[]>([]);
+  const descriptionRef = useRef<HTMLParagraphElement | null>(null);
+  const descriptionCharRefs = useRef<HTMLSpanElement[]>([]);
+
+  titleCharRefs.current = [];
+  descriptionCharRefs.current = [];
 
   useEffect(() => {
-    const triggerAnimationsOnScroll = () => {
-      if (!titleRef.current || startTitleAnimation) return;
+    gsap.registerPlugin(ScrollTrigger);
 
-      const rect = titleRef.current.getBoundingClientRect();
-      const viewportTrigger = window.innerHeight * 0.82;
+    if (!sectionRef.current) return;
 
-      if (rect.top <= viewportTrigger) {
-        setStartTitleAnimation(true);
+    const ctx = gsap.context(() => {
+      gsap.set(titleCharRefs.current, { opacity: 0, y: -22, filter: "blur(7px)" });
+      gsap.set(descriptionRef.current, { opacity: 0, y: 26, filter: "blur(9px)" });
+      gsap.set(descriptionCharRefs.current, { opacity: 0 });
 
-        descriptionTimeoutRef.current = setTimeout(() => {
-          setShowDescription(true);
-        }, titleAnimationDuration);
+      const timeline = gsap.timeline({
+        defaults: { ease: "power2.out" },
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 82%",
+          end: "+=90%",
+          scrub: 0.6,
+        },
+      });
+
+      if (bgRef.current) {
+        timeline.fromTo(
+          bgRef.current,
+          { scale: 1.1, yPercent: -4 },
+          { scale: 1, yPercent: 3, duration: 3.2 },
+          0,
+        );
       }
-    };
 
-    window.addEventListener("scroll", triggerAnimationsOnScroll, { passive: true });
-    window.addEventListener("resize", triggerAnimationsOnScroll);
-    triggerAnimationsOnScroll();
-
-    return () => {
-      window.removeEventListener("scroll", triggerAnimationsOnScroll);
-      window.removeEventListener("resize", triggerAnimationsOnScroll);
-    };
-  }, [startTitleAnimation]);
-
-  useEffect(() => {
-    return () => {
-      if (descriptionTimeoutRef.current) {
-        clearTimeout(descriptionTimeoutRef.current);
+      if (titleCharRefs.current.length > 0) {
+        timeline.to(
+          titleCharRefs.current,
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 0.28,
+            stagger: 0.02,
+          },
+          0.18,
+        );
       }
-    };
+
+      if (descriptionRef.current) {
+        timeline.fromTo(
+          descriptionRef.current,
+          { opacity: 0, y: 26, filter: "blur(9px)" },
+          { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.22 },
+          ">",
+        );
+      }
+
+      if (descriptionCharRefs.current.length > 0) {
+        timeline.fromTo(
+          descriptionCharRefs.current,
+          { opacity: 0 },
+          {
+            opacity: 1,
+            stagger: 0.008,
+            duration: 0.22,
+          },
+          ">",
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
   }, []);
 
   /* Scroll-driven marquee with 3 rows */
@@ -165,70 +201,100 @@ export default function ClientsMobile() {
     >
       {/* Background */}
       <div className="absolute inset-0">
-        <Image
-          src="/images/clients-bg.png"
-          alt=""
-          fill
-          className="object-cover -scale-x-100 -scale-y-100"
-        />
+        <div ref={bgRef} className="absolute inset-0 overflow-hidden will-change-transform">
+          <Image
+            src="/images/clients-bg.png"
+            alt=""
+            fill
+            className="object-cover -scale-x-100 -scale-y-100"
+          />
+        </div>
       </div>
 
       {/* Text content — fade-in on scroll */}
       <div
         className="relative z-10 px-6 pt-22 pb-6"
       >
-        <p ref={titleRef} className="text-[clamp(24px,7.4vw,32px)] font-garamond text-white tracking-[-0.55px] leading-[1.23] min-h-[74px] max-w-[330px]">
-          <TextType
-            text={startTitleAnimation ? "Because " : ""}
-            as="span"
-            typingSpeed={titleTypingSpeed}
-            pauseDuration={1500}
-            deletingSpeed={50}
-            loop={false}
-            startOnVisible={false}
-            showCursor={false}
-            reverseMode={false}
-          />
-          <TextType
-            text={startTitleAnimation ? '"good enough" ' : ""}
-            as="span"
-            typingSpeed={titleTypingSpeed}
-            pauseDuration={1500}
-            deletingSpeed={50}
-            loop={false}
-            startOnVisible={false}
-            showCursor={false}
-            reverseMode={false}
-            initialDelay={150}
-            className="font-bold italic uppercase"
-          />
-          <TextType
-            text={startTitleAnimation ? "was never the plan." : ""}
-            as="span"
-            typingSpeed={titleTypingSpeed}
-            pauseDuration={1500}
-            deletingSpeed={50}
-            loop={false}
-            startOnVisible={false}
-            showCursor
-            cursorCharacter="_"
-            cursorBlinkDuration={0.5}
-            reverseMode={false}
-            initialDelay={438}
-          />
+        <p
+          ref={titleRef}
+          className="text-[clamp(24px,7.4vw,32px)] font-garamond text-white tracking-[-0.55px] leading-[1.23] min-h-[74px] max-w-[330px]"
+        >
+          <span className="font-normal">
+            {titleLead.split("").map((character, index) => (
+              <span
+                key={`lead-${character}-${index}`}
+                ref={(element) => {
+                  if (element) {
+                    titleCharRefs.current[index] = element;
+                  }
+                }}
+                className="inline-block"
+              >
+                {character === " " ? "\u00A0" : character}
+              </span>
+            ))}
+          </span>
+
+          <span className="font-bold italic uppercase">
+            {titleMiddle.split("").map((character, index) => {
+              const charIndex = titleLead.length + index;
+
+              return (
+                <span
+                  key={`middle-${character}-${index}`}
+                  ref={(element) => {
+                    if (element) {
+                      titleCharRefs.current[charIndex] = element;
+                    }
+                  }}
+                  className="inline-block"
+                >
+                  {character === " " ? "\u00A0" : character}
+                </span>
+              );
+            })}
+          </span>
+
+          <span className="font-normal">
+            {titleTail.split("").map((character, index) => {
+              const charIndex = titleLead.length + titleMiddle.length + index;
+
+              return (
+                <span
+                  key={`tail-${character}-${index}`}
+                  ref={(element) => {
+                    if (element) {
+                      titleCharRefs.current[charIndex] = element;
+                    }
+                  }}
+                  className="inline-block"
+                >
+                  {character === " " ? "\u00A0" : character}
+                </span>
+              );
+            })}
+          </span>
         </p>
 
-        <div className="mt-4 min-h-[96px] max-w-[330px]">
-          {showDescription ? (
-            <BlurText
-              text="Brands that trusted Kurojin.studio to shape how the world sees them. From startups to established names, we build with those who value craft."
-              delay={40}
-              animateBy="words"
-              direction="top"
-              className="text-[13px] font-light text-white/82 leading-[1.65]"
-            />
-          ) : null}
-        </div>
+        <p
+          ref={descriptionRef}
+          className="mt-4 min-h-[96px] max-w-[330px] text-[13px] font-light text-white/82 leading-[1.65]"
+          style={{ textShadow: "0px 0px 30px rgba(255,255,255,0.22)" }}
+        >
+          {descriptionText.split("").map((character, index) => (
+            <span
+              key={`${character}-${index}`}
+              ref={(element) => {
+                if (element) {
+                  descriptionCharRefs.current[index] = element;
+                }
+              }}
+              className="inline-block opacity-0"
+            >
+              {character === " " ? "\u00A0" : character}
+            </span>
+          ))}
+        </p>
 
         <div className="absolute top-[92px] right-6 w-[38px] h-[124px] -rotate-90 origin-center mix-blend-color-dodge opacity-80 z-10 pointer-events-none">
           <Image
