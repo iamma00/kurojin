@@ -1,8 +1,9 @@
 "use client";
 
-import { rgba } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import BlurText from "./BlurText";
+import TextType from "./TextType";
 
 interface Logo {
   src: string;
@@ -33,15 +34,67 @@ const row2: Logo[] = [
 
 const row3 = [...row1];
 const row4 = [...row2];
+const titleTypingSpeed = 19;
+const titleSegments = [
+  { text: "Because ", initialDelay: 0 },
+  { text: '"good enough" ', initialDelay: 150 },
+  { text: "was never the plan.", initialDelay: 438 },
+];
+const titleAnimationDuration =
+  Math.max(...titleSegments.map((segment) => segment.initialDelay + segment.text.length * titleTypingSpeed)) + 60;
+
+
 
 export default function Clients() {
   const rowEls = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
+  const titleRef = useRef<HTMLParagraphElement | null>(null);
+  const descriptionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [hoveredLogo, setHoveredLogo] = useState<string | null>(null);
+  const [startTitleAnimation, setStartTitleAnimation] = useState(false);
+  const [showDescription, setShowDescription] = useState(false);
   const positions = useRef<number[]>([]);
   const initialized = useRef(false);
   const scrollVelocity = useRef(0);
+
+  const handleAnimationComplete = () => {
+    console.log("Animation completed!");
+  };
+
+  useEffect(() => {
+    const triggerAnimationsOnScroll = () => {
+      if (!titleRef.current || startTitleAnimation) return;
+
+      const rect = titleRef.current.getBoundingClientRect();
+      const viewportTrigger = window.innerHeight * 0.8;
+
+      if (rect.top <= viewportTrigger) {
+        setStartTitleAnimation(true);
+
+        descriptionTimeoutRef.current = setTimeout(() => {
+          setShowDescription(true);
+        }, titleAnimationDuration);
+      }
+    };
+
+    window.addEventListener("scroll", triggerAnimationsOnScroll, { passive: true });
+    window.addEventListener("resize", triggerAnimationsOnScroll);
+    triggerAnimationsOnScroll();
+
+    return () => {
+      window.removeEventListener("scroll", triggerAnimationsOnScroll);
+      window.removeEventListener("resize", triggerAnimationsOnScroll);
+    };
+  }, [startTitleAnimation]);
+
+  useEffect(() => {
+    return () => {
+      if (descriptionTimeoutRef.current) {
+        clearTimeout(descriptionTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     let lastY = window.scrollY;
@@ -70,7 +123,7 @@ export default function Clients() {
         const scrollDir = scrollVelocity.current > 0 ? 1 : -1;
         const direction = baseDir * scrollDir;
 
-        const speed = 0.8 + Math.abs(scrollVelocity.current) * 0.15;
+        const speed = (0.8 + Math.abs(scrollVelocity.current) * 0.10) * 0.5;
         positions.current[i] += speed * direction;
 
         // Seamless wrap: when we've scrolled a full cycle past the middle copy
@@ -103,7 +156,7 @@ export default function Clients() {
 
     return (
       <div
-        className="overflow-hidden"
+        className={`border-t border-white/15 overflow-hidden${rowIndex === 1 ? " border-b border-white/15" : ""}`}
         onMouseEnter={() => setHoveredRow(rowIndex)}
         onMouseLeave={() => {
           setHoveredRow(null);
@@ -112,22 +165,22 @@ export default function Clients() {
       >
         <div
           ref={(el) => { rowEls.current[rowIndex] = el; }}
-          className="flex w-max gap-x-8 md:gap-x-12 lg:gap-x-16 xl:gap-x-20"
+          className="flex w-max"
         >
           {items.map((logo, i) => (
             <div
               key={i}
-              className={`relative w-[90px] h-[90px] md:w-[110px] md:h-[110px] lg:w-[140px] lg:h-[140px] xl:w-[160px] xl:h-[160px] shrink-0 transition-all duration-300 cursor-pointer ${
+              className={`relative w-[140px] h-[68px] md:w-[180px] md:h-[82px] lg:w-[220px] lg:h-[96px] xl:w-[260px] xl:h-[110px] shrink-0 border-r border-white/15 px-5 md:px-7 lg:px-9 py-2 md:py-3 transition-opacity duration-300 cursor-pointer ${
                 logo.blend ? "mix-blend-plus-lighter" : ""
               } ${
                 hoveredRow === rowIndex && hoveredLogo !== `${rowIndex}-${i}`
-                  ? "opacity-40 scale-95"
-                  : "opacity-100 scale-100"
+                  ? "opacity-30"
+                  : "opacity-100"
               }`}
               onMouseEnter={() => setHoveredLogo(`${rowIndex}-${i}`)}
               onMouseLeave={() => setHoveredLogo(null)}
             >
-              <div className="relative w-full h-full group">
+              <div className="relative w-full h-full">
                 <Image
                   src={logo.src}
                   alt={logo.alt}
@@ -155,21 +208,63 @@ export default function Clients() {
       </div>
 
       {/* Title */}
-      <p className="absolute top-[14%] left-[8%] text-[30px] xl:text-[40px] font-garamond text-white tracking-[-0.8px] z-10">
-        <span className="leading-[0.84]">Because</span>{" "}
-        <span className="font-bold italic uppercase leading-[0.84]">
-          &quot;good enough&quot;{" "}
-        </span>
-        <span className="leading-[0.84]">was never the plan.</span>
+      <p ref={titleRef} className="absolute top-[14%] left-[8%] text-[30px] xl:text-[40px] font-garamond text-white tracking-[-0.8px] z-10">
+        <TextType
+          text={startTitleAnimation ? "Because " : ""}
+          as="span"
+          typingSpeed={titleTypingSpeed}
+          pauseDuration={1500}
+          deletingSpeed={50}
+          loop={false}
+          startOnVisible={false}
+          showCursor={false}
+          reverseMode={false}
+          className="leading-[0.84]"
+        />
+        <TextType
+          text={startTitleAnimation ? '"good enough" ' : ""}
+          as="span"
+          typingSpeed={titleTypingSpeed}
+          pauseDuration={1500}
+          deletingSpeed={50}
+          loop={false}
+          startOnVisible={false}
+          showCursor={false}
+          reverseMode={false}
+          initialDelay={150}
+          className="font-bold italic uppercase leading-[0.84]"
+        />
+        <TextType
+          text={startTitleAnimation ? "was never the plan." : ""}
+          as="span"
+          typingSpeed={titleTypingSpeed}
+          pauseDuration={1500}
+          deletingSpeed={50}
+          loop={false}
+          startOnVisible={false}
+          showCursor
+          cursorCharacter="_"
+          cursorBlinkDuration={0.5}
+          reverseMode={false}
+          initialDelay={438}
+          className="leading-[0.84]"
+        />
       </p>
 
       {/* Description */}
       <div
         className=" absolute top-[22%] left-[8%] text-[16px] text-green-900 xl:text-[20px] font-light text-white leading-[1.4] max-w-[600px] z-10"
       >
-        <p className="opacity-65">
-          Brands that trusted Kurojin.studio to shape how the world sees them.From startups to established names, we build with those who value craft.
-        </p>
+        {showDescription ? (
+          <BlurText
+            text="Brands that trusted Kurojin.studio to shape how the world sees them. From startups to established names, we build with those who value craft."
+            delay={40}
+            animateBy="words"
+            direction="top"
+            onAnimationComplete={handleAnimationComplete}
+            className="opacity-65"
+          />
+        ) : null}
       </div>
 
       {/* Decorative */}
@@ -182,18 +277,26 @@ export default function Clients() {
         />
       </div>
 
-      {/* Carousel */}
-      <div className="absolute bottom-[5%] top-[35%] left-[4%] right-[4%] bg-black/80 border border-white/5 rounded-2xl overflow-hidden py-8 md:py-10 lg:py-12 xl:py-14 z-10">
-        {/* Edge fade gradients */}
-        <div className="absolute top-0 left-0 w-[10%] md:w-[12%] lg:w-[15%] h-full bg-gradient-to-r from-black/80 via-black/50 to-transparent z-20 pointer-events-none rounded-l-2xl" />
-        <div className="absolute top-0 right-0 w-[10%] md:w-[12%] lg:w-[15%] h-full bg-gradient-to-l from-black/80 via-black/50 to-transparent z-20 pointer-events-none rounded-r-2xl" />
+      {/* Carousel — outer clips, inner holds perspective */}
+      <div className="absolute bottom-0 top-[40%] left-[4%] right-[4%] rounded overflow-hidden z-10">
+        <div
+          className="absolute inset-0 bg-black border-t border-white/10"
+          style={{ perspective: "900px" }}
+        >
+          {/* Edge fade gradients */}
+          <div className="absolute top-0 left-0 w-[8%] md:w-[10%] lg:w-[12%] h-full bg-gradient-to-r from-black to-transparent z-20 pointer-events-none" />
+          <div className="absolute top-0 right-0 w-[8%] md:w-[10%] lg:w-[12%] h-full bg-gradient-to-l from-black to-transparent z-20 pointer-events-none" />
 
-        {/* Four rows with proper spacing */}
-        <div className="flex flex-col gap-y-4 md:gap-y-6 lg:gap-y-8 xl:gap-y-10 px-[4%] md:px-[6%] lg:px-[8%] h-full justify-center">
-          {renderRow(row1, 0)}
-          {renderRow(row2, 1)}
-          {renderRow(row3, 2)}
-          {renderRow(row4, 3)}
+          {/* 4 rows — 3D tilted */}
+          <div
+            className="flex flex-col h-full justify-center"
+            style={{ transform: "rotateX(20deg)", transformOrigin: "10% 20%" }}
+          >
+            {renderRow(row1, 0)}
+            {renderRow(row2, 1)}
+            {renderRow(row3, 2)}
+            {renderRow(row4, 3)}
+          </div>
         </div>
       </div>
     </section>

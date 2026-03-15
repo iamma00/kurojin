@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import BlurText from "../BlurText";
+import TextType from "../TextType";
 
 interface Logo {
   src: string;
@@ -39,30 +41,57 @@ const row3: Logo[] = [
   { src: "/images/logo-05.png", alt: "Client 5" },
   { src: "/images/logo-09.png", alt: "Client 9" },
 ];
+const titleTypingSpeed = 19;
+const titleSegments = [
+  { text: "Because ", initialDelay: 0 },
+  { text: '"good enough" ', initialDelay: 150 },
+  { text: "was never the plan.", initialDelay: 438 },
+];
+const titleAnimationDuration =
+  Math.max(...titleSegments.map((segment) => segment.initialDelay + segment.text.length * titleTypingSpeed)) + 60;
 
 export default function ClientsMobile() {
   const rowEls = useRef<(HTMLDivElement | null)[]>([null, null, null]);
   const positions = useRef([0, 0, 0]);
   const scrollVelocity = useRef(0);
   const sectionRef = useRef<HTMLElement>(null);
-  const textRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLParagraphElement>(null);
+  const descriptionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [startTitleAnimation, setStartTitleAnimation] = useState(false);
+  const [showDescription, setShowDescription] = useState(false);
 
-  /* Intersection observer for fade-in of text block */
   useEffect(() => {
-    const el = textRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.classList.add("opacity-100", "translate-y-0");
-          el.classList.remove("opacity-0", "translate-y-6");
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.3 },
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
+    const triggerAnimationsOnScroll = () => {
+      if (!titleRef.current || startTitleAnimation) return;
+
+      const rect = titleRef.current.getBoundingClientRect();
+      const viewportTrigger = window.innerHeight * 0.82;
+
+      if (rect.top <= viewportTrigger) {
+        setStartTitleAnimation(true);
+
+        descriptionTimeoutRef.current = setTimeout(() => {
+          setShowDescription(true);
+        }, titleAnimationDuration);
+      }
+    };
+
+    window.addEventListener("scroll", triggerAnimationsOnScroll, { passive: true });
+    window.addEventListener("resize", triggerAnimationsOnScroll);
+    triggerAnimationsOnScroll();
+
+    return () => {
+      window.removeEventListener("scroll", triggerAnimationsOnScroll);
+      window.removeEventListener("resize", triggerAnimationsOnScroll);
+    };
+  }, [startTitleAnimation]);
+
+  useEffect(() => {
+    return () => {
+      if (descriptionTimeoutRef.current) {
+        clearTimeout(descriptionTimeoutRef.current);
+      }
+    };
   }, []);
 
   /* Scroll-driven marquee with 3 rows */
@@ -155,43 +184,92 @@ export default function ClientsMobile() {
 
       {/* Text content — fade-in on scroll */}
       <div
-        ref={textRef}
-        className="relative z-10 px-7 pt-24 pb-6 opacity-0 translate-y-6 transition-all duration-700 ease-out"
+        className="relative z-10 px-7 pt-24 pb-6"
       >
         {/* Small label */}
         <span className="inline-block text-[10px] uppercase tracking-[3px] text-white/40 font-montserrat mb-4">
           Our Clients
         </span>
 
-        <p className="text-[24px] font-garamond text-white tracking-[-0.5px] leading-[1.25]">
-          <span>Because </span>
-          <span className="font-bold italic uppercase">&quot;good enough&quot; </span>
-          <span>was never the plan.</span>
+        <p ref={titleRef} className="text-[24px] font-garamond text-white tracking-[-0.5px] leading-[1.25] min-h-[62px]">
+          <TextType
+            text={startTitleAnimation ? "Because " : ""}
+            as="span"
+            typingSpeed={titleTypingSpeed}
+            pauseDuration={1500}
+            deletingSpeed={50}
+            loop={false}
+            startOnVisible={false}
+            showCursor={false}
+            reverseMode={false}
+          />
+          <TextType
+            text={startTitleAnimation ? '"good enough" ' : ""}
+            as="span"
+            typingSpeed={titleTypingSpeed}
+            pauseDuration={1500}
+            deletingSpeed={50}
+            loop={false}
+            startOnVisible={false}
+            showCursor={false}
+            reverseMode={false}
+            initialDelay={150}
+            className="font-bold italic uppercase"
+          />
+          <TextType
+            text={startTitleAnimation ? "was never the plan." : ""}
+            as="span"
+            typingSpeed={titleTypingSpeed}
+            pauseDuration={1500}
+            deletingSpeed={50}
+            loop={false}
+            startOnVisible={false}
+            showCursor
+            cursorCharacter="_"
+            cursorBlinkDuration={0.5}
+            reverseMode={false}
+            initialDelay={438}
+          />
         </p>
 
-        <p
-          className="mt-4 text-[13px] font-light text-white/85 leading-[1.65] max-w-[320px]"
-          style={{ textShadow: "0px 0px 33px rgba(255,255,255,0.15)" }}
-        >
-          Brands that trusted Kurojin.studio to shape how the world sees them.
-          From startups to established names, we build with those who value craft.
-        </p>
+        <div className="mt-4 min-h-[84px] max-w-[320px]">
+          {showDescription ? (
+            <BlurText
+              text="Brands that trusted Kurojin.studio to shape how the world sees them. From startups to established names, we build with those who value craft."
+              delay={40}
+              animateBy="words"
+              direction="top"
+              className="text-[13px] font-light text-white/85 leading-[1.65]"
+            />
+          ) : null}
+        </div>
 
         {/* Accent dashes — mobile-only decorative */}
         <div className="flex gap-1.5 mt-5">
           <div className="w-6 h-px bg-white/50" />
           <div className="w-3 h-px bg-white/25" />
         </div>
+
+        <div className="absolute top-22 right-7 w-[42px] h-[140px] -rotate-90 origin-center mix-blend-color-dodge opacity-85 z-10">
+          <Image
+            src="/images/decor-clients.png"
+            alt=""
+            fill
+            className="object-cover"
+          />
+        </div>
       </div>
 
       {/* Logo carousel — 3 rows with edge fades */}
-      <div className="relative z-10 flex-1 flex flex-col justify-center gap-3 py-4">
-        <div className="absolute top-0 left-0 w-[14%] h-full bg-gradient-to-r from-bg to-transparent z-10 pointer-events-none" />
-        <div className="absolute top-0 right-0 w-[14%] h-full bg-gradient-to-l from-bg to-transparent z-10 pointer-events-none" />
+      <div className="relative z-10 mt-auto mb-8 mx-4 rounded-2xl border border-white/8 bg-black/75 px-2 py-5 overflow-hidden">
+        <div className="absolute top-0 left-0 w-[14%] h-full bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-[14%] h-full bg-gradient-to-l from-black/80 via-black/40 to-transparent z-10 pointer-events-none" />
 
-        {renderRow(row1, 0)}
-        {renderRow(row2, 1)}
-        {renderRow(row3, 2)}
+        <div className="flex flex-col justify-center gap-3">
+          {renderRow(row1, 0)}
+          {renderRow(row2, 1)}
+          {renderRow(row3, 2)}
+        </div>
       </div>
     </section>
   );

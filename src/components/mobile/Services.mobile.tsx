@@ -4,16 +4,11 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 
 const servicesList = [
-  "Branding",
-  "3D Production",
-  "Web Design & Dev",
-  "Product/ads Shoot",
-  "Marketing",
-  "Printing Media",
-  "Social Media",
-  "Architectural Viz",
-  "Post-Production",
-  "Software visualization",
+  "Brand Strategy & Design",
+  "Web Design",
+  "Filmmaking",
+  "Product Design",
+  "UI UX",
 ];
 
 export default function ServicesMobile() {
@@ -55,8 +50,8 @@ export default function ServicesMobile() {
             const el = entry.target as HTMLElement;
             const delay = parseInt(el.dataset.delay || "0", 10);
             setTimeout(() => {
-              el.classList.add("opacity-100", "translate-x-0");
-              el.classList.remove("opacity-0", "-translate-x-4");
+              el.classList.add("opacity-100", "translate-y-0");
+              el.classList.remove("opacity-0", "translate-y-4");
             }, delay);
             obs.unobserve(el);
           }
@@ -94,19 +89,14 @@ export default function ServicesMobile() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 px-7 pt-24 pb-14 flex flex-col gap-5 flex-1">
-        {/* Heading block — fade in */}
+      <div className="relative z-10 px-6 pt-18 pb-10 flex flex-col min-h-svh">
+        {/* Heading block */}
         <div
           ref={headingRef}
-          className="flex flex-col gap-5 opacity-0 translate-y-6 transition-all duration-700 ease-out"
+          className="mx-auto mt-8 flex w-full max-w-[360px] flex-col items-center gap-4 text-center opacity-0 translate-y-6 transition-all duration-700 ease-out"
         >
-          {/* Section label — mobile-only */}
-          <span className="text-[10px] uppercase tracking-[3px] text-white/35 font-montserrat">
-            Services
-          </span>
-
           <p
-            className="text-[26px] font-garamond italic font-light text-off-white tracking-[-0.6px] uppercase leading-[1.2]"
+            className="text-[28px] font-garamond italic font-light text-off-white tracking-[-0.6px] uppercase leading-[1.2]"
             style={{ textShadow: "0px 0px 40.9px rgba(255,236,185,0.6)" }}
           >
             One core, All dimensions.
@@ -130,33 +120,45 @@ export default function ServicesMobile() {
           </button>
         </div>
 
-        {/* Services list — stagger reveal from left */}
+        {/* Services categories */}
         <div
           ref={listRef}
-          className="mt-3 flex flex-col opacity-0 translate-y-6 transition-all duration-700 ease-out delay-200"
+          className="mt-auto mb-14 flex flex-wrap justify-center gap-x-6 gap-y-4 opacity-0 translate-y-6 transition-all duration-700 ease-out delay-200"
         >
           {servicesList.map((service, i) => (
             <div
               key={i}
               data-service-item
               data-delay={i * 60}
-              className="flex items-center gap-3 opacity-0 -translate-x-4 transition-all duration-500 ease-out border-b border-white/[0.06] py-2.5 first:pt-0"
+              className="opacity-0 translate-y-4 transition-all duration-500 ease-out"
             >
-              {/* Index number — mobile-only touch */}
-              <span className="text-[10px] font-montserrat text-white/20 tabular-nums w-4 shrink-0">
-                {String(i + 1).padStart(2, "0")}
-              </span>
               <p
-                className="font-garamond italic text-[22px] uppercase leading-[1.6] bg-clip-text text-transparent"
-                style={{
-                  backgroundImage:
-                    "radial-gradient(ellipse at center, rgba(255,255,255,1) 0%, rgba(175,146,128,1) 50%, rgba(94,36,0,1) 100%)",
-                }}
+                className="text-light-gray text-[12px] font-medium leading-none uppercase whitespace-nowrap"
               >
                 {service}
               </p>
             </div>
           ))}
+        </div>
+
+        {/* Scroll down arrow */}
+        <div className="absolute bottom-8 right-6 w-[14px] h-[14px] mix-blend-difference z-10">
+          <Image
+            src="/images/down-arrow.svg"
+            alt="Scroll down"
+            fill
+            className="object-contain"
+          />
+        </div>
+
+        {/* Decorative flower */}
+        <div className="absolute bottom-10 right-12 w-[52px] h-[130px] rotate-90 origin-center mix-blend-lighten z-10">
+          <Image
+            src="/images/decor-flower.png"
+            alt=""
+            fill
+            className="object-cover"
+          />
         </div>
       </div>
     </section>

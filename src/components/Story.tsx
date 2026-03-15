@@ -7,6 +7,8 @@ import Image from "next/image";
 
 const storyBodyText =
   "Every brand begins with a story. We shape that story into a powerful Brand Identity, bring it to life through mindful Design, craft visuals with Product Shoots & immersive 3D Content, build your presence with high-impact Web Experiences, and finally set the momentum through strategic Social Media.";
+const bottomHeadlineLead = "We Care How ";
+const bottomHeadlineTail = "The World Sees It";
 
 export default function Story() {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -15,10 +17,12 @@ export default function Story() {
   const bodyTextRef = useRef<HTMLParagraphElement | null>(null);
   const bodyCharRefs = useRef<HTMLSpanElement[]>([]);
   const bottomHeadlineRef = useRef<HTMLParagraphElement | null>(null);
+  const bottomCharRefs = useRef<HTMLSpanElement[]>([]);
   const dropTextRef = useRef<HTMLParagraphElement | null>(null);
   const lineRef = useRef<HTMLDivElement | null>(null);
 
   bodyCharRefs.current = [];
+  bottomCharRefs.current = [];
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -27,9 +31,10 @@ export default function Story() {
 
     const ctx = gsap.context(() => {
       gsap.set(topHeadlineRef.current, { opacity: 0, y: 70, filter: "blur(8px)" });
-      gsap.set(bodyTextRef.current, { opacity: 1, y: 45, filter: "blur(10px)" });
-      gsap.set(bodyCharRefs.current, { opacity: 0.18 });
-      gsap.set(bottomHeadlineRef.current, { opacity: 0, y: 55, filter: "blur(10px)" });
+      gsap.set(bodyTextRef.current, { opacity: 0, y: 45, filter: "blur(10px)" });
+      gsap.set(bodyCharRefs.current, { opacity: 0 });
+      gsap.set(bottomHeadlineRef.current, { opacity: 1 });
+      gsap.set(bottomCharRefs.current, { opacity: 0, y: -65, filter: "blur(8px)" });
       gsap.set(dropTextRef.current, {
         yPercent: -145,
         scale: 0.42,
@@ -39,12 +44,12 @@ export default function Story() {
       gsap.set(lineRef.current, { opacity: 0.15 });
 
       const timeline = gsap.timeline({
-        defaults: { ease: "none" },
+        defaults: { ease: "power2.out" },
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: "+=260%",
-          scrub: 0.8,
+          end: "+=100%",
+          scrub: 0.55,
           pin: true,
           anticipatePin: 1,
         },
@@ -64,7 +69,7 @@ export default function Story() {
           .fromTo(
             topHeadlineRef.current,
             { opacity: 0, y: 70, filter: "blur(8px)" },
-            { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.55 },
+            { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.28 },
             0.2
           );
       }
@@ -72,31 +77,37 @@ export default function Story() {
       if (bodyTextRef.current) {
         timeline.fromTo(
           bodyTextRef.current,
-          { opacity: 1, y: 45, filter: "blur(10px)" },
-          { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.65 },
-          1.05
+          { opacity: 0, y: 45, filter: "blur(10px)" },
+          { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.2 },
+          ">"
         );
       }
 
       if (bodyCharRefs.current.length > 0) {
         timeline.fromTo(
           bodyCharRefs.current,
-          { opacity: 0.18 },
+          { opacity: 0 },
           {
             opacity: 1,
-            stagger: 0.02,
-            duration: 0.55,
+            stagger: 0.008,
+            duration: 0.18,
           },
-          1.15
+          ">"
         );
       }
 
-      if (bottomHeadlineRef.current) {
-        timeline.fromTo(
-          bottomHeadlineRef.current,
-          { opacity: 0, y: 55, filter: "blur(10px)" },
-          { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.6 },
-          2.15
+      if (bottomCharRefs.current.length > 0) {
+        timeline.to(
+          bottomCharRefs.current,
+          {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 0.3,
+            stagger: 0.022,
+            ease: "power2.out",
+          },
+          ">"
         );
       }
 
@@ -166,17 +177,6 @@ export default function Story() {
         />
       </div>
 
-      <p
-        ref={dropTextRef}
-        className="pointer-events-none absolute inset-0 z-[6] flex items-start justify-center pt-[7vh] whitespace-nowrap font-garamond text-[clamp(2.25rem,10vw,10rem)] font-semibold uppercase tracking-[-0.06em] leading-[0.78] text-[#dcdcdc] will-change-transform"
-        style={{
-          textShadow: "0px 0px 42px rgba(255,236,185,0.2)",
-        }}
-      >
-        <span className="font-light">KUROJIN</span>
-        
-      </p>
-
       {/* Content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10 px-[8%] gap-y-15">
         <p
@@ -191,7 +191,7 @@ export default function Story() {
 
         <p
           ref={bodyTextRef}
-          className="text-white text-[15px] font-light leading-[1.4] max-w-[683px] blur-[0.5px] mix-blend-difference"
+          className="text-white text-[15px] font-light leading-[1.4] max-w-[683px] blur-[0.5px] "
           style={{
             textShadow: "0px 0px 33px rgba(255,255,255,0.3)",
           }}
@@ -204,7 +204,7 @@ export default function Story() {
                   bodyCharRefs.current[index] = element;
                 }
               }}
-              className="inline-block opacity-[0.18] will-change-transform"
+              className="inline-block opacity-[0] will-change-transform"
             >
               {character === " " ? "\u00A0" : character}
             </span>
@@ -213,12 +213,45 @@ export default function Story() {
 
         <p
           ref={bottomHeadlineRef}
-          className="text-white text-[40px] tracking-[-0.8px] uppercase whitespace-nowrap"
+          className="absolute bottom-[8%] left-1/2 -translate-x-1/2 text-white text-[80px] tracking-[-0.8px] uppercase whitespace-nowrap"
           style={{
             textShadow: "0px 0px 45.2px rgba(255,236,185,0.28)",
           }}
         >
-          <span className="font-garamond font-light leading-[1.4]">We Care How </span><span className="font-garamond font-light italic leading-[1.4]">The World Sees It</span>
+          <span className="font-garamond font-light leading-[1.4]">
+            {bottomHeadlineLead.split("").map((character, index) => (
+              <span
+                key={`lead-${character}-${index}`}
+                ref={(element) => {
+                  if (element) {
+                    bottomCharRefs.current[index] = element;
+                  }
+                }}
+                className="inline-block will-change-transform"
+              >
+                {character === " " ? "\u00A0" : character}
+              </span>
+            ))}
+          </span>
+          <span className="font-garamond font-light italic leading-[1.4]">
+            {bottomHeadlineTail.split("").map((character, index) => {
+              const charIndex = bottomHeadlineLead.length + index;
+
+              return (
+                <span
+                  key={`tail-${character}-${index}`}
+                  ref={(element) => {
+                    if (element) {
+                      bottomCharRefs.current[charIndex] = element;
+                    }
+                  }}
+                  className="inline-block will-change-transform"
+                >
+                  {character === " " ? "\u00A0" : character}
+                </span>
+              );
+            })}
+          </span>
         </p>
       </div>
 

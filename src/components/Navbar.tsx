@@ -16,7 +16,6 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    let lastY = 0;
     let ticking = false;
 
     const onScroll = () => {
@@ -24,13 +23,13 @@ export default function Navbar() {
         requestAnimationFrame(() => {
           const y = window.scrollY;
 
-          if (y > 80 && y > lastY) {
+          // Stay compact once scrolled down; only expand again at the very top.
+          if (y > 80) {
             setScrolled(true);
-          } else if (y < lastY || y <= 80) {
+          } else if (y <= 0) {
             setScrolled(false);
           }
 
-          lastY = y;
           ticking = false;
         });
         ticking = true;

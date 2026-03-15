@@ -31,10 +31,10 @@ export default function BudgetMobile() {
   return (
     <section
       id="contact"
-      className="relative w-full min-h-svh bg-bg overflow-hidden flex flex-col items-center justify-center px-7"
+      className="relative w-full min-h-svh bg-bg overflow-hidden"
     >
       {/* Background glows */}
-      <div className="absolute inset-x-7 inset-y-[8%] shadow-[0px_0px_24px_0px_rgba(255,255,255,0.09)]">
+      <div className="absolute top-1/2 left-[8%] right-[8%] -translate-y-1/2 h-[74svh] shadow-[0px_0px_24px_0px_rgba(255,255,255,0.09)]">
         <div
           className="absolute inset-0 opacity-20"
           style={{
@@ -54,7 +54,7 @@ export default function BudgetMobile() {
       {/* Orb — scale in on view */}
       <div
         ref={orbRef}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] aspect-square rounded-full mix-blend-screen overflow-hidden scale-75 opacity-0 transition-all duration-1000 ease-out [&.is-visible]:scale-100 [&.is-visible]:opacity-100"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[72vw] max-w-[360px] aspect-square rounded-full mix-blend-screen overflow-hidden scale-75 opacity-0 transition-all duration-1000 ease-out [&.is-visible]:scale-100 [&.is-visible]:opacity-100"
       >
         <div className="w-full h-full bg-gradient-to-br from-white/5 via-white/2 to-transparent rounded-full animate-[gentlePulse_4s_ease-in-out_infinite]" />
       </div>
@@ -62,21 +62,13 @@ export default function BudgetMobile() {
       {/* Text — fade up on view */}
       <div
         ref={contentRef}
-        className="relative z-10 text-center flex flex-col items-center gap-5 opacity-0 translate-y-6 transition-all duration-700 ease-out delay-200 [&.is-visible]:opacity-100 [&.is-visible]:translate-y-0"
+        className="absolute top-[43%] left-1/2 -translate-x-1/2 z-10 text-center w-[82%] max-w-[360px] flex flex-col items-center gap-5 opacity-0 translate-y-6 transition-all duration-700 ease-out delay-200 [&.is-visible]:opacity-100 [&.is-visible]:translate-y-0"
       >
-        {/* Section label */}
-        <span className="text-[10px] uppercase tracking-[3px] text-white/35 font-montserrat">
-          Budget
-        </span>
-
         <p className="font-garamond text-[28px] text-near-white uppercase mix-blend-difference leading-[1.15]">
           <span className="font-normal">Budget Never</span>
           <br />
           <span className="font-bold italic">Limits Quality</span>
         </p>
-
-        {/* Accent */}
-        <div className="w-10 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
 
         <p className="text-light-gray/85 text-[13px] font-light leading-[1.7] max-w-[300px] mx-auto mix-blend-difference">
           Budgets change. Standards don&apos;t. When numbers shift, we refine the
