@@ -297,7 +297,7 @@ body {
 
   .section-step {
     position: relative;
-    min-height: 170svh;
+    min-height: 125svh;
   }
 
   .section-sticky {

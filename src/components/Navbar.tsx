@@ -23,10 +23,10 @@ export default function Navbar() {
         requestAnimationFrame(() => {
           const y = window.scrollY;
 
-          // Stay compact once scrolled down; only expand again at the very top.
-          if (y > 80) {
+          // Make sticky transition instant and trigger at a lower threshold
+          if (y > 10) {
             setScrolled(true);
-          } else if (y <= 0) {
+          } else {
             setScrolled(false);
           }
 
@@ -113,7 +113,7 @@ export default function Navbar() {
 
       {/* ── Desktop navbar (>= md) ── */}
       <nav
-        className="fixed left-1/2 -translate-x-1/2 z-50 hidden md:block transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"
+        className="fixed left-1/2 -translate-x-1/2 z-50 hidden md:block transition-all duration-150 ease-linear"
         style={{
           top: scrolled ? 30 : 62,
           width: scrolled ? 780 : 1140,
@@ -140,12 +140,12 @@ export default function Navbar() {
             style={{
               paddingLeft: scrolled ? "24px" : "32px",
               paddingRight: scrolled ? "24px" : "32px",
-              transition: "padding 0.5s ease-[cubic-bezier(0.76,0,0.24,1)]",
+              transition: "padding 0.15s linear",
             }}
           >
             {/* Logo */}
             <span
-              className={`relative z-10 font-garamond font-bold italic text-white uppercase tracking-[-0.4px] transition-all duration-500 whitespace-nowrap shrink-0 ${
+              className={`relative z-10 font-garamond font-bold italic text-white uppercase tracking-[-0.4px] transition-all duration-150 whitespace-nowrap shrink-0 ${
                 scrolled ? "text-[16px]" : "text-[20px]"
               }`}
             >
@@ -154,7 +154,7 @@ export default function Navbar() {
 
             {/* Nav Links */}
             <div
-              className={`flex items-center justify-center flex-1 transition-all duration-500 ${
+              className={`flex items-center justify-center flex-1 transition-all duration-150 ${
                 scrolled ? "gap-6" : "gap-16"
               }`}
             >
@@ -162,7 +162,7 @@ export default function Navbar() {
                 <Link
                   key={link.label}
                   href={link.href}
-                  className={`font-garamond text-white tracking-[-0.32px] hover:opacity-80 transition-all whitespace-nowrap ${
+                  className={`font-garamond text-white tracking-[-0.32px] hover:opacity-80 transition-all duration-150 whitespace-nowrap ${
                     scrolled ? "text-[14px]" : "text-[16px]"
                   }`}
                 >
@@ -173,7 +173,7 @@ export default function Navbar() {
 
             {/* CTA */}
             <button
-              className={`relative z-10 bg-white text-black rounded-[55px] font-montserrat font-extrabold italic uppercase overflow-hidden group cursor-pointer shrink-0 transition-all duration-500 hover:bg-gradient-to-r hover:from-[#00ff91] hover:to-[#00fee0] hover:text-black hover:shadow-[0_0_30px_rgba(0,255,145,0.8),0_0_60px_rgba(0,254,224,0.5)] ${
+              className={`relative z-10 bg-white text-black rounded-[55px] font-montserrat font-extrabold italic uppercase overflow-hidden group cursor-pointer shrink-0 transition-all duration-150 hover:bg-gradient-to-r hover:from-[#00ff91] hover:to-[#00fee0] hover:text-black hover:shadow-[0_0_30px_rgba(0,255,145,0.8),0_0_60px_rgba(0,254,224,0.5)] ${
                 scrolled
                   ? "h-[28px] px-9 text-[12px] tracking-[0.5px]"
                   : "h-[32px] px-10 text-[14px] tracking-[0.8px] "

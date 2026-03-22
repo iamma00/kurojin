@@ -19,12 +19,12 @@ export default function SmoothScroll({ children }: { children: ReactNode }) {
 
       locomotive = new LocomotiveScroll({
         lenisOptions: {
-          duration: 0.8,
-          lerp: 0.1,
+          duration: 1.0, // slightly longer for smoothness
+          lerp: 0.15,    // more interpolation for uniformity
           smoothWheel: true,
           syncTouch: true,
-          wheelMultiplier: 1.25,
-          touchMultiplier: 1.15,
+          wheelMultiplier: 1.0, // standardize wheel speed
+          touchMultiplier: 1.0, // standardize touch speed
         },
         scrollCallback: () => {
           ScrollTrigger.update();

@@ -113,21 +113,16 @@ export default function Clients() {
         const cycleWidth = rowEl.scrollWidth / 3;
 
         // Initialize position to -cycleWidth (start on the middle copy)
-        // so there's a full buffer of content on both sides
         if (!initialized.current || positions.current.length <= i) {
           if (positions.current.length <= i) positions.current.push(-cycleWidth);
           else positions.current[i] = -cycleWidth;
         }
 
-        const baseDir = i % 2 === 0 ? 1 : -1;
-        const scrollDir = scrollVelocity.current > 0 ? 1 : -1;
-        const direction = baseDir * scrollDir;
-
-        const speed = (0.8 + Math.abs(scrollVelocity.current) * 0.10) * 0.5;
+        const direction = i % 2 === 0 ? 1 : -1; // alternate row direction
+        const speed = 1.2; // fixed optimal speed for all rows
         positions.current[i] += speed * direction;
 
-        // Seamless wrap: when we've scrolled a full cycle past the middle copy
-        // in either direction, silently jump back by one cycle
+        // Seamless wrap
         if (positions.current[i] > 0) {
           positions.current[i] -= cycleWidth;
         } else if (positions.current[i] < -2 * cycleWidth) {
@@ -138,7 +133,6 @@ export default function Clients() {
       });
 
       initialized.current = true;
-      scrollVelocity.current *= 0.85;
       animationFrameId = requestAnimationFrame(animate);
     };
 

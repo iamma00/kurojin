@@ -1,7 +1,9 @@
 "use client";
 
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useState, useEffect } from "react";
 
+import IntroLoader from "@/components/IntroLoader";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import HeroMobile from "@/components/mobile/Hero.mobile";
@@ -20,6 +22,16 @@ import Watermark from "@/components/Watermark";
 
 export default function Home() {
   const isMobile = useIsMobile();
+  const [showLoader, setShowLoader] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowLoader(false), 1800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (showLoader) {
+    return <IntroLoader text="LOADING" duration={1800} />;
+  }
 
   return (
     <main className="relative">
@@ -58,8 +70,8 @@ export default function Home() {
           </div>
 
           <div className="section-stack" data-scroll-section>
-            <div className="section-step section-z-10">
-              <div className="section-sticky">
+            <div >
+              <div >
                 <Clients />
               </div>
             </div>
