@@ -20,6 +20,13 @@ const row1: Logo[] = [
   { src: "/images/logo-05.png", alt: "Client 5" },
   { src: "/images/logo-06.png", alt: "Client 6" },
   { src: "/images/logo-07.png", alt: "Client 7" },
+  { src: "/images/logo-08.png", alt: "Client 8" },
+  { src: "/images/logo-10.png", alt: "Client 10" },
+  { src: "/images/logo-11.png", alt: "Client 11" },
+  { src: "/images/logo-12.png", alt: "Client 12" },
+  { src: "/images/logo-13.png", alt: "Client 13" },
+  { src: "/images/logo-14.png", alt: "Client 14" },
+  { src: "/images/logo-15.png", alt: "Client 15" },
 ];
 
 const row2: Logo[] = [
@@ -30,6 +37,14 @@ const row2: Logo[] = [
   { src: "/images/logo-13.png", alt: "Client 13" },
   { src: "/images/logo-14.png", alt: "Client 14" },
   { src: "/images/logo-15.png", alt: "Client 15" },
+  { src: "/images/logo-01.png", alt: "Client 1" },
+  { src: "/images/logo-02.png", alt: "Client 2" },
+  { src: "/images/logo-03.png", alt: "Client 3" },
+  { src: "/images/logo-09.png", alt: "Client 9" },
+  { src: "/images/logo-04.png", alt: "Client 4", blend: true },
+  { src: "/images/logo-05.png", alt: "Client 5" },
+  { src: "/images/logo-06.png", alt: "Client 6" },
+  { src: "/images/logo-07.png", alt: "Client 7" },
 ];
 
 const row3 = [...row1];
@@ -41,14 +56,19 @@ const titleSegments = [
   { text: "was never the plan.", initialDelay: 438 },
 ];
 const titleAnimationDuration =
-  Math.max(...titleSegments.map((segment) => segment.initialDelay + segment.text.length * titleTypingSpeed)) + 60;
-
-
+  Math.max(
+    ...titleSegments.map(
+      (segment) =>
+        segment.initialDelay + segment.text.length * titleTypingSpeed,
+    ),
+  ) + 60;
 
 export default function Clients() {
   const rowEls = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
   const titleRef = useRef<HTMLParagraphElement | null>(null);
-  const descriptionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const descriptionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [hoveredLogo, setHoveredLogo] = useState<string | null>(null);
@@ -78,7 +98,9 @@ export default function Clients() {
       }
     };
 
-    window.addEventListener("scroll", triggerAnimationsOnScroll, { passive: true });
+    window.addEventListener("scroll", triggerAnimationsOnScroll, {
+      passive: true,
+    });
     window.addEventListener("resize", triggerAnimationsOnScroll);
     triggerAnimationsOnScroll();
 
@@ -99,10 +121,16 @@ export default function Clients() {
   useEffect(() => {
     let lastY = window.scrollY;
     let animationFrameId: number;
+    let scrollDir = 1; // 1 = down, -1 = up
 
     const handleScroll = () => {
       const currentY = window.scrollY;
       scrollVelocity.current = currentY - lastY;
+      if (currentY > lastY) {
+        scrollDir = 1; // scrolling down
+      } else if (currentY < lastY) {
+        scrollDir = -1; // scrolling up
+      }
       lastY = currentY;
     };
 
@@ -114,13 +142,16 @@ export default function Clients() {
 
         // Initialize position to -cycleWidth (start on the middle copy)
         if (!initialized.current || positions.current.length <= i) {
-          if (positions.current.length <= i) positions.current.push(-cycleWidth);
+          if (positions.current.length <= i)
+            positions.current.push(-cycleWidth);
           else positions.current[i] = -cycleWidth;
         }
 
-        const direction = i % 2 === 0 ? 1 : -1; // alternate row direction
-        const speed = 1.2; // fixed optimal speed for all rows
-        positions.current[i] += speed * direction;
+        // alternate row direction, but reverse on scroll up
+        const baseDirection = i % 2 === 0 ? 1 : -1;
+        const effectiveDirection = baseDirection * scrollDir;
+        const speed = 1.2;
+        positions.current[i] += speed * effectiveDirection;
 
         // Seamless wrap
         if (positions.current[i] > 0) {
@@ -158,7 +189,9 @@ export default function Clients() {
         }}
       >
         <div
-          ref={(el) => { rowEls.current[rowIndex] = el; }}
+          ref={(el) => {
+            rowEls.current[rowIndex] = el;
+          }}
           className="flex w-max"
         >
           {items.map((logo, i) => (
@@ -202,7 +235,10 @@ export default function Clients() {
       </div>
 
       {/* Title */}
-      <p ref={titleRef} className="absolute top-[14%] left-[8%] text-[30px] xl:text-[40px] font-garamond text-white tracking-[-0.8px] z-10">
+      <p
+        ref={titleRef}
+        className="absolute top-[14%] left-[8%] text-[30px] xl:text-[40px] font-garamond text-white tracking-[-0.8px] z-10"
+      >
         <TextType
           text={startTitleAnimation ? "Because " : ""}
           as="span"
@@ -246,9 +282,7 @@ export default function Clients() {
       </p>
 
       {/* Description */}
-      <div
-        className=" absolute top-[22%] left-[8%] text-[16px] text-green-900 xl:text-[20px] font-light text-white leading-[1.4] max-w-[600px] z-10"
-      >
+      <div className=" absolute top-[22%] left-[8%] text-[16px] text-green-900 xl:text-[20px] font-light text-white leading-[1.4] max-w-[600px] z-10">
         {showDescription ? (
           <BlurText
             text="Brands that trusted Kurojin.studio to shape how the world sees them. From startups to established names, we build with those who value craft."

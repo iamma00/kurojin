@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 export default function Budget() {
   return (
@@ -31,8 +32,14 @@ export default function Budget() {
         <div className="w-full h-full bg-gradient-to-br from-white/5 via-white/2 to-transparent rounded-full" />
       </div>
 
-      {/* Text content */}
-      <div className="absolute top-[44%] left-1/2 -translate-x-1/2 text-center max-w-[768px] w-[80%] z-10">
+      {/* Text content with scroll reveal */}
+      <motion.div
+        className="absolute top-[44%] left-1/2 -translate-x-1/2 text-center max-w-[768px] w-[80%] z-10"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.5 }}
+        transition={{ duration: 0.9, ease: "easeOut" }}
+      >
         <p className="font-garamond text-[36px] lg:text-[42px] xl:text-[48px] text-near-white uppercase mix-blend-difference leading-[1.08]">
           <span className="font-normal">Budget Never</span>
           <span className="font-bold italic"> Limits Quality</span>
@@ -41,11 +48,12 @@ export default function Budget() {
           Budgets change. Standards don&apos;t. When numbers shift, we refine
           the output not the excellence. You get less volume, never less value.
         </p>
-      </div>
+      </motion.div>
 
       {/* CTA Button */}
       <div className="absolute top-[75%] left-1/2 -translate-x-1/2 z-10">
-        <button className="bg-white text-bg rounded-[55px] h-[38px] px-5 w-[139px] font-montserrat font-extrabold italic text-[20px] uppercase overflow-hidden relative group cursor-pointer">
+        <button className="bg-white text-bg rounded-[55px] h-[38px] px-5 w-[139px] font-montserrat font-extrabold italic text-[20px] uppercase overflow-hidden relative group cursor-pointer
+          transition-all duration-300 hover:bg-gradient-to-r hover:from-[#00ff91] hover:to-[#00fee0] hover:text-black hover:scale-105 active:scale-95 animate-pulse">
           <span className="block transition-transform duration-300 group-hover:-translate-y-full leading-[1.4]">
             LET&apos;s TALK
           </span>

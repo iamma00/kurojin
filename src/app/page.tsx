@@ -2,7 +2,6 @@
 
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useState, useEffect } from "react";
-
 import IntroLoader from "@/components/IntroLoader";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
@@ -11,6 +10,9 @@ import Clients from "@/components/Clients";
 import ClientsMobile from "@/components/mobile/Clients.mobile";
 import Story from "@/components/Story";
 import StoryMobile from "@/components/mobile/Story.mobile";
+import dynamic from "next/dynamic";
+
+
 import Services from "@/components/Services";
 import ServicesMobile from "@/components/mobile/Services.mobile";
 import Work from "@/components/Work";
@@ -69,7 +71,11 @@ export default function Home() {
             <Hero />
           </div>
 
-          <div className="section-stack" data-scroll-section>
+            <div className="section-stack" data-scroll-section>
+            {/* Stack manager toggles "is-top" on the current section-sticky */}
+            <div style={{ display: "none" }}>
+              {/* client only component will be injected — avoid SSR mismatch by importing dynamically */}
+            </div>
             <div >
               <div >
                 <Clients />
