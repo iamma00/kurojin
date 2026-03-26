@@ -12,6 +12,13 @@ export default function BudgetMobile() {
     const orb = orbRef.current;
     if (!content || !orb) return;
 
+    // Respect reduced motion: reveal immediately
+    if (typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      content.classList.add("is-visible");
+      orb.classList.add("is-visible");
+      return;
+    }
+
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -76,7 +83,7 @@ export default function BudgetMobile() {
         </p>
 
         {/* CTA — tap feedback */}
-        <button className="mt-2 bg-white text-bg rounded-[55px] h-[42px] px-5 w-[160px] font-montserrat font-extrabold italic text-[15px] uppercase overflow-hidden relative group cursor-pointer active:scale-95 transition-transform shadow-[0_10px_30px_rgba(255,255,255,0.16)]">
+        <button type="button" aria-label="Start conversation" className="mt-2 bg-white text-bg rounded-[55px] h-[48px] px-5 w-[160px] font-montserrat font-extrabold italic text-[15px] uppercase overflow-hidden relative group cursor-pointer active:scale-95 transition-transform shadow-[0_10px_30px_rgba(255,255,255,0.16)]">
           <span className="block transition-transform duration-300 group-hover:-translate-y-full leading-[1.4]">
             LET&apos;S TALK
           </span>

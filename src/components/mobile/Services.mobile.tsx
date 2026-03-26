@@ -20,6 +20,13 @@ export default function ServicesMobile() {
     const list = listRef.current;
     if (!heading || !list) return;
 
+    // Respect reduced motion preference — reveal immediately
+    if (typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      heading.classList.add("opacity-100", "translate-y-0");
+      list.classList.add("opacity-100", "translate-y-0");
+      return;
+    }
+
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -110,7 +117,7 @@ export default function ServicesMobile() {
           </p>
 
           {/* CTA */}
-          <button className="bg-white text-bg rounded-[55px] h-[42px] w-[186px] font-montserrat font-extrabold italic text-[15px] uppercase overflow-hidden relative group cursor-pointer border border-bg active:scale-95 transition-transform shadow-[0_10px_30px_rgba(255,255,255,0.15)]">
+          <button type="button" aria-label="View our services" className="bg-white text-bg rounded-[55px] h-[48px] w-[186px] font-montserrat font-extrabold italic text-[15px] uppercase overflow-hidden relative group cursor-pointer border border-bg active:scale-95 transition-transform shadow-[0_10px_30px_rgba(255,255,255,0.15)]">
             <span className="block transition-transform duration-300 group-hover:-translate-y-full leading-[1.4]">
               Our Services
             </span>

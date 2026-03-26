@@ -1,10 +1,23 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect } from "react";
 
 export default function HeroMobile() {
+  // Disable decorative animations when user prefers reduced motion
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (mq && mq.matches) {
+      // disable CSS animations on elements that use animate- classes
+      const els = document.querySelectorAll("[class*='animate-']");
+      els.forEach((el) => {
+        (el as HTMLElement).style.animation = "none";
+      });
+    }
+  }, []);
   return (
-    <section className="relative w-full min-h-svh flex flex-col overflow-hidden bg-[#080808]">
+    <section role="region" aria-label="Hero" className="relative w-full min-h-svh flex flex-col overflow-hidden bg-[#080808]">
       {/* Background image */}
       <div className="absolute inset-0">
         <Image

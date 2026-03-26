@@ -26,6 +26,14 @@ export default function StoryMobile() {
 
     if (!sectionRef.current) return;
 
+    // Respect reduced motion: skip staggered GSAP animations and reveal content
+    if (typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      if (topHeadlineRef.current) topHeadlineRef.current.style.opacity = "1";
+      if (bodyTextRef.current) bodyTextRef.current.style.opacity = "1";
+      if (bottomCharRefs.current.length > 0) bottomCharRefs.current.forEach((el) => el && (el.style.opacity = "1"));
+      return;
+    }
+
     const ctx = gsap.context(() => {
       gsap.set(topHeadlineRef.current, { opacity: 0, y: 54, filter: "blur(8px)" });
       gsap.set(bodyTextRef.current, { opacity: 0, y: 34, filter: "blur(9px)" });

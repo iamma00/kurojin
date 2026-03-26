@@ -43,13 +43,24 @@ export default function Story() {
       });
       gsap.set(lineRef.current, { opacity: 0.15 });
 
+      const computeEnd = () => {
+        const el = sectionRef.current;
+        if (!el) return "+=100%";
+        // Pin for the full duration of the section animation: section height + viewport
+        return `+=${el.offsetHeight + window.innerHeight}`;
+      };
+
       const timeline = gsap.timeline({
         defaults: { ease: "power2.out" },
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: "+=70%",
+          end: computeEnd,
           scrub: 0.55,
+          pin: true,
+          // Reserve space so the next section is pushed below while pinned
+          pinSpacing: true,
+          anticipatePin: 1,
         },
       });
 

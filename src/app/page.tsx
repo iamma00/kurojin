@@ -21,6 +21,9 @@ import Budget from "@/components/Budget";
 import BudgetMobile from "@/components/mobile/Budget.mobile";
 import Footer from "@/components/Footer";
 import Watermark from "@/components/Watermark";
+import CTA from "@/components/CTA";
+import CTAMobile from "@/components/mobile/CTA.mobile";
+import { div } from "three/src/nodes/math/OperatorNode.js";
 
 export default function Home() {
   const isMobile = useIsMobile();
@@ -58,8 +61,13 @@ export default function Home() {
           </div>
 
           <div data-scroll-section>
+            <CTAMobile/>
+          </div>
+
+          <div data-scroll-section>
             <WorkMobile />
           </div>
+          
 
           <div data-scroll-section>
             <BudgetMobile />
@@ -83,26 +91,35 @@ export default function Home() {
             </div>
 
             <div className="section-step section-z-20">
-              <div className="section-sticky">
+              <div>
                 <Story />
               </div>
             </div>
 
             <div className="section-step section-z-30">
-              <div className="section-sticky">
+              <div>
                 <Services />
               </div>
             </div>
 
+            <div className="section-step section-z-60">
+              <div>
+                <CTA/>
+              </div>
+            </div>
+
             <div className="section-step section-z-40">
-              <div className="section-sticky">
+              <div>
                 <Work />
               </div>
             </div>
-          </div>
 
-          <div data-scroll-section>
-            <Budget />
+            <div className="section-step section-z-80">
+              <div>
+                <Budget />
+              </div>
+            </div>
+
           </div>
         </>
       )}

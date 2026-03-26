@@ -39,6 +39,17 @@ const descriptionText =
   "Brands that trusted Kurojin.studio to shape how the world sees them. From startups to established names, we build with those who value craft.";
 
 export default function ClientsMobile() {
+  // Respect users' reduced motion preference on mobile
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (mq && mq.matches && titleCharRefs.current) {
+      titleCharRefs.current.forEach((el) => {
+        if (el) el.style.opacity = "1";
+      });
+      if (descriptionRef.current) descriptionRef.current.style.opacity = "1";
+    }
+  }, []);
   const rowEls = useRef<(HTMLDivElement | null)[]>([null, null, null]);
   const positions = useRef([0, 0, 0]);
   const scrollVelocity = useRef(0);
@@ -56,6 +67,13 @@ export default function ClientsMobile() {
     gsap.registerPlugin(ScrollTrigger);
 
     if (!sectionRef.current) return;
+
+    // If the user prefers reduced motion, reveal content without JS animation
+    if (typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      titleCharRefs.current.forEach((el) => el && (el.style.opacity = "1"));
+      if (descriptionRef.current) descriptionRef.current.style.opacity = "1";
+      return;
+    }
 
     const ctx = gsap.context(() => {
       gsap.set(titleCharRefs.current, { opacity: 0, y: -22, filter: "blur(7px)" });
@@ -198,6 +216,7 @@ export default function ClientsMobile() {
     <section
       ref={sectionRef}
       className="relative w-full min-h-svh bg-bg overflow-hidden flex flex-col"
+      style={{ touchAction: "pan-y" }}
     >
       {/* Background */}
       <div className="absolute inset-0">
