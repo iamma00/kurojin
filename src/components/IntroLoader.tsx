@@ -1,102 +1,133 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
+import gsap from 'gsap';
 
-/**
- * IntroLoader - A full-screen animated intro loader with left-to-down slide effect and custom radial gradient.
- */
-export default function IntroLoader({
-  text = "LOADING",
-  duration = 1800,
-  onFinish,
-}: {
-  text?: string;
-  duration?: number;
-  onFinish?: () => void;
-}) {
-  const loaderRef = useRef<HTMLDivElement>(null);
-  const [slideOut, setSlideOut] = useState(false);
+const IntroLoader = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setSlideOut(true);
-      setTimeout(() => {
-        if (onFinish) onFinish();
-        if (loaderRef.current) {
-          loaderRef.current.style.opacity = "0";
-          loaderRef.current.style.pointerEvents = "none";
+    const ctx = gsap.context(() => {
+      // Animate progress
+      gsap.to({}, {
+        duration: 2.5,
+        onUpdate: function() {
+          setProgress(Math.round(this.progress() * 100));
+        },
+      });
+
+      // Text reveal animation
+      gsap.fromTo(
+        textRef.current,
+        { 
+          opacity: 0, 
+          y: 50,
+          filter: 'blur(20px)',
+        },
+        { 
+          opacity: 1, 
+          y: 0,
+          filter: 'blur(0px)',
+          duration: 1,
+          ease: 'power3.out',
         }
-      }, 700); // match slide duration
-    }, duration);
-    return () => clearTimeout(timeout);
-  }, [duration, onFinish]);
+      );
+
+      // Glow pulse animation
+      gsap.to(glowRef.current, {
+        scale: 1.5,
+        opacity: 0.3,
+        duration: 1.5,
+        repeat: -1,
+        yoyo: true,
+        ease: 'power2.inOut',
+      });
+
+      // Progress bar animation
+      gsap.fromTo(
+        progressRef.current,
+        { scaleX: 0 },
+        { 
+          scaleX: 1, 
+          duration: 2.3,
+          ease: 'power2.inOut',
+        }
+      );
+
+      // Exit animation
+      gsap.to(containerRef.current, {
+        opacity: 0,
+        scale: 1.1,
+        filter: 'blur(30px)',
+        duration: 0.6,
+        delay: 2.3,
+        ease: 'power3.inOut',
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <div
-      ref={loaderRef}
-      style={{
-        position: "fixed",
-        inset: 0,
-        background:
-          "radial-gradient(ellipse at 60% 0%, #ff8c2b 0%, #ff3c00 40%, #1a1a1a 100%)",
-        zIndex: 9999,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        transition: "opacity 0.7s cubic-bezier(.77,0,.18,1)",
-        pointerEvents: slideOut ? "none" : undefined,
-      }}
+    <div 
+      ref={containerRef}
+      className="fixed inset-0 z-[100] bg-[#050505] flex flex-col items-center justify-center"
     >
-      <div
-        className={`intro-slide${slideOut ? " slide-out" : ""}`}
-        style={{ textAlign: "center" }}
-      >
-        <div style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          marginBottom: 8,
-        }}>
-          {[0, 1, 2, 3].map((i) => (
-            <div
-              key={i}
-              style={{
-                width: 16,
-                height: 16,
-                margin: "0 2px",
-                background: "#111",
-                borderRadius: 3,
-                transform: `translateY(${i % 2 === 0 ? -6 : 6}px)`,
-                animation: `intro-bounce 1s ${i * 0.12}s infinite cubic-bezier(.77,0,.18,1)`,
-              }}
-            />
-          ))}
+      {/* Animated background glow */}
+      <div 
+        ref={glowRef}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-20"
+        style={{
+          // Studio warm gradient: deep red -> orange for glow
+          background: 'radial-gradient(circle, rgba(255,60,0,0.45) 0%, rgba(255,140,43,0.25) 30%, transparent 70%)',
+        }}
+      />
+
+      {/* Main content */}
+      <div className="relative z-10 flex flex-col items-center">
+        {/* Logo text */}
+        <div ref={textRef} className="text-center mb-12">
+          <h1 className="font-garamond font-bold italic text-white text-5xl md:text-7xl lg:text-8xl tracking-tight text-glow">
+            KUROJIN.
+          </h1>
+          <p className="font-montserrat text-white/60 text-sm md:text-base mt-4 tracking-[0.3em] uppercase">
+            Studio
+          </p>
         </div>
-        <span style={{
-          color: "#111",
-          fontWeight: 600,
-          fontSize: 18,
-          letterSpacing: 1.5,
-        }}>{text}</span>
+
+        {/* Progress bar */}
+        <div className="w-48 md:w-64 h-[2px] bg-white/10 rounded-full overflow-hidden">
+          <div 
+            ref={progressRef}
+            className="h-full origin-left"
+            style={{
+              // Progress uses studio red->orange gradient
+              background: 'linear-gradient(90deg, #ff3c00, #ff8c2b)',
+              boxShadow: '0 0 20px rgba(255,60,0,0.45)',
+            }}
+          />
+        </div>
+
+        {/* Progress percentage */}
+        <div className="mt-4 font-montserrat text-white/50 text-xs tracking-widest">
+          {progress}%
+        </div>
+
+        {/* Japanese characters */}
+        <div className="absolute -bottom-32 font-montserrat text-white/10 text-6xl md:text-8xl select-none">
+          黒人
+        </div>
       </div>
-      <style>{`
-        @keyframes intro-bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-18px); }
-        }
-        .intro-slide {
-          animation: slide-in-left-down 0.7s cubic-bezier(.77,0,.18,1);
-        }
-        .intro-slide.slide-out {
-          animation: slide-out-left-down 0.7s cubic-bezier(.77,0,.18,1) forwards;
-        }
-        @keyframes slide-in-left-down {
-          0% { opacity: 0; transform: translate(-60vw, -60vh) scale(0.8); }
-          100% { opacity: 1; transform: translate(0, 0) scale(1); }
-        }
-        @keyframes slide-out-left-down {
-          0% { opacity: 1; transform: translate(0, 0) scale(1); }
-          100% { opacity: 0; transform: translate(60vw, 60vh) scale(0.8); }
-        }
-      `}</style>
+
+      {/* Corner decorations */}
+      <div className="absolute top-8 left-8 w-16 h-16 border-l border-t border-white/10" />
+      <div className="absolute top-8 right-8 w-16 h-16 border-r border-t border-white/10" />
+      <div className="absolute bottom-8 left-8 w-16 h-16 border-l border-b border-white/10" />
+      <div className="absolute bottom-8 right-8 w-16 h-16 border-r border-b border-white/10" />
     </div>
   );
-}
+};
+
+export default IntroLoader;
