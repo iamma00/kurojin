@@ -35,7 +35,7 @@ export default function Home() {
   }, []);
 
   if (showLoader) {
-    return <IntroLoader text="LOADING" duration={1800} />;
+    return <IntroLoader />;
   }
 
   return (
