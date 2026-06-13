@@ -19,7 +19,7 @@ export default function Work() {
             textShadow: "0px 0px 56.7px rgba(255,255,255,0.6)",
           }}
         >
-          <span className="font-normal leading-[1.08]">Every Pixel</span>
+          <span className="font-normal leading-[1.08]">Every Pixel</span>search through 
           <span className="font-bold italic leading-[1.08]">, </span>
           <span className="font-bold italic leading-[1.08] text-[#f2f2f2]">
             Handcrafted.

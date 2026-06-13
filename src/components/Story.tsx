@@ -170,12 +170,7 @@ export default function Story() {
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[#080808]" />
         <div ref={bgRef} className="absolute inset-0 overflow-hidden will-change-transform">
-          <Image
-            src="/images/story-bg.png"
-            alt=""
-            fill
-            className="object-cover"
-          />
+          
         </div>
         <div
           className="absolute inset-0"

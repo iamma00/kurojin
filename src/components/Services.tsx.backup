@@ -18,7 +18,12 @@ export default function Services() {
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-bg" />
         <div className="absolute inset-0 overflow-hidden">
-          
+          <Image
+            src="/images/services-bg.png"
+            alt=""
+            fill
+            className="object-cover -scale-x-100 -scale-y-100"
+          />
         </div>
         {/* Vignette overlay */}
         <div

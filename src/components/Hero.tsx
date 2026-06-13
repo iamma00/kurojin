@@ -5,13 +5,7 @@ export default function Hero() {
     <section className="relative w-full h-screen overflow-hidden bg-[#0c0c0c]">
       {/* Background image */}
       <div className="absolute inset-0">
-        <Image
-          src="/images/hero-bg.png"
-          alt=""
-          fill
-          className="object-cover rotate-180"
-          priority
-        />
+
 
         {/* ── Middle row: three branding items ── */}
         <div className="absolute top-[40%] left-[8%] right-[8%] flex items-center justify-between z-10">

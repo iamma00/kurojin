@@ -226,12 +226,7 @@ export default function Clients() {
     <section className="relative w-full h-screen bg-bg overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
-        <Image
-          src="/images/clients-bg.png"
-          alt=""
-          fill
-          className="object-cover -scale-x-100 -scale-y-100"
-        />
+        
       </div>
 
       {/* Title */}

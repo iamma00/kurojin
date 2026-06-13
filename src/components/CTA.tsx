@@ -78,7 +78,7 @@ export default function CTA() {
 
       {/* Background image for subtle texture */}
       <div className="absolute inset-0 opacity-0 pointer-events-none">
-        <Image src="/images/work-bg.png" alt="" fill className="object-cover" />
+        
       </div>
 
       {/* Headline with overlay that follows split */}
