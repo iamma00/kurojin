@@ -1,32 +1,22 @@
 "use client";
-
-import { useIsMobile } from "@/hooks/useIsMobile";
 import { useState, useEffect } from "react";
+import SmoothScrollProvider from "@/components/SmoothScrollProvider";
+import GlobalBackground from "@/components/GlobalBackground";
+
+// UI Components
 import IntroLoader from "@/components/IntroLoader";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import HeroMobile from "@/components/mobile/Hero.mobile";
 import Clients from "@/components/Clients";
-import ClientsMobile from "@/components/mobile/Clients.mobile";
 import Story from "@/components/Story";
-import StoryMobile from "@/components/mobile/Story.mobile";
-import dynamic from "next/dynamic";
-
-
 import Services from "@/components/Services";
-import ServicesMobile from "@/components/mobile/Services.mobile";
 import Work from "@/components/Work";
-import WorkMobile from "@/components/mobile/Work.mobile";
 import Budget from "@/components/Budget";
-import BudgetMobile from "@/components/mobile/Budget.mobile";
 import Footer from "@/components/Footer";
 import Watermark from "@/components/Watermark";
 import CTA from "@/components/CTA";
-import CTAMobile from "@/components/mobile/CTA.mobile";
-import { div } from "three/src/nodes/math/OperatorNode.js";
 
 export default function Home() {
-  const isMobile = useIsMobile();
   const [showLoader, setShowLoader] = useState(true);
 
   useEffect(() => {
@@ -39,91 +29,44 @@ export default function Home() {
   }
 
   return (
-    <main className="relative">
-      <Navbar />
-      {!isMobile ? <Watermark /> : null}
-      {isMobile ? (
-        <>
-          <div data-scroll-section>
-            <HeroMobile />
-          </div>
-
-          <div data-scroll-section>
-            <ClientsMobile />
-          </div>
-
-          <div data-scroll-section>
-            <StoryMobile />
-          </div>
-
-          <div data-scroll-section>
-            <ServicesMobile />
-          </div>
-
-          <div data-scroll-section>
-            <CTAMobile/>
-          </div>
-
-          <div data-scroll-section>
-            <WorkMobile />
-          </div>
-          
-
-          <div data-scroll-section>
-            <BudgetMobile />
-          </div>
-        </>
-      ) : (
-        <>
-          <div data-scroll-section>
+    <SmoothScrollProvider>
+      <GlobalBackground />
+      <main className="relative z-10 ">
+        <Navbar />
+        <Watermark />
+        <div
+          className="relative z-20 " >
+          <div data-scroll-section className="relative z-10 gap-8">
             <Hero />
           </div>
 
-            <div className="section-stack" data-scroll-section>
-            {/* Stack manager toggles "is-top" on the current section-sticky */}
-            <div style={{ display: "none" }}>
-              {/* client only component will be injected — avoid SSR mismatch by importing dynamically */}
-            </div>
-            <div >
-              <div >
-                <Clients />
-              </div>
-            </div>
-
-            <div className="section-step section-z-20">
-              <div>
-                <Story />
-              </div>
-            </div>
-
-            <div className="section-step section-z-30">
-              <div>
-                <Services />
-              </div>
-            </div>
-
-            <div className="section-step section-z-60">
-              <div>
-                <CTA/>
-              </div>
-            </div>
-
-            <div className="section-step section-z-40">
-              <div>
-                <Work />
-              </div>
-            </div>
-
-            <div className="section-step section-z-80">
-              <div>
-                <Budget />
-              </div>
-            </div>
-
+          <div className="section-step section-z-20">
+            <Clients />
           </div>
-        </>
-      )}
-      <Footer />
-    </main>
+
+          <div className="section-step section-z-30">
+            <Story />
+          </div>
+
+          <div className="section-step section-z-30">
+            <Services />
+          </div>
+
+          <div className="section-step section-z-60">
+            <CTA />
+          </div>
+
+          <div className="section-step section-z-40">
+            <Work />
+          </div>
+
+          <div className="section-step section-z-80">
+            <Budget />
+          </div>
+        </div>
+
+        <Footer />
+      </main>
+    </SmoothScrollProvider>
   );
 }

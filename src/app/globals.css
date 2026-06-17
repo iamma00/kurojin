@@ -321,3 +321,17 @@ body {
   }
 }
 
+.section-wrapper {
+  scroll-margin-top: 100px;
+}
+
+/* Force breathing room */
+.section-wrapper > * {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Make sure background shows through */
+.Clients, .Story, .Services, .Work, .Budget, .CTA {
+  background: transparent !important;
+}

@@ -181,7 +181,7 @@ export default function Clients() {
 
     return (
       <div
-        className={`border-t border-white/15 overflow-hidden${rowIndex === 1 ? " border-b border-white/15" : ""}`}
+        className={`border-t border-white/15 overflow-hidden ${rowIndex === 1 ? "border-b border-white/15" : ""}`}
         onMouseEnter={() => setHoveredRow(rowIndex)}
         onMouseLeave={() => {
           setHoveredRow(null);
@@ -197,7 +197,7 @@ export default function Clients() {
           {items.map((logo, i) => (
             <div
               key={i}
-              className={`relative w-[140px] h-[68px] md:w-[180px] md:h-[82px] lg:w-[220px] lg:h-[96px] xl:w-[260px] xl:h-[110px] shrink-0 border-r border-white/15 px-5 md:px-7 lg:px-9 py-2 md:py-3 transition-opacity duration-300 cursor-pointer ${
+              className={`relative w-[110px] h-[52px] sm:w-[130px] sm:h-[62px] md:w-[160px] md:h-[72px] lg:w-[200px] lg:h-[88px] xl:w-[240px] xl:h-[102px] shrink-0 border-r border-white/15 px-4 sm:px-5 md:px-7 lg:px-9 py-2 md:py-3 transition-opacity duration-300 cursor-pointer ${
                 logo.blend ? "mix-blend-plus-lighter" : ""
               } ${
                 hoveredRow === rowIndex && hoveredLogo !== `${rowIndex}-${i}`
@@ -223,17 +223,16 @@ export default function Clients() {
   };
 
   return (
-    <section className="relative w-full h-screen bg-bg overflow-hidden">
+    <section className="relative w-full h-screen min-h-[680px] bg-transparent backdrop-blur-md overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0">
-        
-      </div>
+      <div className="absolute inset-0" />
 
       {/* Title */}
       <p
         ref={titleRef}
-        className="absolute top-[14%] left-[8%] text-[30px] xl:text-[40px] font-garamond text-white tracking-[-0.8px] z-10"
+        className="absolute top-[12%] sm:top-[14%] left-4 md:left-[8%] text-[26px] sm:text-[30px] md:text-[34px] xl:text-[40px] font-garamond text-white tracking-[-0.7px] md:tracking-[-0.8px] z-10 px-4 md:px-0"
       >
+        {/* TextType components unchanged */}
         <TextType
           text={startTitleAnimation ? "Because " : ""}
           as="span"
@@ -244,7 +243,7 @@ export default function Clients() {
           startOnVisible={false}
           showCursor={false}
           reverseMode={false}
-          className="leading-[0.84]"
+          className="leading-[0.9]"
         />
         <TextType
           text={startTitleAnimation ? '"good enough" ' : ""}
@@ -257,7 +256,7 @@ export default function Clients() {
           showCursor={false}
           reverseMode={false}
           initialDelay={150}
-          className="font-bold italic uppercase leading-[0.84]"
+          className="font-bold italic uppercase leading-[0.9]"
         />
         <TextType
           text={startTitleAnimation ? "was never the plan." : ""}
@@ -272,12 +271,12 @@ export default function Clients() {
           cursorBlinkDuration={0.5}
           reverseMode={false}
           initialDelay={438}
-          className="leading-[0.84]"
+          className="leading-[0.9]"
         />
       </p>
 
       {/* Description */}
-      <div className=" absolute top-[22%] left-[8%] text-[16px] text-green-900 xl:text-[20px] font-light text-white leading-[1.4] max-w-[600px] z-10">
+      <div className="absolute top-[21%] sm:top-[23%] left-4 md:left-[8%] text-[15px] sm:text-[16px] md:text-[18px] xl:text-[20px] font-light text-white leading-[1.45] max-w-[340px] sm:max-w-[420px] md:max-w-[520px] lg:max-w-[600px] z-10 px-4 md:px-0">
         {showDescription ? (
           <BlurText
             text="Brands that trusted Kurojin.studio to shape how the world sees them. From startups to established names, we build with those who value craft."
@@ -291,7 +290,7 @@ export default function Clients() {
       </div>
 
       {/* Decorative */}
-      <div className="absolute top-[18%] right-[8%] w-[78px] h-[264px] -rotate-90 origin-center mix-blend-color-dodge opacity-90 z-10">
+      <div className="hidden md:block absolute top-[18%] right-[8%] w-[68px] h-[220px] -rotate-90 origin-center mix-blend-color-dodge opacity-90 z-10">
         <Image
           src="/images/decor-clients.png"
           alt=""
@@ -300,17 +299,17 @@ export default function Clients() {
         />
       </div>
 
-      {/* Carousel — outer clips, inner holds perspective */}
-      <div className="absolute bottom-0 top-[40%] left-[4%] right-[4%] rounded overflow-hidden z-10">
+      {/* Carousel */}
+      <div className="absolute bottom-0 top-[42%] sm:top-[44%] left-0 right-0 md:left-[4%] md:right-[4%] overflow-hidden z-10">
         <div
           className="absolute inset-0 bg-black border-t border-white/10"
           style={{ perspective: "900px" }}
         >
           {/* Edge fade gradients */}
-          <div className="absolute top-0 left-0 w-[8%] md:w-[10%] lg:w-[12%] h-full bg-gradient-to-r from-black to-transparent z-20 pointer-events-none" />
-          <div className="absolute top-0 right-0 w-[8%] md:w-[10%] lg:w-[12%] h-full bg-gradient-to-l from-black to-transparent z-20 pointer-events-none" />
+          <div className="absolute top-0 left-0 w-[6%] sm:w-[8%] md:w-[10%] lg:w-[12%] h-full bg-gradient-to-r from-black to-transparent z-20 pointer-events-none" />
+          <div className="absolute top-0 right-0 w-[6%] sm:w-[8%] md:w-[10%] lg:w-[12%] h-full bg-gradient-to-l from-black to-transparent z-20 pointer-events-none" />
 
-          {/* 4 rows — 3D tilted */}
+          {/* Rows */}
           <div
             className="flex flex-col h-full justify-center"
             style={{ transform: "rotateX(20deg)", transformOrigin: "10% 20%" }}

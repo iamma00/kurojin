@@ -7,6 +7,7 @@ import Image from "next/image";
 
 const storyBodyText =
   "Every brand begins with a story. We shape that story into a powerful Brand Identity, bring it to life through mindful Design, craft visuals with Product Shoots & immersive 3D Content, build your presence with high-impact Web Experiences, and finally set the momentum through strategic Social Media.";
+
 const bottomHeadlineLead = "We Care How ";
 const bottomHeadlineTail = "The World Sees It";
 
@@ -46,7 +47,6 @@ export default function Story() {
       const computeEnd = () => {
         const el = sectionRef.current;
         if (!el) return "+=100%";
-        // Pin for the full duration of the section animation: section height + viewport
         return `+=${el.offsetHeight + window.innerHeight}`;
       };
 
@@ -58,7 +58,6 @@ export default function Story() {
           end: computeEnd,
           scrub: 0.55,
           pin: true,
-          // Reserve space so the next section is pushed below while pinned
           pinSpacing: true,
           anticipatePin: 1,
         },
@@ -74,13 +73,12 @@ export default function Story() {
       }
 
       if (topHeadlineRef.current) {
-        timeline
-          .fromTo(
-            topHeadlineRef.current,
-            { opacity: 0, y: 70, filter: "blur(8px)" },
-            { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.28 },
-            0.2
-          );
+        timeline.fromTo(
+          topHeadlineRef.current,
+          { opacity: 0, y: 70, filter: "blur(8px)" },
+          { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.28 },
+          0.2
+        );
       }
 
       if (bodyTextRef.current) {
@@ -96,11 +94,7 @@ export default function Story() {
         timeline.fromTo(
           bodyCharRefs.current,
           { opacity: 0 },
-          {
-            opacity: 1,
-            stagger: 0.008,
-            duration: 0.18,
-          },
+          { opacity: 1, stagger: 0.008, duration: 0.18 },
           ">"
         );
       }
@@ -124,29 +118,13 @@ export default function Story() {
         timeline
           .fromTo(
             dropTextRef.current,
-            {
-              yPercent: -145,
-              scale: 0.42,
-              opacity: 0,
-              transformOrigin: "50% 0%",
-            },
-            {
-              yPercent: -22,
-              scale: 1.15,
-              opacity: 0.28,
-              duration: 0.9,
-            },
+            { yPercent: -145, scale: 0.42, opacity: 0 },
+            { yPercent: -22, scale: 1.15, opacity: 0.28, duration: 0.9 },
             2.65
           )
           .to(
             dropTextRef.current,
-            {
-              yPercent: 48,
-              scale: 2.95,
-              opacity: 0.42,
-              ease: "power2.out",
-              duration: 1.2,
-            },
+            { yPercent: 48, scale: 2.95, opacity: 0.42, duration: 1.2 },
             3.15
           );
       }
@@ -165,13 +143,11 @@ export default function Story() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative w-full h-screen bg-bg overflow-hidden">
+    <section ref={sectionRef} className="relative w-full h-screen min-h-[620px] bg-bg overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[#080808]" />
-        <div ref={bgRef} className="absolute inset-0 overflow-hidden will-change-transform">
-          
-        </div>
+        <div ref={bgRef} className="absolute inset-0 overflow-hidden will-change-transform" />
         <div
           className="absolute inset-0"
           style={{
@@ -182,20 +158,24 @@ export default function Story() {
       </div>
 
       {/* Content */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10 px-[8%] gap-y-15">
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10 px-6 md:px-[8%] gap-y-8 md:gap-y-12 lg:gap-y-15">
+        
+        {/* Top Headline */}
         <p
           ref={topHeadlineRef}
-          className="text-off-white text-[40px] font-garamond tracking-[-0.8px] whitespace-nowrap"
+          className="text-off-white text-[28px] sm:text-[34px] md:text-[40px] lg:text-[44px] font-garamond tracking-[-0.6px] md:tracking-[-0.8px] leading-[1.15] px-2"
           style={{
             textShadow: "0px 0px 40.9px rgba(255,236,185,0.6)",
           }}
         >
-          <span className="font-normal leading-[1.4] tracking-[-0.32px]">Your focus is on what </span><span className="font-bold italic uppercase">you build.</span>
+          <span className="font-normal">Your focus is on what </span>
+          <span className="font-bold italic uppercase">you build.</span>
         </p>
 
+        {/* Body Text */}
         <p
           ref={bodyTextRef}
-          className="text-white text-[15px] font-light leading-[1.4] max-w-[683px] blur-[0.5px] "
+          className="text-white text-[14px] sm:text-[15px] md:text-[16px] font-light leading-[1.45] max-w-[680px] blur-[0.5px] px-2"
           style={{
             textShadow: "0px 0px 33px rgba(255,255,255,0.3)",
           }}
@@ -204,9 +184,7 @@ export default function Story() {
             <span
               key={`${character}-${index}`}
               ref={(element) => {
-                if (element) {
-                  bodyCharRefs.current[index] = element;
-                }
+                if (element) bodyCharRefs.current[index] = element;
               }}
               className="inline-block opacity-[0] will-change-transform"
             >
@@ -215,21 +193,20 @@ export default function Story() {
           ))}
         </p>
 
+        {/* Bottom Headline */}
         <p
           ref={bottomHeadlineRef}
-          className="absolute bottom-[8%] left-1/2 -translate-x-1/2 text-white text-[80px] tracking-[-0.8px] uppercase whitespace-nowrap"
+          className="absolute bottom-[6%] md:bottom-[8%] left-1/2 -translate-x-1/2 text-white text-[42px] sm:text-[54px] md:text-[68px] lg:text-[80px] tracking-[-0.7px] md:tracking-[-0.8px] uppercase whitespace-nowrap px-4 text-center leading-none"
           style={{
             textShadow: "0px 0px 45.2px rgba(255,236,185,0.28)",
           }}
         >
-          <span className="font-garamond font-light leading-[1.4]">
+          <span className="font-garamond font-light">
             {bottomHeadlineLead.split("").map((character, index) => (
               <span
                 key={`lead-${character}-${index}`}
                 ref={(element) => {
-                  if (element) {
-                    bottomCharRefs.current[index] = element;
-                  }
+                  if (element) bottomCharRefs.current[index] = element;
                 }}
                 className="inline-block will-change-transform"
               >
@@ -237,17 +214,14 @@ export default function Story() {
               </span>
             ))}
           </span>
-          <span className="font-garamond font-light italic leading-[1.4]">
+          <span className="font-garamond font-light italic">
             {bottomHeadlineTail.split("").map((character, index) => {
               const charIndex = bottomHeadlineLead.length + index;
-
               return (
                 <span
                   key={`tail-${character}-${index}`}
                   ref={(element) => {
-                    if (element) {
-                      bottomCharRefs.current[charIndex] = element;
-                    }
+                    if (element) bottomCharRefs.current[charIndex] = element;
                   }}
                   className="inline-block will-change-transform"
                 >
@@ -260,7 +234,7 @@ export default function Story() {
       </div>
 
       {/* Bottom line divider */}
-      <div ref={lineRef} className="absolute bottom-[-2px] left-[8%] right-[8%] h-[2px] z-20">
+      <div ref={lineRef} className="absolute bottom-[-2px] left-6 md:left-[8%] right-6 md:right-[8%] h-[2px] z-20">
         <Image
           src="/images/line-divider.svg"
           alt=""
