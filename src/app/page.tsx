@@ -15,6 +15,8 @@ import Budget from "@/components/Budget";
 import Footer from "@/components/Footer";
 import Watermark from "@/components/Watermark";
 import CTA from "@/components/CTA";
+import Loader from "@/components/Loader";
+import TextVideo from "@/components/TextVideo";
 
 export default function Home() {
   const [showLoader, setShowLoader] = useState(true);
@@ -53,7 +55,7 @@ export default function Home() {
           </div>
 
           <div className="section-step section-z-60">
-            <CTA />
+            <TextVideo />
           </div>
 
           <div className="section-step section-z-40">

@@ -1,61 +1,49 @@
-// components/Loader.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useRef, useEffect } from 'react';
+import gsap from 'gsap';
 
-export default function Loader() {
-  const [count, setCount] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-    ``
+interface LoaderProps {
+  onLoadComplete: () => void;
+}
+
+const Loader: React.FC<LoaderProps> = ({ onLoadComplete }) => {
+  const loaderRef = useRef<HTMLDivElement | null>(null);
+  const titleRef = useRef<HTMLHeadingElement | null>(null);
+  const letterRefs = useRef<(HTMLSpanElement | null)[]>([]);
+
   useEffect(() => {
-    // Fast, aggressive counting
-    const interval = setInterval(() => {
-      setCount(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(() => setIsLoading(false), 300);
-          return 100;
-        }
-        return prev + Math.floor(Math.random() * 10) + 2;
-      });
-    }, 50);
-    return () => clearInterval(interval);
-  }, []);
+    const t1 = gsap.timeline();
+    const exit1 = gsap.timeline({pause: true});
+  
+    if (titleRef.current && loaderRef.current) {
+    t1.fromTo(letterRefs.current, { opacity: 0}, { opacity: 1, duration: 0.9, ease: "power2.inOut"});
+
+    t1.to(letterRefs.current, { opacity: 1, scale: 0, y: 20, stagger: 0.05, duration: 0.8, ease: "back.out(1.7)", });
+  }
+
+})
+
+  const splitText = (text: string) => {
+    return text.split("").map((char, index) => (
+      <span key={index} ref={el => {
+        if (el) letterRefs.current[index] = el;
+      }}
+      className="inline-block"
+      >
+        {char}
+      </span>
+    ));
+
+};
 
   return (
-    <AnimatePresence>
-      {isLoading && (
-        <motion.div
-          className="fixed inset-0 z-[100] bg-black flex items-center justify-between px-12"
-          exit={{ y: '-100%' }}
-          transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
-        >
-          {/* Left side: Brand */}
-          <div className="overflow-hidden">
-            <motion.h1
-              initial={{ y: 100 }}
-              animate={{ y: 0 }}
-              transition={{ delay: 0.2, duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
-              className="text-white text-4xl font-bold tracking-tighter"
-            >
-              KUROJIN
-            </motion.h1>
-          </div>
-
-          {/* Right side: Brutalist Counter */}
-          <div className="overflow-hidden">
-            <motion.div
-              initial={{ y: 100 }}
-              animate={{ y: 0 }}
-              transition={{ delay: 0.2, duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
-              className="text-white text-[10rem] md:text-[14rem] font-bold leading-none tracking-tighter"
-            >
-              {Math.min(count, 100)}
-            </motion.div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
+      <div ref={loaderRef} className="fixed inset-0 z-[100] bg-black flex items-center justify-center">
+        <h1  ref={titleRef} className="text-black text-[10vw] font-bold tracking-wider animate-pulse">
+          {splitText("Kurojin.")}
+        </h1>
+      </div>
+  )
 }
+ 
+export default  Loader;
