@@ -9,153 +9,106 @@ import {
 import { motion } from "framer-motion";
 
 const services = [
-  {
-    name: "Branding",
-    video: "https://vimeo.com/showcase/12294817?video=1183919850",
-  },
-  {
-    name: "Brand Strategy",
-    video: "https://vimeo.com/showcase/12294817?video=1183919848",
-  },
-  {
-    name: "Motion Graphics",
-    video: "https://vimeo.com/showcase/12294817?video=1183919849",
-  },
-  {
-    name: "Video Editing",
-    video: "https://vimeo.com/showcase/12294817?video=1183919890",
-  },
-  {
-    name: "3D Animation",
-    video: "https://vimeo.com/showcase/12294817?video=1183919909",
-  },
-  {
-    name: "Web Development",
-    video: "https://vimeo.com/showcase/12294817?video=1183919928",
-  },
-  {
-    name: "Naming & Packaging",
-    video: "https://vimeo.com/showcase/12294817?video=1066726309",
-  },
-  {
-    name: "Branding & Advertising",
-    video: "https://vimeo.com/showcase/12294817?video=1066726233",
-  },
+  { name: "Branding", videoId: "1183919850" },
+  { name: "Brand Strategy", videoId: "1183919848" },
+  { name: "Motion Graphics", videoId: "1183919849" },
+  { name: "Video Editing", videoId: "1183919890" },
+  { name: "3D Animation", videoId: "1183919909" },
+  { name: "Web Development", videoId: "1183919928" },
+  { name: "Naming & Packaging", videoId: "1066726309" },
+  { name: "Branding & Advertising", videoId: "1066726233" },
 ];
 
 const TextVideo: React.FC = () => {
-  const [activeVideo, setActiveVideo] = useState("");
-  const [activeIndex, setActiveIndex] = useState(-1);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const textRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const videoContainerRef = useRef<HTMLDivElement | null>(null);
-  const videoRefs = useRef<{ [key: string]: HTMLIFrameElement | null }>({});
+  // Default to the first service so there's never a blank video on load
+  const [activeIndex, setActiveIndex] = useState(0);
+  const leaveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const setTextRef = useCallback((el: HTMLDivElement | null, index: number) => {
-    textRefs.current[index] = el;
-  }, []);
+  const activeService = services[activeIndex];
 
-  const setVideoRef = useCallback(
-    (el: HTMLIFrameElement | null, src: string) => {
-      videoRefs.current[src] = el;
-    },
-    [],
-  );
-
-  // Lazy load Vimeo embeds
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const iframe = entry.target as HTMLIFrameElement;
-            if (iframe && !iframe.src) {
-              iframe.src = iframe.dataset.src || "";
-            }
-            observer.unobserve(iframe);
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
-
-    Object.values(videoRefs.current).forEach((videoEl) => {
-      if (videoEl) observer.observe(videoEl);
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  const handleSelect = useCallback((service: any, index: number) => {
+  const handleSelect = useCallback((index: number) => {
+    if (leaveTimeout.current) clearTimeout(leaveTimeout.current);
     setActiveIndex(index);
-    setActiveVideo(service.video);
   }, []);
 
-  const handleVideoContainerHover = useCallback(() => {
-    if (activeIndex !== -1 && services[activeIndex]) {
-      setActiveVideo(services[activeIndex].video);
-    }
-  }, [activeIndex]);
+  // Small grace period before resetting on leave — kills the
+  // flicker that happens when the cursor crosses from text to video
+  const handleLeave = useCallback(() => {
+    leaveTimeout.current = setTimeout(() => {
+      setActiveIndex(0);
+    }, 150);
+  }, []);
+
+  const cancelLeave = useCallback(() => {
+    if (leaveTimeout.current) clearTimeout(leaveTimeout.current);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (leaveTimeout.current) clearTimeout(leaveTimeout.current);
+    };
+  }, []);
 
   return (
-    <div className="bg-transparent lg:h-[80vw] h-[115vh] w-full" ref={containerRef}>
-      <div className="w-full lg:h-[83vw] lg:p-14 p-4 relative">
-        <h1 className="text-white lg:text-[3.5vw] text-sm mb-4">Our Services</h1>
+    <div className="bg-transparent w-full">
+      <div className="w-full p-4 lg:p-14 relative">
+        <h1 className="text-white text-2xl lg:text-[3.5vw] mb-6 lg:mb-4">
+          Our Services
+        </h1>
 
         <div className="content flex flex-col-reverse lg:flex-row items-start justify-between gap-8 lg:gap-0">
-          {/* ==================== VIDEO CONTAINER ==================== */}
-          <div className="w-full lg:w-[100%] relative" style={{ height: "100%" }}>
+          {/* ==================== VIDEO ==================== */}
+          <div className="w-full lg:w-[45vw]">
             <div
-              ref={videoContainerRef}
-              className="media w-full lg:w-[45vw] aspect-video lg:aspect-square relative lg:sticky lg:top-20 rounded-lg overflow-hidden"
-              onMouseEnter={handleVideoContainerHover}
-              onMouseLeave={() => {
-                setActiveIndex(-1);
-                setActiveVideo("");
-              }}
+              className="media w-full aspect-video lg:aspect-square relative lg:sticky lg:top-20 rounded-lg overflow-hidden "
+              onMouseEnter={cancelLeave}
+              onMouseLeave={handleLeave}
             >
-              {services.map((service) => (
-                <iframe
-                  key={service.video}
-                  ref={(el) => setVideoRef(el, service.video)}
-                  data-src={`https://player.vimeo.com/video/${new URL(service.video).searchParams.get(
-                    "video"
-                  )}?autoplay=1&muted=1&loop=1&background=1`}
-                  width="100%"
-                  height="100%"
-                  allow="autoplay; fullscreen"
-                  className={`absolute inset-0 w-full h-full transition-opacity duration-300 object-cover ${
-                    activeVideo === service.video ? "opacity-100" : "opacity-0"
-                  }`}
-                  style={{ pointerEvents: "none" }}
-                ></iframe>
-              ))}
+              {/* Only the active video mounts — no stacking 8 iframes */}
+              <iframe
+                key={activeService.videoId}
+                src={`https://player.vimeo.com/video/${activeService.videoId}?autoplay=1&muted=1&loop=1&background=1`}
+                width="100%"
+                height="100%"
+                allow="autoplay; fullscreen"
+                title={activeService.name}
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{ pointerEvents: "none" }}
+              />
+              {/* Caption overlay — gives mobile users (no hover) feedback on what's playing */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent lg:hidden">
+                <span className="text-white text-sm font-medium">
+                  {activeService.name}
+                </span>
+              </div>
             </div>
           </div>
 
           {/* ==================== TEXT LIST ==================== */}
-          <div className="text-content w-full lg:w-[70vw] lg:pl-8">
-            {services.map((service, index) => (
-              <motion.h2
-                key={index}
-                ref={(el) => setTextRef(el, index)}
-                className="lg:text-[4.5vw] text-xl md:text-2xl font-bold tracking-tight leading-none mb-4 lg:mb-2 cursor-pointer text-[#333333] active:text-white transition-colors"
-                initial={{ x: 0 }}
-                animate={{
-                  x: activeIndex === index ? 30 : 0,
-                  color: activeIndex === index ? "#ffffff" : "#333333",
-                }}
-                transition={{ duration: 0.2 }}
-                onMouseEnter={() => handleSelect(service, index)}
-                onClick={() => handleSelect(service, index)}
-                onMouseLeave={() => {
-                  setActiveVideo("");
-                  setActiveIndex(-1);
-                }}
-              >
-                {service.name}
-              </motion.h2>
-            ))}
+          <div className="text-content w-full lg:w-[50vw] lg:pl-8">
+            {services.map((service, index) => {
+              const isActive = activeIndex === index;
+              return (
+                <motion.button
+                  key={service.name}
+                  type="button"
+                  aria-current={isActive}
+                  className="block w-full text-left lg:text-[4.5vw] text-xl md:text-2xl font-bold tracking-tight leading-none mb-4 lg:mb-2 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/60 rounded"
+                  initial={false}
+                  animate={{
+                    x: isActive ? 30 : 0,
+                    color: isActive ? "#ffffff" : "#333333",
+                  }}
+                  transition={{ duration: 0.2 }}
+                  onMouseEnter={() => handleSelect(index)}
+                  onFocus={() => handleSelect(index)}
+                  onClick={() => handleSelect(index)}
+                  onMouseLeave={handleLeave}
+                >
+                  {service.name}
+                </motion.button>
+              );
+            })}
           </div>
         </div>
       </div>
