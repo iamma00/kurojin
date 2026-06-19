@@ -14,9 +14,8 @@ import Work from "@/components/Work";
 import Budget from "@/components/Budget";
 import Footer from "@/components/Footer";
 import Watermark from "@/components/Watermark";
-import CTA from "@/components/CTA";
-import Loader from "@/components/Loader";
 import TextVideo from "@/components/TextVideo";
+import CTA from "@/components/CTA";
 
 export default function Home() {
   const [showLoader, setShowLoader] = useState(true);
@@ -33,38 +32,25 @@ export default function Home() {
   return (
     <SmoothScrollProvider>
       <GlobalBackground />
-      <main className="relative z-10 ">
+      <main className="relative">
         <Navbar />
         <Watermark />
-        <div
-          className="relative z-20 " >
-          <div data-scroll-section className="relative z-10 gap-8">
-            <Hero />
-          </div>
 
-          <div className="section-step section-z-20">
-            <Clients />
-          </div>
+        <div className="relative z-20">
+          {/* Hero - usually full height, no extra gap */}
+          <Hero />
 
-          <div className="section-step section-z-30">
-            <Story />
-          </div>
+          {/* Tight sections */}
+          <Clients />
+          <Story />
+          <Services />
+          <TextVideo />
 
-          <div className="section-step section-z-30">
-            <Services />
-          </div>
+          {/* CTA - your special component */}
+          <CTA />
 
-          <div className="section-step section-z-60">
-            <TextVideo />
-          </div>
-
-          <div className="section-step section-z-40">
-            <Work />
-          </div>
-
-          <div className="section-step section-z-80">
-            <Budget />
-          </div>
+          <Work />
+          <Budget />
         </div>
 
         <Footer />

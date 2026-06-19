@@ -52,9 +52,6 @@ const TextVideo: React.FC = () => {
   return (
     <div className="bg-transparent w-full">
       <div className="w-full p-4 lg:p-14 relative">
-        <h1 className="text-white text-2xl lg:text-[3.5vw] mb-6 lg:mb-4">
-          Our Services
-        </h1>
 
         <div className="content flex flex-col-reverse lg:flex-row items-start justify-between gap-8 lg:gap-0">
           {/* ==================== VIDEO ==================== */}
