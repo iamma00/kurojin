@@ -20,19 +20,14 @@ const services = [
 ];
 
 const TextVideo: React.FC = () => {
-  // Default to the first service so there's never a blank video on load
   const [activeIndex, setActiveIndex] = useState(0);
   const leaveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const activeService = services[activeIndex];
 
   const handleSelect = useCallback((index: number) => {
     if (leaveTimeout.current) clearTimeout(leaveTimeout.current);
     setActiveIndex(index);
   }, []);
 
-  // Small grace period before resetting on leave — kills the
-  // flicker that happens when the cursor crosses from text to video
   const handleLeave = useCallback(() => {
     leaveTimeout.current = setTimeout(() => {
       setActiveIndex(0);
@@ -52,30 +47,37 @@ const TextVideo: React.FC = () => {
   return (
     <div className="bg-transparent w-full">
       <div className="w-full p-4 lg:p-14 relative">
-
         <div className="content flex flex-col-reverse lg:flex-row items-start justify-between gap-8 lg:gap-0">
           {/* ==================== VIDEO ==================== */}
           <div className="w-full lg:w-[45vw]">
             <div
-              className="media w-full aspect-video lg:aspect-square relative lg:sticky lg:top-20 rounded-lg overflow-hidden "
+              className="media w-full aspect-video lg:aspect-square relative lg:sticky lg:top-20 rounded-lg overflow-hidden"
               onMouseEnter={cancelLeave}
               onMouseLeave={handleLeave}
             >
-              {/* Only the active video mounts — no stacking 8 iframes */}
-              <iframe
-                key={activeService.videoId}
-                src={`https://player.vimeo.com/video/${activeService.videoId}?autoplay=1&muted=1&loop=1&background=1`}
-                width="100%"
-                height="100%"
-                allow="autoplay; fullscreen"
-                title={activeService.name}
-                className="absolute inset-0 w-full h-full object-cover"
-                style={{ pointerEvents: "none" }}
-              />
-              {/* Caption overlay — gives mobile users (no hover) feedback on what's playing */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent lg:hidden">
+              {/* All iframes mount once on initial render and stay mounted.
+                  We only flip opacity/z-index, so Vimeo never has to
+                  re-buffer a video you've already hovered to once. */}
+              {services.map((service, index) => (
+                <iframe
+                  key={service.videoId}
+                  src={`https://player.vimeo.com/video/${service.videoId}?autoplay=1&muted=1&loop=1&background=1`}
+                  width="100%"
+                  height="100%"
+                  allow="autoplay; fullscreen"
+                  title={service.name}
+                  className="absolute inset-0 w-full h-full object-cover transition-opacity duration-200"
+                  style={{
+                    pointerEvents: "none",
+                    opacity: activeIndex === index ? 1 : 0,
+                    zIndex: activeIndex === index ? 1 : 0,
+                  }}
+                />
+              ))}
+
+              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent lg:hidden z-10">
                 <span className="text-white text-sm font-medium">
-                  {activeService.name}
+                  {services[activeIndex].name}
                 </span>
               </div>
             </div>

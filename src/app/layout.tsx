@@ -18,17 +18,23 @@ const montserrat = { variable: "--font-montserrat" };
 export const metadata: Metadata = {
   title: "Kurojin Studios",
   description: "A full-spectrum creative partner for modern brands.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" className={cn("font-sans", geist.variable)}>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+      </head>
       <body
-        className={`${ebGaramond.variable} ${montserrat.variable} antialiased`}
+        className={`${ebGaramond.variable} ${montserrat.variable} antialiased overflow-x-hidden`}
       >
         <SmoothScroll>{children}</SmoothScroll>
       </body>
