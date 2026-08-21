@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { EB_Garamond, Geist } from "next/font/google";
-import SmoothScroll from "@/components/SmoothScroll";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import CustomCursor from "@/components/CustomCursor";
+import RouteTransition from "@/components/RouteTransition";
+import ScrollProgress from "@/components/ScrollProgress";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 const ebGaramond = EB_Garamond({
   variable: "--font-eb-garamond",
@@ -13,13 +15,12 @@ const ebGaramond = EB_Garamond({
   style: ["normal", "italic"],
 });
 
-const montserrat = { variable: "--font-montserrat" };
-
 export const metadata: Metadata = {
-  title: "Kurojin Studios",
-  description: "A full-spectrum creative partner for modern brands.",
+  title: "Kurojin Studios — Full-Spectrum Creative Partner",
+  description:
+    "Brand identity, web experiences, 2D/3D content, motion graphics, and social media. Ordinary isn't in our vocabulary.",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/images/kuro-icon.webp",
   },
 };
 
@@ -30,13 +31,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={cn("font-sans", geist.variable)}>
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-      </head>
       <body
-        className={`${ebGaramond.variable} ${montserrat.variable} antialiased overflow-x-hidden`}
+        className={`${ebGaramond.variable} antialiased overflow-x-hidden bg-bg text-white`}
       >
-        <SmoothScroll>{children}</SmoothScroll>
+        <RouteTransition>
+          {children}
+          <ScrollProgress />
+        </RouteTransition>
+        <CustomCursor />
       </body>
     </html>
   );

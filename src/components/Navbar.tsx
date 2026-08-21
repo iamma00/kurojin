@@ -1,19 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import GlassSurface from "./GlassSurface";
+import { siteConfig } from "@/lib/site-config";
 
-const navLinks = [
-  { label: "Home", href: "#" },
-  { label: "Work", href: "#work" },
-  { label: "Services", href: "#services" },
-  { label: "Contact", href: "#contact" },
-];
+const navLinks = siteConfig.nav;
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     let ticking = false;
@@ -35,8 +33,15 @@ export default function Navbar() {
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [menuOpen]);
+
+  // close menu on route change
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
 
   return (
     <>
@@ -64,13 +69,16 @@ export default function Navbar() {
           mixBlendMode="screen"
           className="relative flex items-center justify-center w-full h-full"
         >
-          <span className="absolute left-1/2 -translate-x-1/2 z-10 font-garamond font-bold italic text-white uppercase text-[16px] tracking-[-0.45px] drop-shadow-[0_0_14px_rgba(255,255,255,0.18)]">
+          <Link
+            href="/"
+            className="absolute left-1/2 -translate-x-1/2 z-10 font-garamond font-bold italic text-white uppercase text-[16px] tracking-[-0.45px] drop-shadow-[0_0_14px_rgba(255,255,255,0.18)]"
+          >
             KUROJIN.
-          </span>
+          </Link>
 
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="absolute right-4 z-10 w-9 h-9 rounded-full border border-white/20 bg-white/5 flex flex-col items-center justify-center gap-[5px]"
+            className="absolute right-4 z-10 w-9 h-9 rounded-full border border-white/20 bg-white/5 flex flex-col items-center justify-center gap-[5px] cursor-pointer"
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
           >
@@ -120,7 +128,11 @@ export default function Navbar() {
               key={link.label}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className="font-garamond text-white text-[28px] leading-none tracking-[-0.6px] uppercase transition-all duration-300"
+              className={`font-garamond text-[28px] leading-none tracking-[-0.6px] uppercase transition-all duration-300 ${
+                pathname === link.href
+                  ? "text-white italic font-bold"
+                  : "text-white"
+              }`}
               style={{
                 transitionDelay: menuOpen ? `${index * 50}ms` : "0ms",
                 opacity: menuOpen ? 1 : 0,
@@ -131,13 +143,17 @@ export default function Navbar() {
             </Link>
           ))}
 
-          <button className="mt-1 bg-white text-black rounded-[55px] h-[42px] px-9 font-montserrat font-extrabold italic text-[14px] uppercase shadow-[0_8px_30px_rgba(255,255,255,0.18)] active:scale-95 transition-transform">
+          <Link
+            href="/contact"
+            onClick={() => setMenuOpen(false)}
+            className="mt-1 bg-white text-black rounded-[55px] h-[42px] px-9 inline-flex items-center justify-center font-montserrat font-extrabold italic text-[14px] uppercase shadow-[0_8px_30px_rgba(255,255,255,0.18)] active:scale-95 transition-transform"
+          >
             LET&apos;S TALK
-          </button>
+          </Link>
         </div>
       </div>
 
-      {/* ── Desktop navbar (>= md) — unchanged ── */}
+      {/* ── Desktop navbar (>= md) ── */}
       <nav
         className="fixed left-1/2 -translate-x-1/2 z-50 hidden md:block transition-all duration-150 ease-linear"
         style={{
@@ -169,13 +185,14 @@ export default function Navbar() {
               transition: "padding 0.15s linear",
             }}
           >
-            <span
+            <Link
+              href="/"
               className={`relative z-10 font-garamond font-bold italic text-white uppercase tracking-[-0.4px] transition-all duration-150 whitespace-nowrap shrink-0 ${
                 scrolled ? "text-[16px]" : "text-[20px]"
               }`}
             >
               KUROJIN.
-            </span>
+            </Link>
 
             <div
               className={`flex items-center justify-center flex-1 transition-all duration-150 ${
@@ -186,17 +203,23 @@ export default function Navbar() {
                 <Link
                   key={link.label}
                   href={link.href}
-                  className={`font-garamond text-white tracking-[-0.32px] hover:opacity-80 transition-all duration-150 whitespace-nowrap ${
+                  className={`font-garamond text-white tracking-[-0.32px] hover:opacity-80 transition-all duration-150 whitespace-nowrap relative group ${
                     scrolled ? "text-[14px]" : "text-[16px]"
-                  }`}
+                  } ${pathname === link.href ? "italic font-bold" : ""}`}
                 >
                   {link.label}
+                  <span
+                    className={`absolute -bottom-1 left-0 h-px bg-white/80 transition-all duration-300 ${
+                      pathname === link.href ? "w-full" : "w-0 group-hover:w-full"
+                    }`}
+                  />
                 </Link>
               ))}
             </div>
 
-            <button
-              className={`relative z-10 bg-white text-black rounded-[55px] font-montserrat font-extrabold italic uppercase overflow-hidden group cursor-pointer shrink-0 transition-all duration-150 hover:bg-gradient-to-r hover:from-[#00ff91] hover:to-[#00fee0] hover:text-black hover:shadow-[0_0_30px_rgba(0,255,145,0.8),0_0_60px_rgba(0,254,224,0.5)] ${
+            <Link
+              href="/contact"
+              className={`relative z-10 bg-white text-black rounded-[55px] font-montserrat font-extrabold italic uppercase overflow-hidden group cursor-pointer shrink-0 inline-flex items-center justify-center transition-all duration-150 hover:bg-gradient-to-r hover:from-[#00ff91] hover:to-[#00fee0] hover:text-black hover:shadow-[0_0_30px_rgba(0,255,145,0.8),0_0_60px_rgba(0,254,224,0.5)] ${
                 scrolled
                   ? "h-[28px] px-9 text-[12px] tracking-[0.5px]"
                   : "h-[32px] px-10 text-[14px] tracking-[0.8px] "
@@ -208,7 +231,7 @@ export default function Navbar() {
               <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 translate-y-full group-hover:translate-y-0">
                 LET&apos;S GO
               </span>
-            </button>
+            </Link>
           </div>
         </GlassSurface>
       </nav>

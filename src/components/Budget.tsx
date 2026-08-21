@@ -1,15 +1,17 @@
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 
 export default function Budget() {
   return (
     <section
       id="contact"
-      className="relative w-full h-screen bg-bg overflow-hidden"
+      className="relative w-full h-screen min-h-[620px] bg-bg overflow-hidden"
     >
       {/* Background glow container */}
-      <div className="absolute top-1/2 left-[8%] right-[8%] -translate-y-1/2 h-[74vh] max-h-[802px] shadow-[0px_0px_20px_0px_rgba(255,255,255,0.11)]">
-        {/* Red glow (bottom-right) */}
+      <div className="absolute top-1/2 left-[8%] right-[8%] -translate-y-1/2 h-[74vh] max-h-[802px] shadow-[0px_0px_20px_0px_rgba(255,255,255,0.11)] rounded-lg overflow-hidden">
         <div
           className="absolute inset-0 opacity-20"
           style={{
@@ -17,7 +19,6 @@ export default function Budget() {
               "radial-gradient(ellipse at bottom right, rgba(196,37,8,1) 0%, rgba(49,9,2,1) 50%, rgba(0,0,0,1) 100%)",
           }}
         />
-        {/* Teal glow (top-left) */}
         <div
           className="absolute inset-0 opacity-20"
           style={{
@@ -27,50 +28,54 @@ export default function Budget() {
         />
       </div>
 
-      {/* Center orb/video placeholder */}
+      {/* Center orb */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[37.5vw] max-w-[720px] aspect-square rounded-full mix-blend-screen overflow-hidden">
         <div className="w-full h-full bg-gradient-to-br from-white/5 via-white/2 to-transparent rounded-full" />
       </div>
 
-      {/* Text content with scroll reveal */}
+      {/* Text content */}
       <motion.div
-        className="absolute top-[44%] left-1/2 -translate-x-1/2 text-center max-w-[768px] w-[80%] z-10"
+        className="absolute top-[40%] left-1/2 -translate-x-1/2 text-center max-w-[768px] w-[80%] z-10"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.5 }}
         transition={{ duration: 0.9, ease: "easeOut" }}
       >
-        <p className="font-garamond text-[36px] lg:text-[42px] xl:text-[48px] text-near-white uppercase mix-blend-difference leading-[1.08]">
+        <p className="font-garamond text-[36px] lg:text-[42px] xl:text-[48px] text-near-white uppercase leading-[1.08]">
           <span className="font-normal">Budget Never</span>
           <span className="font-bold italic"> Limits Quality</span>
         </p>
-        <p className="mt-8 text-light-gray text-[15px] font-light leading-[1.4] max-w-[655px] mx-auto mix-blend-difference">
-          Budgets change. Standards don&apos;t. When numbers shift, we refine
-          the output not the excellence. You get less volume, never less value.
+        <p className="mt-8 text-light-gray text-[15px] font-light leading-[1.4] max-w-[655px] mx-auto">
+          Budgets change. Standards don&apos;t. When numbers shift, we refine the
+          output, not the excellence. You get less volume, never less value.
         </p>
       </motion.div>
 
       {/* CTA Button */}
-      <div className="absolute top-[75%] left-1/2 -translate-x-1/2 z-10">
-        <button className="bg-white text-bg rounded-[55px] h-[38px] px-5 w-[139px] font-montserrat font-extrabold italic text-[20px] uppercase overflow-hidden relative group cursor-pointer
-          transition-all duration-300 hover:bg-gradient-to-r hover:from-[#00ff91] hover:to-[#00fee0] hover:text-black hover:scale-105 active:scale-95 animate-pulse">
+      <motion.div
+        className="absolute top-[72%] left-1/2 -translate-x-1/2 z-10"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.5 }}
+        transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+      >
+        <Link
+          href="/contact"
+          className="bg-white text-bg rounded-[55px] h-[44px] px-8 inline-flex items-center justify-center font-montserrat font-extrabold italic text-[16px] uppercase overflow-hidden relative group cursor-pointer transition-all duration-300 hover:bg-gradient-to-r hover:from-[#00ff91] hover:to-[#00fee0] hover:text-black hover:shadow-[0_0_30px_rgba(0,255,145,0.5)] active:scale-95"
+        >
           <span className="block transition-transform duration-300 group-hover:-translate-y-full leading-[1.4]">
-            LET&apos;s TALK
+            LET&apos;S TALK
           </span>
           <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 translate-y-full group-hover:translate-y-0 leading-[1.4]">
             LET&apos;S GO
           </span>
-        </button>
-      </div>
+        </Link>
+      </motion.div>
 
       {/* Bottom line divider */}
       <div className="absolute bottom-0 left-[8%] right-[8%] h-[2px]">
-        <Image
-          src="/images/line-divider.svg"
-          alt=""
-          fill
-          className="object-cover"
-        />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/images/line-divider.svg" alt="" className="h-full w-full object-cover" />
       </div>
     </section>
   );

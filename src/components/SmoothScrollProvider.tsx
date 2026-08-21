@@ -1,28 +1,43 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import Lenis from "@studio-freight/lenis";
+import { ReactNode, useEffect } from "react";
+import Lenis from "lenis";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-export default function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
-  const lenisRef = useRef<Lenis | null>(null);
+gsap.registerPlugin(ScrollTrigger);
 
+/**
+ * Single smooth-scroll provider using Lenis (modern, maintained).
+ * Integrates with GSAP ScrollTrigger so pinned/scrubbed sections work.
+ * Replaces the old dual Locomotive + Lenis setup that caused jank.
+ */
+export default function SmoothScrollProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      duration: 1.1,
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
+      touchMultiplier: 1.5,
     });
 
-    lenisRef.current = lenis;
+    // Sync Lenis with GSAP ScrollTrigger
+    lenis.on("scroll", ScrollTrigger.update);
 
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+    gsap.ticker.lagSmoothing(0);
 
-    requestAnimationFrame(raf);
+    // Expose for anchor navigation
+    (window as unknown as Record<string, unknown>).__lenis = lenis;
 
     return () => {
+      gsap.ticker.remove(lenis.raf);
       lenis.destroy();
     };
   }, []);

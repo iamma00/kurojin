@@ -11,16 +11,17 @@ interface Logo {
   blend?: boolean;
 }
 
-const row1: Logo[] = [
+// One master array of all client logos — each logo appears in EXACTLY ONE row.
+const allLogos: Logo[] = [
   { src: "/images/logo-01.png", alt: "Client 1" },
   { src: "/images/logo-02.png", alt: "Client 2" },
   { src: "/images/logo-03.png", alt: "Client 3" },
-  { src: "/images/logo-09.png", alt: "Client 9" },
   { src: "/images/logo-04.png", alt: "Client 4", blend: true },
   { src: "/images/logo-05.png", alt: "Client 5" },
   { src: "/images/logo-06.png", alt: "Client 6" },
   { src: "/images/logo-07.png", alt: "Client 7" },
   { src: "/images/logo-08.png", alt: "Client 8" },
+  { src: "/images/logo-09.png", alt: "Client 9" },
   { src: "/images/logo-10.png", alt: "Client 10" },
   { src: "/images/logo-11.png", alt: "Client 11" },
   { src: "/images/logo-12.png", alt: "Client 12" },
@@ -29,26 +30,13 @@ const row1: Logo[] = [
   { src: "/images/logo-15.png", alt: "Client 15" },
 ];
 
-const row2: Logo[] = [
-  { src: "/images/logo-08.png", alt: "Client 8" },
-  { src: "/images/logo-10.png", alt: "Client 10" },
-  { src: "/images/logo-11.png", alt: "Client 11" },
-  { src: "/images/logo-12.png", alt: "Client 12" },
-  { src: "/images/logo-13.png", alt: "Client 13" },
-  { src: "/images/logo-14.png", alt: "Client 14" },
-  { src: "/images/logo-15.png", alt: "Client 15" },
-  { src: "/images/logo-01.png", alt: "Client 1" },
-  { src: "/images/logo-02.png", alt: "Client 2" },
-  { src: "/images/logo-03.png", alt: "Client 3" },
-  { src: "/images/logo-09.png", alt: "Client 9" },
-  { src: "/images/logo-04.png", alt: "Client 4", blend: true },
-  { src: "/images/logo-05.png", alt: "Client 5" },
-  { src: "/images/logo-06.png", alt: "Client 6" },
-  { src: "/images/logo-07.png", alt: "Client 7" },
-];
+// Split: first carousel row = first half, second row = the rest. No overlap.
+const splitAt = Math.ceil(allLogos.length / 2);
+const row1: Logo[] = allLogos.slice(0, splitAt); // logos 01–08
+const row2: Logo[] = allLogos.slice(splitAt); // logos 09–15
 
-const row3 = [...row1];
-const row4 = [...row2];
+// Only 2 rows rendered; each row tripled inside renderRow for seamless wrap.
+const renderedRows = [row1, row2];
 const titleTypingSpeed = 19;
 const titleSegments = [
   { text: "Because ", initialDelay: 0 },
@@ -64,7 +52,7 @@ const titleAnimationDuration =
   ) + 60;
 
 export default function Clients() {
-  const rowEls = useRef<(HTMLDivElement | null)[]>([null, null, null, null]);
+  const rowEls = useRef<(HTMLDivElement | null)[]>([null, null]);
   const titleRef = useRef<HTMLParagraphElement | null>(null);
   const descriptionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
@@ -77,6 +65,8 @@ export default function Clients() {
   const positions = useRef<number[]>([]);
   const initialized = useRef(false);
   const scrollVelocity = useRef(0);
+  const carouselRef = useRef<HTMLDivElement | null>(null);
+  const currentSkew = useRef(0);
 
   const handleAnimationComplete = () => {
     console.log("Animation completed!");
@@ -163,6 +153,21 @@ export default function Clients() {
         rowEl.style.transform = `translateX(${positions.current[i]}px)`;
       });
 
+      // CodeGrid-style velocity skew: fast scroll skews the whole carousel,
+      // then it eases back to 0. Clamped so it never looks broken.
+      if (carouselRef.current) {
+        const targetSkew = Math.max(
+          -8,
+          Math.min(8, scrollVelocity.current * 0.22)
+        );
+        currentSkew.current += (targetSkew - currentSkew.current) * 0.08;
+        if (Math.abs(currentSkew.current) > 0.01) {
+          carouselRef.current.style.transform = `skewX(${currentSkew.current}deg)`;
+        } else {
+          carouselRef.current.style.transform = "skewX(0deg)";
+        }
+      }
+
       initialized.current = true;
       animationFrameId = requestAnimationFrame(animate);
     };
@@ -181,6 +186,7 @@ export default function Clients() {
 
     return (
       <div
+        key={rowIndex}
         className={`border-t border-white/15 overflow-hidden ${rowIndex === 1 ? "border-b border-white/15" : ""}`}
         onMouseEnter={() => setHoveredRow(rowIndex)}
         onMouseLeave={() => {
@@ -197,7 +203,7 @@ export default function Clients() {
           {items.map((logo, i) => (
             <div
               key={i}
-              className={`relative w-[110px] h-[52px] sm:w-[130px] sm:h-[62px] md:w-[160px] md:h-[72px] lg:w-[200px] lg:h-[88px] xl:w-[240px] xl:h-[102px] shrink-0 border-r border-white/15 px-4 sm:px-5 md:px-7 lg:px-9 py-2 md:py-3 transition-opacity duration-300 cursor-pointer ${
+              className={`group relative w-[136px] h-[64px] sm:w-[168px] sm:h-[77px] md:w-[208px] md:h-[93px] lg:w-[256px] lg:h-[112px] xl:w-[304px] xl:h-[128px] shrink-0 border-r border-white/15 px-5 sm:px-6 md:px-8 lg:px-10 py-3 md:py-4 transition-opacity duration-300 cursor-pointer ${
                 logo.blend ? "mix-blend-plus-lighter" : ""
               } ${
                 hoveredRow === rowIndex && hoveredLogo !== `${rowIndex}-${i}`
@@ -212,7 +218,7 @@ export default function Clients() {
                   src={logo.src}
                   alt={logo.alt}
                   fill
-                  className="object-contain"
+                  className="object-contain grayscale group-hover:grayscale-0 transition-all duration-500"
                 />
               </div>
             </div>
@@ -223,15 +229,19 @@ export default function Clients() {
   };
 
   return (
-    <section className="relative w-full h-screen min-h-[680px] bg-transparent backdrop-blur-md overflow-hidden">
+    <section className="relative w-full min-h-screen bg-transparent backdrop-blur-md overflow-hidden flex flex-col">
       {/* Background */}
       <div className="absolute inset-0" />
 
-      {/* Title */}
-      <p
-        ref={titleRef}
-        className="absolute top-[12%] sm:top-[14%] left-4 md:left-[8%] text-[26px] sm:text-[30px] md:text-[34px] xl:text-[40px] font-garamond text-white tracking-[-0.7px] md:tracking-[-0.8px] z-10 px-4 md:px-0"
-      >
+      {/* Header block — generous top spacing so navbar clears */}
+      <div className="relative z-10 pt-[110px] md:pt-[140px] px-4 md:px-[8%]">
+        <p className="font-montserrat text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-white/50 mb-5">
+          Trusted by / 15+ brands
+        </p>
+        <p
+          ref={titleRef}
+          className="text-[26px] sm:text-[30px] md:text-[38px] xl:text-[44px] font-garamond text-white tracking-[-0.7px] md:tracking-[-0.8px]"
+        >
         {/* TextType components unchanged */}
         <TextType
           text={startTitleAnimation ? "Because " : ""}
@@ -273,10 +283,10 @@ export default function Clients() {
           initialDelay={438}
           className="leading-[0.9]"
         />
-      </p>
+        </p>
 
-      {/* Description */}
-      <div className="absolute top-[21%] sm:top-[23%] left-4 md:left-[8%] text-[15px] sm:text-[16px] md:text-[18px] xl:text-[20px] font-light text-white leading-[1.45] max-w-[340px] sm:max-w-[420px] md:max-w-[520px] lg:max-w-[600px] z-10 px-4 md:px-0">
+        {/* Description */}
+        <div className="mt-6 text-[15px] sm:text-[16px] md:text-[18px] xl:text-[20px] font-light text-white leading-[1.45] max-w-[340px] sm:max-w-[420px] md:max-w-[520px] lg:max-w-[600px]">
         {showDescription ? (
           <BlurText
             text="Brands that trusted Kurojin.studio to shape how the world sees them. From startups to established names, we build with those who value craft."
@@ -286,38 +296,32 @@ export default function Clients() {
             onAnimationComplete={handleAnimationComplete}
             className="opacity-65"
           />
-        ) : null}
+          ) : null}
+        </div>
       </div>
 
       {/* Decorative */}
-      <div className="hidden md:block absolute top-[18%] right-[8%] w-[68px] h-[220px] -rotate-90 origin-center mix-blend-color-dodge opacity-90 z-10">
+      <div className="hidden md:block absolute top-[16%] right-[6%] w-[68px] h-[220px] -rotate-90 origin-center mix-blend-color-dodge opacity-90 z-10">
         <Image
-          src="/images/decor-clients.png"
+          src="/images/decor-clients.jpg"
           alt=""
           fill
           className="object-cover"
         />
       </div>
 
-      {/* Carousel */}
-      <div className="absolute bottom-0 top-[42%] sm:top-[44%] left-0 right-0 md:left-[4%] md:right-[4%] overflow-hidden z-10">
-        <div
-          className="absolute inset-0 bg-black border-t border-white/10"
-          style={{ perspective: "900px" }}
-        >
-          {/* Edge fade gradients */}
-          <div className="absolute top-0 left-0 w-[6%] sm:w-[8%] md:w-[10%] lg:w-[12%] h-full bg-gradient-to-r from-black to-transparent z-20 pointer-events-none" />
-          <div className="absolute top-0 right-0 w-[6%] sm:w-[8%] md:w-[10%] lg:w-[12%] h-full bg-gradient-to-l from-black to-transparent z-20 pointer-events-none" />
-
+      {/* Carousel — full-bleed across the whole section, no card, no margin */}
+      <div
+        ref={carouselRef}
+        className="relative z-10 flex-1 min-h-[300px] mt-10 md:mt-14 overflow-hidden will-change-transform"
+      >
+        <div className="absolute inset-0" style={{ perspective: "900px" }}>
           {/* Rows */}
           <div
             className="flex flex-col h-full justify-center"
             style={{ transform: "rotateX(20deg)", transformOrigin: "10% 20%" }}
           >
-            {renderRow(row1, 0)}
-            {renderRow(row2, 1)}
-            {renderRow(row3, 2)}
-            {renderRow(row4, 3)}
+            {renderedRows.map((row, i) => renderRow(row, i))}
           </div>
         </div>
       </div>

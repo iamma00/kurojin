@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
@@ -19,11 +19,13 @@ export default function Story() {
   const bodyCharRefs = useRef<HTMLSpanElement[]>([]);
   const bottomHeadlineRef = useRef<HTMLParagraphElement | null>(null);
   const bottomCharRefs = useRef<HTMLSpanElement[]>([]);
+  const bottomCharCounter = useRef(0);
   const dropTextRef = useRef<HTMLParagraphElement | null>(null);
   const lineRef = useRef<HTMLDivElement | null>(null);
 
   bodyCharRefs.current = [];
   bottomCharRefs.current = [];
+  bottomCharCounter.current = 0;
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -142,6 +144,44 @@ export default function Story() {
     return () => ctx.revert();
   }, []);
 
+  /**
+   * Headline is built word-by-word: each word is an inline-block of char
+   * spans (so the per-char drop-in animation still works), with REAL space
+   * text nodes between words so the line can wrap on narrow screens.
+   */
+  const renderHeadlineWords = (
+    text: string,
+    italic: boolean,
+    keyPrefix: string
+  ) =>
+    text
+      .trim()
+      .split(" ")
+      .map((word, wi) => (
+        <Fragment key={`${keyPrefix}-${wi}`}>
+          <span
+            className={`inline-block whitespace-nowrap ${
+              italic ? "font-garamond font-light italic" : "font-garamond font-light"
+            }`}
+          >
+            {word.split("").map((character, ci) => {
+              const charIndex = bottomCharCounter.current++;
+              return (
+                <span
+                  key={`${character}-${ci}`}
+                  ref={(element) => {
+                    if (element) bottomCharRefs.current[charIndex] = element;
+                  }}
+                  className="inline-block will-change-transform"
+                >
+                  {character}
+                </span>
+              );
+            })}
+          </span>{" "}
+        </Fragment>
+      ));
+
   return (
     <section ref={sectionRef} className="relative w-full h-screen min-h-[620px] bg-bg overflow-hidden">
       {/* Background */}
@@ -159,7 +199,11 @@ export default function Story() {
 
       {/* Content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10 px-6 md:px-[8%] gap-y-8 md:gap-y-12 lg:gap-y-15">
-        
+        {/* Mono label */}
+        <p className="font-montserrat text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-white/50">
+          The story / 物語
+        </p>
+
         {/* Top Headline */}
         <p
           ref={topHeadlineRef}
@@ -193,53 +237,29 @@ export default function Story() {
           ))}
         </p>
 
-        {/* Bottom Headline */}
+        {/* Bottom Headline — anchored low, wraps gracefully on mobile */}
         <p
           ref={bottomHeadlineRef}
-          className="absolute bottom-[6%] md:bottom-[8%] left-1/2 -translate-x-1/2 text-white text-[42px] sm:text-[54px] md:text-[68px] lg:text-[80px] tracking-[-0.7px] md:tracking-[-0.8px] uppercase whitespace-nowrap px-4 text-center leading-none"
+          className="absolute bottom-[10%] md:bottom-[12%] left-1/2 -translate-x-1/2 w-[92%] md:w-[86%] text-white uppercase text-center leading-[0.95]"
           style={{
-            textShadow: "0px 0px 45.2px rgba(255,236,185,0.28)",
+            fontSize: "clamp(34px, 7.5vw, 92px)",
+            letterSpacing: "-0.02em",
+            textShadow:
+              "0px 0px 45.2px rgba(255,236,185,0.28), 0px 4px 24px rgba(0,0,0,0.5)",
           }}
         >
-          <span className="font-garamond font-light">
-            {bottomHeadlineLead.split("").map((character, index) => (
-              <span
-                key={`lead-${character}-${index}`}
-                ref={(element) => {
-                  if (element) bottomCharRefs.current[index] = element;
-                }}
-                className="inline-block will-change-transform"
-              >
-                {character === " " ? "\u00A0" : character}
-              </span>
-            ))}
-          </span>
-          <span className="font-garamond font-light italic">
-            {bottomHeadlineTail.split("").map((character, index) => {
-              const charIndex = bottomHeadlineLead.length + index;
-              return (
-                <span
-                  key={`tail-${character}-${index}`}
-                  ref={(element) => {
-                    if (element) bottomCharRefs.current[charIndex] = element;
-                  }}
-                  className="inline-block will-change-transform"
-                >
-                  {character === " " ? "\u00A0" : character}
-                </span>
-              );
-            })}
-          </span>
+          {renderHeadlineWords(bottomHeadlineLead, false, "lead")}
+          {renderHeadlineWords(bottomHeadlineTail, true, "tail")}
         </p>
       </div>
 
       {/* Bottom line divider */}
       <div ref={lineRef} className="absolute bottom-[-2px] left-6 md:left-[8%] right-6 md:right-[8%] h-[2px] z-20">
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src="/images/line-divider.svg"
           alt=""
-          fill
-          className="object-cover"
+          className="h-full w-full object-cover"
         />
       </div>
     </section>

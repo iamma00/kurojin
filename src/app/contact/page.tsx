@@ -1,14 +1,21 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Phone, Mail, MapPin } from "lucide-react";
-import { BackgroundRippleEffect } from "@/components/ui/background-ripple-effect";
-import { ContainerScroll } from "@/components/ui/container-scroll-animation";
+import { Phone, Mail, MapPin, Loader2 } from "lucide-react";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import SmoothScrollProvider from "@/components/SmoothScrollProvider";
+import { siteConfig } from "@/lib/site-config";
 
-gsap.registerPlugin(useGSAP, ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger);
+
+/* ────────────────────────────────────────────────
+   TERMINAL — dark-room transmission theme
+   accent: violet #a78bfa / base #020204
+   The form IS the hero.
+   ──────────────────────────────────────────────── */
 
 interface TrailImage {
   element: HTMLImageElement;
@@ -16,18 +23,25 @@ interface TrailImage {
   removeTime: number;
 }
 
+type FormState = "idle" | "submitting" | "success" | "error";
+
+const VIOLET = "#a78bfa";
+
+const projectTypes = ["Branding", "Web", "2D", "3D", "Motion", "Social", "Other"];
+const budgetRanges = ["< $1k", "$1k – $5k", "$5k – $15k", "$15k+", "Not sure yet"];
+
 export default function ContactPage() {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
-    phone: "",
+    projectType: "",
+    budget: "",
     message: "",
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [formState, setFormState] = useState<FormState>("idle");
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const trailContainerRef = useRef<HTMLDivElement>(null);
   const trailRef = useRef<TrailImage[]>([]);
   const animationFrameRef = useRef<number | null>(null);
@@ -48,26 +62,37 @@ export default function ContactPage() {
 
   const images = Array.from(
     { length: config.imageCount },
-    (_, i) => `/images/All/Artboard-${i + 1}.png`
+    (_, i) => `/images/All/Artboard-${i + 1}.webp`
   );
 
-  useGSAP(
-    () => {
-      gsap.from(".contact-reveal", {
-        y: 40,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.08,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 75%",
-        },
+  /* ── entrance animations ── */
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        "[data-term-reveal]",
+        { opacity: 0, y: 40 },
+        { opacity: 1, y: 0, duration: 1, stagger: 0.1, ease: "power3.out" }
+      );
+      gsap.utils.toArray<HTMLElement>("[data-term-section]").forEach((sec) => {
+        gsap.fromTo(
+          sec.querySelectorAll("[data-term-item]"),
+          { opacity: 0, y: 40 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.09,
+            ease: "power3.out",
+            scrollTrigger: { trigger: sec, start: "top 80%" },
+          }
+        );
       });
-    },
-    { scope: sectionRef }
-  );
+    }, rootRef);
+    return () => ctx.revert();
+  }, []);
 
+  /* ── pointer trail canvas (preserved from original) ── */
   const createTrailImage = useCallback(
     (clientX: number, clientY: number) => {
       const container = trailContainerRef.current;
@@ -110,7 +135,8 @@ export default function ContactPage() {
         removeTime: Date.now() + config.imageLifespan,
       });
     },
-    [images, config]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [images]
   );
 
   const removeOldTrailImages = useCallback(() => {
@@ -132,7 +158,8 @@ export default function ContactPage() {
         }
       }, config.outDuration);
     }
-  }, [config]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
@@ -158,11 +185,13 @@ export default function ContactPage() {
         createTrailImage(e.clientX, e.clientY);
       }
     },
-    [createTrailImage, config.mouseThreshold]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [createTrailImage]
   );
 
   const startTrailAnimation = useCallback(() => {
     if (typeof window === "undefined" || window.innerWidth <= 1000) return;
+    if (mouseMoveListenerRef.current) return;
 
     mouseMoveListenerRef.current = handleMouseMove;
     document.addEventListener("mousemove", handleMouseMove);
@@ -171,7 +200,6 @@ export default function ContactPage() {
       removeOldTrailImages();
       animationFrameRef.current = requestAnimationFrame(animate);
     };
-
     animationFrameRef.current = requestAnimationFrame(animate);
   }, [handleMouseMove, removeOldTrailImages]);
 
@@ -180,12 +208,10 @@ export default function ContactPage() {
       document.removeEventListener("mousemove", mouseMoveListenerRef.current);
       mouseMoveListenerRef.current = null;
     }
-
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
     }
-
     trailRef.current.forEach((item) => {
       if (item.element.parentNode) {
         item.element.parentNode.removeChild(item.element);
@@ -196,7 +222,6 @@ export default function ContactPage() {
 
   useEffect(() => {
     const floatingContainer = document.querySelector(".floating-elements");
-
     if (floatingContainer) {
       for (let i = 0; i < 12; i++) {
         const el = document.createElement("div");
@@ -211,13 +236,9 @@ export default function ContactPage() {
     startTrailAnimation();
 
     const handleResize = () => {
-      if (window.innerWidth <= 1000) {
-        stopTrailAnimation();
-      } else {
-        startTrailAnimation();
-      }
+      if (window.innerWidth <= 1000) stopTrailAnimation();
+      else startTrailAnimation();
     };
-
     window.addEventListener("resize", handleResize);
 
     return () => {
@@ -227,322 +248,371 @@ export default function ContactPage() {
     };
   }, [startTrailAnimation, stopTrailAnimation]);
 
+  /* ── form ── */
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    if (formState === "submitting") return;
 
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      setFormState("error");
+      setErrorMsg("Please fill in your name, email and message.");
+      return;
+    }
 
-    setIsSubmitting(false);
-    setSubmitted(true);
+    setFormState("submitting");
+    setErrorMsg("");
 
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        message: "",
+    try {
+      const res = await fetch(siteConfig.contact.formEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          projectType: formData.projectType,
+          budget: formData.budget,
+          message: formData.message,
+        }),
       });
-    }, 3200);
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || "Something went wrong.");
+      }
+      setFormState("success");
+      setTimeout(() => {
+        setFormState("idle");
+        setFormData({ name: "", email: "", projectType: "", budget: "", message: "" });
+      }, 4000);
+    } catch (err) {
+      setFormState("error");
+      setErrorMsg(err instanceof Error ? err.message : "Something went wrong. Try again.");
+    }
   };
 
+  const inputClass =
+    "w-full border-b border-white/15 bg-transparent py-3.5 text-[15px] font-light text-white placeholder:text-white/25 outline-none transition-colors duration-300 focus:border-[#a78bfa]";
+  const labelClass =
+    "mb-1 block font-montserrat text-[10px] uppercase tracking-[0.3em] text-white/40";
+
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-neutral-950 text-white">
-      <BackgroundRippleEffect />
+    <SmoothScrollProvider>
+      <div
+        ref={rootRef}
+        className="relative min-h-screen bg-[#020204] text-white"
+      >
+        {/* scanline texture */}
+        <div
+          className="pointer-events-none fixed inset-0 z-0 opacity-[0.04]"
+          aria-hidden="true"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(0deg, transparent, transparent 2px, #a78bfa 2px, #a78bfa 3px)",
+          }}
+        />
+        {/* violet glow */}
+        <div
+          className="pointer-events-none fixed inset-0 z-0"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(ellipse 60% 40% at 70% 20%, rgba(167,139,250,0.08), transparent 60%)",
+          }}
+        />
 
-      <style jsx global>{`
-        .floating-element {
-          position: absolute;
-          top: 100%;
-          width: 6px;
-          height: 6px;
-          border-radius: 9999px;
-          background: rgba(255, 255, 255, 0.12);
-          filter: blur(0.2px);
-          animation-name: floatUp;
-          animation-timing-function: linear;
-          animation-iteration-count: infinite;
-        }
+        <Navbar />
 
-        .trail-img {
-          user-select: none;
-          -webkit-user-drag: none;
-        }
-
-        @keyframes floatUp {
-          from {
-            transform: translateY(0px);
-            opacity: 0;
-          }
-          20% {
-            opacity: 1;
-          }
-          to {
-            transform: translateY(-520px);
-            opacity: 0;
-          }
-        }
-      `}</style>
-
-      {/* Hero Section */}
-      <div className="relative z-10 flex min-h-[100dvh] flex-col items-center justify-center pb-20 pt-20">
-        <div className="mx-auto max-w-5xl px-6 text-center">
-          <h1 className="mb-6 text-5xl font-bold tracking-tighter md:text-7xl">
-            Let&apos;s Connect
-          </h1>
-          <p className="mx-auto max-w-2xl text-xl text-neutral-400 md:text-2xl">
-            Have a project in mind? Want to collaborate?{" "}
-            <br className="hidden md:block" />
-            Drop us a message.
-          </p>
-        </div>
-
-        <div className="mt-16 w-full max-w-6xl px-6">
-          <ContainerScroll
-            titleComponent={
-              <div className="text-center">
-                <h2 className="text-4xl font-semibold text-white">
-                  Scroll to see the magic
-                </h2>
-                <p className="mt-4 text-lg text-neutral-400">
-                  Interactive animations that make your site feel alive
+        {/* ══════════ 1. HERO / FORM — split transmission ══════════ */}
+        <section className="relative z-10 pt-44 pb-20 md:pt-52 md:pb-28">
+          <div className="k-container">
+            <div className="grid gap-16 lg:grid-cols-[1fr_1.1fr] lg:gap-20">
+              {/* left: heading + channels */}
+              <div>
+                <p
+                  data-term-reveal
+                  className="mb-8 font-montserrat text-[11px] uppercase tracking-[0.4em] text-[#a78bfa]"
+                >
+                  Transmission / Open channel 黒人
                 </p>
+                <h1
+                  data-term-reveal
+                  className="font-garamond leading-[0.92] tracking-[-0.03em] text-white"
+                  style={{ fontSize: "clamp(48px, 7vw, 104px)" }}
+                >
+                  <span className="font-normal">Start a</span>
+                  <br />
+                  <span className="font-bold italic text-[#a78bfa]">transmission</span>
+                </h1>
+                <p
+                  data-term-reveal
+                  className="mt-8 max-w-[440px] text-[15px] font-light leading-[1.75] text-white/55"
+                >
+                  Have a project in mind? Want to collaborate? Open a channel —
+                  every message gets a human reply within 24 hours.
+                </p>
+
+                {/* contact channels */}
+                <div data-term-reveal className="mt-14 space-y-5">
+                  <a
+                    href={`mailto:${siteConfig.contact.email}`}
+                    className="group flex items-center gap-4 text-white/70 transition-colors duration-300 hover:text-[#a78bfa]"
+                  >
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/12 transition-colors duration-300 group-hover:border-[#a78bfa]/50">
+                      <Mail className="h-4 w-4" />
+                    </span>
+                    <span className="text-[15px] font-light">{siteConfig.contact.email}</span>
+                  </a>
+                  {siteConfig.contact.phone && (
+                    <a
+                      href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`}
+                      className="group flex items-center gap-4 text-white/70 transition-colors duration-300 hover:text-[#a78bfa]"
+                    >
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/12 transition-colors duration-300 group-hover:border-[#a78bfa]/50">
+                        <Phone className="h-4 w-4" />
+                      </span>
+                      <span className="text-[15px] font-light">{siteConfig.contact.phone}</span>
+                    </a>
+                  )}
+                  <div className="flex items-center gap-4 text-white/50">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/12">
+                      <MapPin className="h-4 w-4" />
+                    </span>
+                    <span className="text-[15px] font-light">{siteConfig.contact.location}</span>
+                  </div>
+                </div>
+
+                {/* socials */}
+                <div data-term-reveal className="mt-12 flex flex-wrap gap-3">
+                  {siteConfig.socials.map((s) => (
+                    <a
+                      key={s.label}
+                      href={s.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rounded-full border border-white/12 px-5 py-2 font-montserrat text-[11px] uppercase tracking-[0.2em] text-white/55 transition-all duration-300 hover:border-[#a78bfa]/60 hover:text-[#a78bfa]"
+                    >
+                      {s.label}
+                    </a>
+                  ))}
+                </div>
               </div>
-            }
-          >
-            <div className="w-full h-[260px] sm:h-[320px] md:h-[420px]">
+
+              {/* right: the form panel */}
+              <div data-term-reveal>
+                <div className="relative rounded-[28px] border border-white/10 bg-white/[0.02] p-8 backdrop-blur-sm md:p-10">
+                  <div className="mb-8 flex items-center justify-between border-b border-white/8 pb-5">
+                    <span className="font-montserrat text-[10px] uppercase tracking-[0.3em] text-white/40">
+                      Form / 001
+                    </span>
+                    <span className="flex items-center gap-2 font-montserrat text-[10px] uppercase tracking-[0.25em] text-[#a78bfa]/80">
+                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#a78bfa]" />
+                      Channel open
+                    </span>
+                  </div>
+
+                  {formState === "success" ? (
+                    <div className="flex min-h-[420px] flex-col items-center justify-center text-center">
+                      <span className="mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-[#a78bfa]/50 text-[28px] text-[#a78bfa]">
+                        ✓
+                      </span>
+                      <h3 className="font-garamond text-[32px] italic text-white">
+                        Transmission received.
+                      </h3>
+                      <p className="mt-4 max-w-[320px] text-[14px] font-light leading-6 text-white/55">
+                        We&apos;ll decode it and reply within 24 hours. Keep an
+                        eye on your inbox.
+                      </p>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleSubmit} noValidate>
+                      <div className="grid gap-7 sm:grid-cols-2">
+                        <div>
+                          <label htmlFor="name" className={labelClass}>
+                            Name *
+                          </label>
+                          <input
+                            id="name"
+                            name="name"
+                            type="text"
+                            value={formData.name}
+                            onChange={handleChange}
+                            placeholder="Your name"
+                            className={inputClass}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="email" className={labelClass}>
+                            Email *
+                          </label>
+                          <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            placeholder="you@company.com"
+                            className={inputClass}
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="projectType" className={labelClass}>
+                            Project type
+                          </label>
+                          <select
+                            id="projectType"
+                            name="projectType"
+                            value={formData.projectType}
+                            onChange={handleChange}
+                            className={`${inputClass} cursor-pointer appearance-none bg-[#020204]`}
+                          >
+                            <option value="">Select…</option>
+                            {projectTypes.map((t) => (
+                              <option key={t} value={t}>
+                                {t}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label htmlFor="budget" className={labelClass}>
+                            Budget range
+                          </label>
+                          <select
+                            id="budget"
+                            name="budget"
+                            value={formData.budget}
+                            onChange={handleChange}
+                            className={`${inputClass} cursor-pointer appearance-none bg-[#020204]`}
+                          >
+                            <option value="">Select…</option>
+                            {budgetRanges.map((b) => (
+                              <option key={b} value={b}>
+                                {b}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="sm:col-span-2">
+                          <label htmlFor="message" className={labelClass}>
+                            Message *
+                          </label>
+                          <textarea
+                            id="message"
+                            name="message"
+                            rows={4}
+                            value={formData.message}
+                            onChange={handleChange}
+                            placeholder="Tell us about the project…"
+                            className={`${inputClass} resize-none`}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      {formState === "error" && errorMsg && (
+                        <p className="mt-5 rounded-lg border border-red-400/25 bg-red-400/8 px-4 py-3 text-[13px] text-red-300">
+                          {errorMsg}
+                        </p>
+                      )}
+
+                      <button
+                        type="submit"
+                        disabled={formState === "submitting"}
+                        data-cursor="SEND"
+                        className="mt-9 flex h-[52px] w-full cursor-pointer items-center justify-center gap-3 rounded-full bg-white font-montserrat text-[13px] font-extrabold uppercase italic tracking-[0.08em] text-black transition-all duration-300 hover:bg-[#a78bfa] hover:shadow-[0_0_40px_rgba(167,139,250,0.4)] active:scale-[0.98] disabled:cursor-wait disabled:opacity-70"
+                      >
+                        {formState === "submitting" ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Transmitting…
+                          </>
+                        ) : (
+                          <>Send message ↗</>
+                        )}
+                      </button>
+                    </form>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ══════════ 2. INTERACTIVE TRAIL CANVAS ══════════ */}
+        <section data-term-section className="relative z-10 pb-24 md:pb-32">
+          <div className="k-container">
+            <p data-term-item className="mb-6 font-montserrat text-[11px] uppercase tracking-[0.3em] text-white/40">
+              Signal test — move your cursor
+            </p>
+            <div data-term-item className="h-[220px] w-full sm:h-[280px] md:h-[360px]">
               <div
                 ref={trailContainerRef}
-                className="trail-container relative h-full w-full overflow-hidden rounded-3xl border border-neutral-800 bg-black"
+                data-cursor="PLAY"
+                className="trail-container relative h-full w-full overflow-hidden rounded-[28px] border border-white/10 bg-black/60"
               >
-                <div className="floating-elements absolute inset-0 pointer-events-none" />
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-4 text-center text-xs text-neutral-500/70 sm:text-sm">
-                  Move your mouse here • Desktop only
+                <div className="floating-elements pointer-events-none absolute inset-0" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <p className="pointer-events-none select-none font-garamond italic text-[clamp(20px,3vw,36px)] text-white/25">
+                    drag through the dark…
+                  </p>
                 </div>
               </div>
             </div>
-          </ContainerScroll>
-        </div>
-      </div>
-
-      {/* Contact Form */}
-      <section
-  ref={sectionRef}
-  className="relative z-10 border-t border-white/8 flex items-center justify-center bg-[#010101]"
->
-  <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-24 md:px-8 md:py-28 lg:px-10 lg:py-32 ">
-    <div className="mx-auto mb-12 max-w-3xl text-center md:mb-16">
-      <h1 className="text-4xl font-bold  text-[#00ff91]/80 sm:text-5xl md:text-6xl">
-        Contact Us
-      </h1>
-      <h2 className="text-4xl font-semibold tracking-[-0.04em] text-[#fffaee] sm:text-5xl md:text-6xl">
-        Let&apos;s build something clear, elegant, and memorable.
-      </h2>
-    </div>
-
-    <div className="mx-auto max-w-6xl ">
-      <div className="grid gap-6 rounded-[32px] border border-white/10 bg-[#0a0a0a]/92 p-4 shadow-[0_24px_120px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:p-6 md:gap-8 md:rounded-[36px] md:p-8 lg:grid-cols-[0.95fr_1.05fr] lg:p-10 ">
-        {/* LEFT — Info panel */}
-        <section className="contact-reveal flex flex-col justify-between rounded-[28px] border border-white/8 bg-white/[0.025] p-6 sm:p-8 md:p-10">
-          <div>
-            <p className="mb-4 text-[11px] uppercase tracking-[0.3em] text-[#00ff91]/85">
-              Contact
-            </p>
-            <h3 className="max-w-sm text-4xl italic leading-[0.95] tracking-[-0.045em] text-[#fffaee] sm:text-5xl md:text-6xl">
-              Get in Touch
-            </h3>
-            <p className="mt-6 max-w-md text-sm leading-7 text-[#fffaee]/60 sm:text-base sm:leading-8">
-              Whether it&apos;s a question, an idea, or a collaboration,
-              we&apos;d love to hear from you.
-            </p>
-          </div>
-
-          <div className="mt-10 space-y-5 sm:mt-12 sm:space-y-6">
-            <ContactRow
-              icon={<Phone size={18} strokeWidth={1.5} />}
-              label="Number"
-              value="+894 022 0232"
-            />
-            <ContactRow
-              icon={<Mail size={18} strokeWidth={1.5} />}
-              label="Email"
-              value="info@kurojin.studio"
-            />
-            <ContactRow
-              icon={<MapPin size={18} strokeWidth={1.5} />}
-              label="Location"
-              value={
-                <>
-                  1234 Innovation Street, Suite 567
-                  <br />
-                  New York, US
-                </>
-              }
-            />
           </div>
         </section>
 
-        {/* RIGHT — Form panel */}
-        <section className="contact-reveal rounded-[28px] border border-white/8 bg-white/[0.02] p-6 sm:p-8 md:p-10">
-          {submitted ? (
-            <div className="flex min-h-[520px] flex-col items-center justify-center rounded-[24px] border border-emerald-400/15 bg-emerald-400/[0.03] px-6 text-center">
-              <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-emerald-400/20 bg-emerald-400/10 text-4xl text-[#fffaee]">
-                ✉
-              </div>
-              <h3 className="text-3xl italic tracking-[-0.03em] text-[#fffaee] sm:text-4xl">
-                Message Received
-              </h3>
-              <p className="mt-4 max-w-md text-sm leading-7 text-[#fffaee]/60 sm:text-base sm:leading-8">
-                Thank you. We&apos;ll get back to you shortly.
-              </p>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-7">
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
-                <Field
-                  label="First Name"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  placeholder="John"
-                />
-                <Field
-                  label="Last Name"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  placeholder="Doe"
-                />
-              </div>
-
-              <div className="space-y-5 sm:space-y-6">
-                <Field
-                  label="Email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="info@gmail.com"
-                />
-
-                <Field
-                  label="Phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="Enter your phone number"
-                />
-
-                <div>
-                  <label className="mb-3 block text-[11px] uppercase tracking-[0.3em] text-[#fffaee]/48">
-                    Message
-                  </label>
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={7}
-                    placeholder="Type your message here"
-                    className="w-full resize-none rounded-[22px] border border-white/10 bg-white/[0.03] px-5 py-4 text-sm leading-7 text-[#fffaee] placeholder:text-[#fffaee]/26 transition-all duration-300 focus:border-[#00ff91]/45 focus:bg-white/[0.045] focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="group flex h-14 w-full items-center justify-center rounded-full bg-[#fffaee] px-6 text-sm font-medium tracking-wide text-[#010101] transition-all duration-200 hover:scale-[1.01] hover:bg-white active:scale-[0.985] disabled:opacity-60"
+        {/* ══════════ 3. WHAT HAPPENS NEXT ══════════ */}
+        <section data-term-section className="relative z-10 border-t border-white/8 py-20 md:py-28">
+          <div className="k-container">
+            <p data-term-item className="mb-12 text-center font-montserrat text-[11px] uppercase tracking-[0.3em] text-white/45">
+              After you hit send
+            </p>
+            <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 sm:grid-cols-3">
+              {[
+                { step: "01", title: "We reply", body: "Within 24 hours — a real human, not an autoresponder." },
+                { step: "02", title: "We listen", body: "A short call to understand your brand, goals, and budget." },
+                { step: "03", title: "We propose", body: "A clear scope, timeline, and number. No surprises later." },
+              ].map((s) => (
+                <div
+                  key={s.step}
+                  data-term-item
+                  className="rounded-[24px] border border-white/10 bg-white/[0.02] p-7 text-center transition-colors duration-300 hover:border-[#a78bfa]/35"
                 >
-                  <span className="relative z-10">
-                    {isSubmitting ? "Sending..." : "Send Message"}
+                  <span className="font-garamond italic text-[34px] leading-none text-[#a78bfa]/75">
+                    {s.step}
                   </span>
-                </button>
-
-                <p className="mt-4 text-center text-xs tracking-[0.18em] text-[#fffaee]/34">
-                  CLEAR COMMUNICATION • THOUGHTFUL EXECUTION • FAST RESPONSE
-                </p>
-              </div>
-            </form>
-          )}
+                  <h3 className="mt-4 font-garamond text-[21px] text-white">{s.title}</h3>
+                  <p className="mt-2.5 text-[13px] font-light leading-6 text-white/55">
+                    {s.body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         </section>
-      </div>
-    </div>
-  </div>
-</section>
 
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-neutral-800 bg-black py-12 text-center text-sm text-neutral-500">
-        <p>
-          © {new Date().getFullYear()} Your Company. Made with ripple effects &amp; love.
-        </p>
-      </footer>
-    </div>
-  );
-}
+        {/* ══════════ 4. AVAILABILITY STATUS STRIP ══════════ */}
+        <section className="relative z-10 border-t border-white/8 py-10">
+          <div className="k-container flex flex-wrap items-center justify-center gap-4">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#a78bfa] opacity-60" />
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#a78bfa]" />
+            </span>
+            <p className="font-montserrat text-[11px] uppercase tracking-[0.3em] text-white/50">
+              Status: accepting new projects — response time &lt; 24h
+            </p>
+          </div>
+        </section>
 
-function ContactRow({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: React.ReactNode;
-}) {
-  return (
-    <div className="flex items-start gap-4">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-[#fffaee]/70">
-        {icon}
+        <Footer />
       </div>
-      <div>
-        <p className="mb-1 text-xs uppercase tracking-[0.24em] text-[#7aa2ff]">
-          {label}
-        </p>
-        <p className="text-sm text-[#fffaee]/80">{value}</p>
-      </div>
-    </div>
-  );
-}
-
-function Field({
-  label,
-  name,
-  value,
-  onChange,
-  placeholder,
-  type = "text",
-}: {
-  label: string;
-  name: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  placeholder: string;
-  type?: string;
-}) {
-  return (
-    <div>
-      <label className="mb-2 block text-xs uppercase tracking-[0.24em] text-[#fffaee]/50">
-        {label}
-      </label>
-      <input
-        type={type}
-        name={name}
-        value={value}
-        onChange={onChange}
-        required
-        placeholder={placeholder}
-        className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-[#fffaee] placeholder:text-[#fffaee]/30 transition-colors duration-200 focus:border-[#00ff91]/50 focus:outline-none"
-      />
-    </div>
+    </SmoothScrollProvider>
   );
 }

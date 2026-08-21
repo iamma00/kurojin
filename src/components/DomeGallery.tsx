@@ -34,32 +34,32 @@ type ItemDef = {
 
 const DEFAULT_IMAGES: ImageItem[] = [
   {
-    src: '/images/Packaging/Artboard2.png',
-    alt: 'Abstract art'
+    src: '/images/Packaging/Artboard-1.jpg',
+    alt: 'Packaging design'
   },
   {
-    src: '/images/Packaging/Artboard3.png',
-    alt: 'Modern sculpture'
+    src: '/images/Packaging/Artboard-2.jpg',
+    alt: 'Packaging design'
   },
   {
-      src: '/images/Packaging/Artboard4.png',
-      alt: 'Digital artwork'
+    src: '/images/Packaging/Artboard-3.jpg',
+    alt: 'Packaging design'
   },
   {
-    src: '/images/Packaging/Artboard5.png',
-    alt: 'Contemporary art'
+    src: '/images/Packaging/Artboard-4.jpg',
+    alt: 'Packaging design'
   },
   {
-    src: '/images/Socialmedia/Artboard2.png',
-    alt: 'Geometric pattern'
+    src: '/images/Socialmedia/Artboard1.jpg',
+    alt: 'Social media design'
   },
   {
-    src: '/images/Socialmedia/Artboard3.png',
-    alt: 'Textured surface'
+    src: '/images/Socialmedia/Artboard2.jpg',
+    alt: 'Social media design'
   },
   {
-    src: '/images/Socialmedia/Artboard4.png',
-    alt: 'Social media image'
+    src: '/images/Socialmedia/Artboard3.jpg',
+    alt: 'Social media design'
   }
 ];
 

@@ -3,53 +3,65 @@
 import { useEffect, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
+/**
+ * Custom cursor — dot + lagging ring (mix-blend-difference).
+ * Elements can declare data-cursor="VIEW" / "DRAG" etc. to morph the
+ * ring into a labeled pill. Touch devices are skipped entirely.
+ */
 export default function CustomCursor() {
+  const [label, setLabel] = useState<string | null>(null);
   const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [enabled, setEnabled] = useState(false);
 
-  // Exact position for the inner dot
   const dotX = useMotionValue(-100);
   const dotY = useMotionValue(-100);
-
-  // Spring-physics position for the lagging outer ring
-  const ringX = useSpring(-100, { stiffness: 300, damping: 20 });
-  const ringY = useSpring(-100, { stiffness: 300, damping: 20 });
+  const ringX = useSpring(-100, { stiffness: 350, damping: 28 });
+  const ringY = useSpring(-100, { stiffness: 350, damping: 28 });
 
   useEffect(() => {
-    // Don't render custom cursor on touch devices
-    if (typeof window !== "undefined" && "ontouchstart" in window) return;
+    if (typeof window === "undefined") return;
+    if ("ontouchstart" in window || navigator.maxTouchPoints > 0) return;
+    setEnabled(true);
+    document.body.classList.add("custom-cursor-on");
 
     const moveCursor = (e: MouseEvent) => {
-      // Update positions
       dotX.set(e.clientX);
       dotY.set(e.clientY);
       ringX.set(e.clientX);
       ringY.set(e.clientY);
 
-      // Smart hover check: Check the element directly under the mouse
       const target = e.target as HTMLElement;
-      // Check for links, buttons, or anything explicitly marked with data-cursor-hover
-      const isInteractive = !!target.closest("a, button, [data-cursor-hover]");
-      setIsHovering(isInteractive);
+      const labeled = target.closest("[data-cursor]") as HTMLElement | null;
+      if (labeled) {
+        setLabel(labeled.dataset.cursor || "VIEW");
+        setIsHovering(false);
+        return;
+      }
+      setLabel(null);
+      setIsHovering(!!target.closest("a, button, [data-cursor-hover]"));
     };
 
-    const handleMouseEnter = () => setIsVisible(true);
-    const handleMouseLeave = () => setIsVisible(false);
+    const handleEnter = () => setIsVisible(true);
+    const handleLeave = () => setIsVisible(false);
 
-    window.addEventListener("mousemove", moveCursor);
-    document.addEventListener("mouseenter", handleMouseEnter);
-    document.addEventListener("mouseleave", handleMouseLeave);
-
+    window.addEventListener("mousemove", moveCursor, { passive: true });
+    document.addEventListener("mouseenter", handleEnter);
+    document.addEventListener("mouseleave", handleLeave);
     return () => {
       window.removeEventListener("mousemove", moveCursor);
-      document.removeEventListener("mouseenter", handleMouseEnter);
-      document.removeEventListener("mouseleave", handleMouseLeave);
+      document.removeEventListener("mouseenter", handleEnter);
+      document.removeEventListener("mouseleave", handleLeave);
     };
   }, [dotX, dotY, ringX, ringY]);
 
+  if (!enabled) return null;
+
+  const ringSize = label ? 88 : isHovering ? 64 : 40;
+
   return (
     <>
-      {/* Inner Dot - Pinpoint accuracy */}
+      {/* Inner dot — hidden while a label or hover state is active */}
       <motion.div
         className="fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference rounded-full bg-white"
         style={{
@@ -59,30 +71,43 @@ export default function CustomCursor() {
           height: 8,
           translateX: "-50%",
           translateY: "-50%",
-          opacity: isVisible && !isHovering ? 1 : 0, // Hide dot when hovering interactive elements
+          opacity: isVisible && !isHovering && !label ? 1 : 0,
         }}
       />
 
-      {/* Outer Ring - Fluid motion & Hover feedback */}
+      {/* Outer ring / labeled pill */}
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-[9998] mix-blend-difference rounded-full bg-transparent border-2 border-white"
+        className={`fixed top-0 left-0 pointer-events-none z-[9998] rounded-full flex items-center justify-center ${
+          label
+            ? "bg-[#fffaee] text-[#010101]"
+            : "mix-blend-difference border-2 border-white"
+        }`}
         style={{
           x: ringX,
           y: ringY,
           translateX: "-50%",
           translateY: "-50%",
           opacity: isVisible ? 1 : 0,
-          width: isHovering ? 64 : 40,
-          height: isHovering ? 64 : 40,
-          backgroundColor: isHovering ? "rgba(255, 255, 255, 0.15)" : "transparent", // Slight fill on hover
+          width: ringSize,
+          height: ringSize,
+          backgroundColor: label
+            ? "rgba(255,250,238,0.95)"
+            : isHovering
+            ? "rgba(255,255,255,0.15)"
+            : "transparent",
         }}
-        // Smooth transition for the scale/fill effect
-        transition={{ 
-          width: { type: "spring", stiffness: 300, damping: 20 }, 
-          height: { type: "spring", stiffness: 300, damping: 20 }, 
-          backgroundColor: { duration: 0.2 } 
+        transition={{
+          width: { type: "spring", stiffness: 300, damping: 22 },
+          height: { type: "spring", stiffness: 300, damping: 22 },
+          backgroundColor: { duration: 0.2 },
         }}
-      />
+      >
+        {label && (
+          <span className="font-montserrat text-[10px] font-bold tracking-[0.2em] uppercase select-none">
+            {label}
+          </span>
+        )}
+      </motion.div>
     </>
   );
 }

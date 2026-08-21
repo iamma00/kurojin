@@ -1,151 +1,82 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  Dribbble,
-  Instagram,
-  Linkedin,
-  Mail,
-} from "lucide-react";
-import { motion } from "motion/react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Instagram, Linkedin } from "lucide-react";
+import { siteConfig } from "@/lib/site-config";
 
-const navLinks = [
-  { label: "Home", href: "#" },
-  { label: "Work", href: "#work" },
-  { label: "Services", href: "#services" },
-  { label: "Contact", href: "#contact" },
-];
-
-const socialLinks = [
-  { label: "Instagram", href: "https://instagram.com", icon: Instagram },
-  { label: "LinkedIn", href: "https://linkedin.com", icon: Linkedin },
-  { label: "Dribbble", href: "https://dribbble.com", icon: Dribbble },
-];
-
-import dynamic from "next/dynamic";
-
-
+/**
+ * Minimal footer — strict black & white theme.
+ * The only color: the "kurojin" wordmark burns in a fire gradient.
+ * Socials trimmed to Instagram + LinkedIn only.
+ */
 export default function Footer() {
+  const year = new Date().getFullYear();
+
   return (
-    <>
-      {/* Desktop/tablet footer */}
-      <footer
-        id="site-footer"
-        className="hidden md:flex relative z-60 w-full min-h-screen flex-col justify-between items-center overflow-hidden  px-0 pt-0 pb-0"
-      >
-      {/* Animated background overlays */}
-      <motion.div
-        className="pointer-events-none absolute inset-0 z-0"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-        style={{
-          background:
-            "radial-gradient(circle at 50% 112%, rgba(255,64,64,0.16), transparent 32%)," +
-            "radial-gradient(circle at 20% 10%, rgba(120,170,255,0.16), transparent 30%)," +
-            "linear-gradient(180deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.015) 22%, rgba(255,255,255,0) 42%)"
-        }}
-      />
-      {/* Floating decorative element */}
-      <motion.div
-        className="pointer-events-none absolute left-1/2 top-[10%] z-10 -translate-x-1/2"
-        initial={{ opacity: 0, scale: 0.8, y: -40 }}
-        whileInView={{ opacity: 0.7, scale: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 1.1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        style={{ filter: "blur(2px)" }}
-      >
-        <div className="w-80 h-30 rounded-full bg-linear-to-r from-[#00ff91]/30 via-[#7aa2ff]/20 to-[#ff4050]/30 opacity-20 animate-pulse" />
-      </motion.div>
-      {/* Main content grid */}
-      <motion.div
-        className="relative z-20 mx-auto w-full max-w-300 flex-1 flex flex-col justify-center items-center px-4 py-20 md:px-12 md:py-32"
-        initial={{ opacity: 0, y: 60 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-      >
-        <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-16">
-          {/* About */}
-          <div className="flex flex-col items-start justify-start gap-4 md:col-span-1">
-            <h2 className="font-garamond text-[clamp(28px,8vw,42px)] font-semibold leading-[0.95] tracking-[-0.04em] text-white">
-              Kurojin Studio
-            </h2>
-            <p className="text-[13px] font-light leading-[1.7] text-white/60 max-w-80">
-              Design systems that feel precise, cinematic, and alive. Brand direction, digital surfaces, and motion-led experiences for teams that want clarity with edge.
-            </p>
-          </div>
-          {/* Navigation */}
-          <div className="flex flex-col items-start gap-3 md:col-span-1">
-            <span className="text-[12px] font-semibold uppercase tracking-[0.18em] text-white/50 mb-1">Navigate</span>
-            {navLinks.map((link) => (
+    <footer
+      id="site-footer"
+      className="relative z-30 w-full border-t border-white/10 bg-black"
+    >
+      <div className="mx-auto w-full max-w-[1500px] px-6 md:px-12">
+        {/* ── top row: nav + socials ── */}
+        <div className="flex flex-col gap-10 py-14 md:flex-row md:items-start md:justify-between md:py-16">
+          {/* nav */}
+          <nav className="flex flex-wrap gap-x-8 gap-y-3">
+            {siteConfig.nav.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
-                className="group inline-flex items-center gap-2 text-[16px] font-light tracking-[-0.02em] text-white/80 transition-colors duration-300 hover:text-[#00ff91] focus:text-[#00fee0] relative"
+                className="group relative text-[13px] uppercase tracking-[0.22em] text-white/60 transition-colors duration-300 hover:text-white"
               >
-                <span className="relative z-10">{link.label}</span>
-                <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-linear-to-r from-[#00ff91] to-[#00fee0] rounded-full transition-all duration-300 group-hover:w-full group-focus:w-full"></span>
+                {link.label}
+                <span className="absolute -bottom-1 left-0 h-px w-0 bg-white transition-all duration-300 group-hover:w-full" />
               </Link>
             ))}
-          </div>
-          {/* Socials */}
-          <div className="flex flex-col items-start gap-3 md:col-span-1">
-            <span className="text-[12px] font-semibold uppercase tracking-[0.18em] text-white/50 mb-1">Socials</span>
-            {socialLinks.map((link) => {
-              const Icon = link.icon;
+          </nav>
+
+          {/* socials — Instagram + LinkedIn only */}
+          <div className="flex items-center gap-3">
+            {siteConfig.socials.map((s) => {
+              const Icon = s.label === "LinkedIn" ? Linkedin : Instagram;
               return (
                 <a
-                  key={link.label}
-                  href={link.href}
+                  key={s.label}
+                  href={s.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="group inline-flex items-center gap-2 text-[15px] font-light text-white/70 transition-colors duration-300 hover:text-[#7aa2ff] focus:text-[#00ff91]"
+                  aria-label={s.label}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/60 transition-all duration-300 hover:border-white hover:text-white"
                 >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/4 transition duration-300 group-hover:border-white/22 group-hover:bg-white/7">
-                    <Icon className="h-3.5 w-3.5" />
-                  </span>
-                  <span>{link.label}</span>
+                  <Icon className="h-4 w-4" strokeWidth={1.75} />
                 </a>
               );
             })}
           </div>
-          {/* Contact */}
-          <div className="flex flex-col items-start gap-4 md:col-span-1">
-            <span className="text-[12px] font-semibold uppercase tracking-[0.18em] text-white/50 mb-1">Contact</span>
-            <a
-              href="mailto:hello@kurojin.studio"
-              className="group inline-flex items-center gap-2 text-[15px] text-white/88 transition-colors duration-300 hover:text-[#7aa2ff]"
-            >
-              <Mail className="h-4 w-4 text-[#7aa2ff]" />
-              <span>hello@kurojin.studio</span>
-            </a>
-            <p className="text-[18px] font-light leading-[1.65] text-white/62">
-              Available for identity systems, product design, visual direction, and launch support.
-            </p>
-          </div>
         </div>
-        {/* Divider */}
-        <div className="w-full border-t border-white/10 my-12" />
-        {/* Bottom bar */}
-        <div className="flex flex-col md:flex-row items-center justify-between w-full gap-2 text-[16px] uppercase tracking-[0.16em] text-white/33">
-          <span>© 2026 Kurojin. All rights reserved.</span>
-          <span>Built for brands that want clarity with edge.</span>
-        </div>
-        {/* Logo wordmark */}
-        <div className="relative mt-16 flex justify-center items-center w-full">
+
+        {/* ── wordmark — black & white page, fire wordmark ── */}
+        <div className="overflow-hidden border-t border-white/10 py-10 md:py-14">
           <p
             aria-hidden="true"
-            className="pointer-events-none select-none text-center font-montserrat text-[clamp(56px,22vw,132px)] font-extrabold uppercase leading-[0.72] tracking-[-0.06em] text-white md:text-[clamp(78px,24vw,250px)] md:tracking-[-0.08em] drop-shadow-[0_0_40px_rgba(0,255,145,0.08)] animate-pulse"
-
+            className="kurojin-fire select-none text-center font-montserrat font-extrabold uppercase leading-[0.8] tracking-[-0.06em]"
+            style={{ fontSize: "clamp(64px, 17vw, 240px)" }}
           >
             kurojin
           </p>
         </div>
-      </motion.div>
-      </footer>
-    </>
+
+        {/* ── bottom bar ── */}
+        <div className="flex flex-col items-center justify-between gap-3 border-t border-white/10 py-7 text-[11px] uppercase tracking-[0.2em] text-white/35 md:flex-row">
+          <span>© {year} Kurojin. All rights reserved.</span>
+          <span className="text-white/25">黒人 — clarity with edge</span>
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="cursor-pointer text-white/50 transition-colors duration-300 hover:text-white"
+          >
+            Back to top ↑
+          </button>
+        </div>
+      </div>
+    </footer>
   );
 }

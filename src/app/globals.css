@@ -1,8 +1,5 @@
 @import "tailwindcss";
-@import "../../node_modules/tw-animate-css/dist/tw-animate.css";
-@import "shadcn/tailwind.css";
 @import "tw-animate-css";
-@import "locomotive-scroll/dist/locomotive-scroll.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -11,9 +8,13 @@
   --color-off-white: #fffaee;
   --color-light-gray: #d0d0d0;
   --color-near-white: #f4f4f4;
+  --color-accent: #00ff91;
+  --color-accent-alt: #00fee0;
+  --color-warm: #ffecb9;
   --font-garamond: var(--font-eb-garamond);
   --font-montserrat: "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-helvetica: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-sans: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -32,7 +33,6 @@
   --color-border: var(--border);
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
   --color-muted: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -52,28 +52,39 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
-  --font-sans: var(--font-sans);
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* NOTE: do NOT add an unlayered universal margin/padding reset here.
+   Tailwind v4 puts utilities in @layer utilities, and UNLAYERED css wins
+   the cascade over layered css regardless of specificity — an unlayered
+   universal reset silently kills every padding/margin utility site-wide
+   (that was the "cramped slop" root cause). Preflight already resets. */
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto; /* Lenis handles smooth scroll */
+}
+
+/* NOTE: do NOT put overflow-x: clip/hidden on html or body.
+   Per CSS spec, overflow-x: clip + overflow-y: visible computes to auto,
+   which turns them into scroll containers and BREAKS position: sticky
+   (the FeaturedShowcase preview card). Horizontal bleed is instead killed
+   per-section via overflow-hidden on the marquee/showcase sections. */
+
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
 }
 
 body {
   background: var(--color-bg);
   color: #fff;
   font-family: var(--font-helvetica);
-  overflow-x: hidden;
-}
-
-[data-scroll-container] {
-  min-height: 100vh;
+  /* NO overflow-x here — see note above; it breaks position: sticky */
 }
 
 /* Hide scrollbar globally */
@@ -165,30 +176,52 @@ body {
   }
 }
 
-/* Mobile component keyframes */
+/* ── Shared motion keyframes ── */
 @keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes gentlePulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.06);
-    opacity: 0.8;
-  }
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.06); opacity: 0.8; }
 }
 
-/* Enhanced CTA Button Styles */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 35s linear infinite;
+}
+.animate-marquee-reverse {
+  animation: marquee 35s linear infinite reverse;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(120vh) scale(0.4); opacity: 0; }
+  15% { opacity: 0.9; }
+  85% { opacity: 0.9; }
+  100% { transform: translateY(-80px) scale(1.1); opacity: 0; }
+}
+
+.floating-element {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  animation: floatUp linear infinite;
+}
+
+.trail-img {
+  width: 145px;
+  height: 145px;
+  object-fit: cover;
+}
+
+/* ── CTA Button (shared) ── */
 .cta-button {
   position: relative;
   display: inline-flex;
@@ -204,134 +237,105 @@ body {
   cursor: pointer;
   overflow: hidden;
   z-index: 10;
-  will-change: transform, box-shadow;
-  transition: all 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+  will-change: transform;
+  transition: all 0.4s cubic-bezier(0.76, 0, 0.24, 1);
   background: white;
   color: #000;
-  box-shadow: 0 8px 24px rgba(0, 255, 145, 0.2), 
-              0 0 1px rgba(255, 255, 255, 0.5) inset,
-              0 0 20px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(8px);
 }
-
 .cta-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(0, 255, 145, 0.35),
-              0 4px 12px rgba(0, 254, 224, 0.3),
-              0 0 1px rgba(255, 255, 255, 0.6) inset,
-              0 0 25px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(90deg, #00ff91, #00fee0);
+  box-shadow: 0 0 30px rgba(0, 255, 145, 0.5), 0 0 60px rgba(0, 254, 224, 0.3);
 }
-
 .cta-button:active {
-  transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(0, 255, 145, 0.2),
-              0 0 1px rgba(255, 255, 255, 0.4) inset;
+  transform: translateY(0) scale(0.97);
 }
 
-.cta-button-text {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease-out;
-}
-
-.cta-button:hover .cta-button-text-primary {
-  transform: translateY(-100%);
-}
-
-.cta-button-text-secondary {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease-out;
-  transform: translateY(100%);
-}
-
-.cta-button:hover .cta-button-text-secondary {
-  transform: translateY(0);
-}
-
-/* Responsive CTA Button */
-.cta-button-sm {
-  height: 28px;
-  padding: 0 16px;
-  font-size: 12px;
-}
-
-.cta-button-lg {
-  height: 32px;
-  padding: 0 20px;
-  font-size: 14px;
-}
-
-@keyframes marquee {
-  0% {
-    transform: translateX(0);
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
-  100% {
-    transform: translateX(-50%);
-  }
+  html { scroll-behavior: auto; }
 }
 
-.animate-marquee {
-  animation: marquee 35s linear infinite;
-}
-
-.animate-marquee-reverse {
-  animation: marquee 35s linear infinite reverse;
-}
-
-@media (max-width: 767.98px) {
-  [data-scroll-section] {
-    position: relative;
-  }
-}
-
-/* Desktop section lift stack */
-@media (min-width: 768px) {
-  .section-stack {
-    position: relative;
-  }
-
-  .section-step {
-    position: relative;
-    min-height: 125svh;
-  }
-
-  /* Removed global .section-sticky sticky rules so sections can opt-in
-     to sticky/pinning behavior individually (e.g. via JS-driven logic
-     or component-scoped styles). */
-
-  .section-z-10 {
-    z-index: 10;
-  }
-
-  .section-z-20 {
-    z-index: 20;
-  }
-
-  .section-z-30 {
-    z-index: 30;
-  }
-
-  .section-z-40 {
-    z-index: 40;
-  }
-}
-
+/* ── Section spacing helper ── */
 .section-wrapper {
   scroll-margin-top: 100px;
 }
 
-/* Force breathing room */
-.section-wrapper > * {
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
+/* Hide native cursor on fine pointers — CustomCursor takes over */
+@media (pointer: fine) {
+  body.custom-cursor-on,
+  body.custom-cursor-on a,
+  body.custom-cursor-on button,
+  body.custom-cursor-on [data-cursor-hover] {
+    cursor: none;
+  }
 }
 
-/* Make sure background shows through */
+/* ── Fire wordmark — the one flame in a black & white footer ── */
+/* force-recompile-2 */
+.kurojin-fire {
+  background: linear-gradient(
+    180deg,
+    #fff3d6 0%,
+    #ffd166 18%,
+    #ff9e2c 38%,
+    #ff5c1a 58%,
+    #e6390f 78%,
+    #7a1204 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 28px rgba(255, 92, 26, 0.28))
+    drop-shadow(0 0 80px rgba(255, 60, 0, 0.14));
+}
+
+/* ── SplitReveal line masks ── */
+.sr-mask {
+  display: block;
+  overflow: hidden;
+}
+.sr-line {
+  display: block;
+  will-change: transform;
+}
+
+/* ── Global layout system: consistent left/right margins on every page ── */
+.k-container {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5vw, 96px);
+  max-width: 1600px;
+}
+.k-container-narrow {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5vw, 96px);
+  max-width: 1200px;
+}
+/* Prevent any text/card from bleeding off the viewport edge */
+.k-safe {
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
+/* Clamp giant display type so it never clips at screen edges */
+.k-display {
+  font-size: clamp(34px, 7.5vw, 120px);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+.k-display-sm {
+  font-size: clamp(28px, 5vw, 64px);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+/* Make sure background shows through sections */
 .Clients, .Story, .Services, .Work, .Budget, .CTA {
   background: transparent !important;
 }
@@ -341,41 +345,8 @@ body {
   var(--delay, 0ms);
 
   @keyframes cell-ripple {
-    0% {
-      opacity: 0.4;
-    }
-    50% {
-      opacity: 0.8;
-    }
-    100% {
-      opacity: 0.4;
-    }
+    0% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+    100% { opacity: 0.4; }
   }
-}
-
-
-.trail-img {
-  width: 145px;
-  height: 145px;
-  object-fit: cover;
-}
-
-.floating-element {
-  position: absolute;
-  width: 5px;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.18);
-  border-radius: 50%;
-  animation: floatUp linear infinite;
-}
-
-@keyframes floatUp {
-  0% { transform: translateY(120vh) scale(0.4); opacity: 0; }
-  15% { opacity: 0.9; }
-  85% { opacity: 0.9; }
-  100% { transform: translateY(-80px) scale(1.1); opacity: 0; }
-}
-
-.form-group {
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }

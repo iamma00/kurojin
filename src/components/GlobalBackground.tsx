@@ -4,16 +4,18 @@ import Image from "next/image";
 
 export default function GlobalBackground() {
   return (
-    <div className="fixed w-full h-full overflow-hidden">
-      {/* The path must start with '/' which points directly to the public folder */}
+    <div className="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
       <Image
-        src="/images/globally.png"
-        alt="Background Image"
+        src="/images/globally.jpg"
+        alt=""
         fill
-        className="object-cover w-full h-full"
+        className="object-cover"
         priority
-
+        sizes="100vw"
+        quality={80}
       />
+      {/* subtle vignette so foreground text pops */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.35)_100%)]" />
     </div>
   );
 }
