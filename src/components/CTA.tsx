@@ -51,7 +51,7 @@ export default function CTA() {
         <div className="mt-10 flex justify-center">
           <Link
             href="/contact"
-            className="bg-white text-black rounded-[55px] h-[58px] md:h-[66px] px-10 md:px-14 w-[260px] md:w-[300px] font-montserrat font-extrabold italic text-[19px] md:text-[23px] uppercase overflow-hidden relative group cursor-pointer border border-white/20 hover:border-white transition-all active:scale-[0.97] hover:bg-gradient-to-r hover:from-[#00ff91] hover:to-[#00fee0] hover:text-black hover:shadow-[0_0_40px_rgba(0,255,145,0.7)] inline-flex items-center justify-center"
+            className="border border-white/25 bg-transparent text-white rounded-[55px] h-[58px] md:h-[66px] px-10 md:px-14 w-[260px] md:w-[300px] font-montserrat font-extrabold italic text-[19px] md:text-[23px] uppercase overflow-hidden relative group cursor-pointer transition-all active:scale-[0.97] hover:border-[#ff5c1a]/70 hover:text-white hover:shadow-[0_0_40px_rgba(255,92,26,0.25)] inline-flex items-center justify-center"
           >
             <span className="block transition-transform duration-300 group-hover:-translate-y-full leading-tight">
               LET&apos;S TALK

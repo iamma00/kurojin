@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -83,18 +84,20 @@ export default function Work() {
         </p>
       </div>
 
-      {/* CTA Button */}
+      {/* CTA — quiet editorial link (solid pill reserved for final CTA) */}
       <div data-work-reveal className="absolute top-[56%] left-1/2 -translate-x-1/2 z-10">
         <Link
           href="/work"
-          className="bg-white text-bg rounded-[55px] h-[44px] px-[10px] w-[211px] font-montserrat font-extrabold italic text-[18px] uppercase overflow-hidden relative group cursor-pointer border border-bg inline-flex items-center justify-center transition-shadow hover:shadow-[0_0_30px_rgba(255,255,255,0.35)]"
+          data-cursor="VIEW"
+          className="group inline-flex items-center gap-3 font-montserrat text-[12px] md:text-[13px] uppercase tracking-[0.3em] text-white/60 transition-colors duration-300 hover:text-white"
         >
-          <span className="block transition-transform duration-300 group-hover:-translate-y-full leading-[1.4]">
-            Our Work
+          <span className="relative">
+            View selected work
+            <span className="absolute -bottom-1.5 left-0 h-px w-full bg-white/25">
+              <span className="block h-full w-0 bg-[#ff5c1a] transition-all duration-500 group-hover:w-full" />
+            </span>
           </span>
-          <span className="absolute inset-0 flex items-center justify-center transition-transform duration-300 translate-y-full group-hover:translate-y-0 leading-[1.4]">
-            Our Legacy
-          </span>
+          <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
         </Link>
       </div>
     </section>

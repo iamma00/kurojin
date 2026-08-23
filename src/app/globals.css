@@ -244,8 +244,8 @@ body {
 }
 .cta-button:hover {
   transform: translateY(-2px);
-  background: linear-gradient(90deg, #00ff91, #00fee0);
-  box-shadow: 0 0 30px rgba(0, 255, 145, 0.5), 0 0 60px rgba(0, 254, 224, 0.3);
+  background: linear-gradient(90deg, #ff8c2b, #ff3c00);
+  box-shadow: 0 0 30px rgba(255, 92, 26, 0.5), 0 0 60px rgba(255, 60, 0, 0.3);
 }
 .cta-button:active {
   transform: translateY(0) scale(0.97);

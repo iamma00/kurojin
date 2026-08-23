@@ -78,7 +78,9 @@ const TextVideo: React.FC = () => {
             >
               {inView &&
                 services.map((service, index) =>
-                  mounted.has(index) ? (
+                  // Keep at most 3 Vimeo decoders live: the active reel plus
+                  // its neighbors. Everything else unmounts (saves CPU/data).
+                  mounted.has(index) && Math.abs(index - activeIndex) <= 1 ? (
                     <iframe
                       key={service.videoId}
                       src={`https://player.vimeo.com/video/${service.videoId}?autoplay=1&muted=1&loop=1&background=1`}
@@ -114,7 +116,7 @@ const TextVideo: React.FC = () => {
                   key={service.name}
                   type="button"
                   aria-current={isActive}
-                  className="block w-full text-left lg:text-[4.5vw] text-xl md:text-2xl font-bold tracking-tight leading-none mb-4 lg:mb-2 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/60 rounded"
+                  className="block w-full text-left lg:text-[4.5vw] text-xl md:text-2xl font-bold tracking-tight leading-none mb-1 py-3 lg:py-2 lg:mb-2 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/60 rounded"
                   initial={false}
                   animate={{
                     x: isActive ? 30 : 0,

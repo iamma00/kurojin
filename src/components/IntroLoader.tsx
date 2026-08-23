@@ -18,6 +18,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 type MinimalLenis = { stop?: () => void; start?: () => void };
 
+/** Fired once the intro is finished/skipped so entrance animations can start. */
+export const INTRO_DONE_EVENT = "kurojin:intro-done";
+
 function getLenis(): MinimalLenis | undefined {
   return (window as unknown as Record<string, unknown>).__lenis as
     | MinimalLenis
@@ -61,6 +64,8 @@ export default function IntroLoader() {
     if (finishedRef.current) return;
     finishedRef.current = true;
     unlockScroll();
+    (window as unknown as Record<string, unknown>).__kurojinIntroDone = true;
+    window.dispatchEvent(new CustomEvent(INTRO_DONE_EVENT));
     setLeaving(true);
     window.setTimeout(() => setHidden(true), EXIT_MS);
   }, [unlockScroll]);

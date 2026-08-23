@@ -70,7 +70,13 @@ export default function Footer() {
           <span>© {year} Kurojin. All rights reserved.</span>
           <span className="text-white/25">黒人 — clarity with edge</span>
           <button
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            onClick={() => {
+              const lenis = (
+                window as unknown as Record<string, unknown>
+              ).__lenis as { scrollTo?: (v: number) => void } | undefined;
+              if (lenis?.scrollTo) lenis.scrollTo(0);
+              else window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
             className="cursor-pointer text-white/50 transition-colors duration-300 hover:text-white"
           >
             Back to top ↑

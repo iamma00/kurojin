@@ -1,29 +1,18 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
 export default function Budget() {
   return (
-    <section
-      id="contact"
-      className="relative w-full h-screen min-h-[620px] bg-bg overflow-hidden"
-    >
-      {/* Background glow container */}
-      <div className="absolute top-1/2 left-[8%] right-[8%] -translate-y-1/2 h-[74vh] max-h-[802px] shadow-[0px_0px_20px_0px_rgba(255,255,255,0.11)] rounded-lg overflow-hidden">
+    <section className="relative w-full h-screen min-h-[620px] bg-bg overflow-hidden">
+      {/* Ember glow — single warm radial, matches brand fire accents */}
+      <div className="absolute top-1/2 left-[8%] right-[8%] -translate-y-1/2 h-[74vh] max-h-[802px] rounded-lg overflow-hidden">
         <div
-          className="absolute inset-0 opacity-20"
+          className="absolute inset-0 opacity-[0.16]"
           style={{
             background:
-              "radial-gradient(ellipse at bottom right, rgba(196,37,8,1) 0%, rgba(49,9,2,1) 50%, rgba(0,0,0,1) 100%)",
-          }}
-        />
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{
-            background:
-              "radial-gradient(ellipse at top left, rgba(8,196,181,1) 0%, rgba(2,49,45,1) 50%, rgba(0,0,0,1) 100%)",
+              "radial-gradient(ellipse at 65% 85%, rgba(255,92,26,1) 0%, rgba(90,22,4,1) 45%, rgba(0,0,0,1) 100%)",
           }}
         />
       </div>
@@ -61,7 +50,7 @@ export default function Budget() {
       >
         <Link
           href="/contact"
-          className="bg-white text-bg rounded-[55px] h-[44px] px-8 inline-flex items-center justify-center font-montserrat font-extrabold italic text-[16px] uppercase overflow-hidden relative group cursor-pointer transition-all duration-300 hover:bg-gradient-to-r hover:from-[#00ff91] hover:to-[#00fee0] hover:text-black hover:shadow-[0_0_30px_rgba(0,255,145,0.5)] active:scale-95"
+          className="bg-white text-bg rounded-[55px] h-[44px] px-8 inline-flex items-center justify-center font-montserrat font-extrabold italic text-[16px] uppercase overflow-hidden relative group cursor-pointer transition-all duration-300 hover:bg-gradient-to-r hover:from-[#ff8c2b] hover:to-[#ff3c00] hover:text-black hover:shadow-[0_0_30px_rgba(255,92,26,0.5)] active:scale-95"
         >
           <span className="block transition-transform duration-300 group-hover:-translate-y-full leading-[1.4]">
             LET&apos;S TALK

@@ -3,7 +3,6 @@
 import { Fragment, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Image from "next/image";
 
 const storyBodyText =
   "Every brand begins with a story. We shape that story into a powerful Brand Identity, bring it to life through mindful Design, craft visuals with Product Shoots & immersive 3D Content, build your presence with high-impact Web Experiences, and finally set the momentum through strategic Social Media.";
@@ -11,26 +10,30 @@ const storyBodyText =
 const bottomHeadlineLead = "We Care How ";
 const bottomHeadlineTail = "The World Sees It";
 
+/* number of characters in the lead headline — index offset for the tail */
+const leadCharCount = bottomHeadlineLead.trim().split(/\s+/).join("").length;
+
 export default function Story() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const bgRef = useRef<HTMLDivElement | null>(null);
   const topHeadlineRef = useRef<HTMLParagraphElement | null>(null);
   const bodyTextRef = useRef<HTMLParagraphElement | null>(null);
   const bodyCharRefs = useRef<HTMLSpanElement[]>([]);
   const bottomHeadlineRef = useRef<HTMLParagraphElement | null>(null);
   const bottomCharRefs = useRef<HTMLSpanElement[]>([]);
-  const bottomCharCounter = useRef(0);
-  const dropTextRef = useRef<HTMLParagraphElement | null>(null);
   const lineRef = useRef<HTMLDivElement | null>(null);
-
-  bodyCharRefs.current = [];
-  bottomCharRefs.current = [];
-  bottomCharCounter.current = 0;
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
     if (!sectionRef.current) return;
+
+    /* Reduced motion: skip the pin + scrub entirely, render final state. */
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(bodyCharRefs.current, { opacity: 1 });
+      gsap.set(bottomCharRefs.current, { opacity: 1, y: 0, filter: "none" });
+      gsap.set(lineRef.current, { opacity: 1 });
+      return;
+    }
 
     const ctx = gsap.context(() => {
       gsap.set(topHeadlineRef.current, { opacity: 0, y: 70, filter: "blur(8px)" });
@@ -38,12 +41,6 @@ export default function Story() {
       gsap.set(bodyCharRefs.current, { opacity: 0 });
       gsap.set(bottomHeadlineRef.current, { opacity: 1 });
       gsap.set(bottomCharRefs.current, { opacity: 0, y: -65, filter: "blur(8px)" });
-      gsap.set(dropTextRef.current, {
-        yPercent: -145,
-        scale: 0.42,
-        opacity: 0,
-        transformOrigin: "50% 0%",
-      });
       gsap.set(lineRef.current, { opacity: 0.15 });
 
       const computeEnd = () => {
@@ -64,15 +61,6 @@ export default function Story() {
           anticipatePin: 1,
         },
       });
-
-      if (bgRef.current) {
-        timeline.fromTo(
-          bgRef.current,
-          { scale: 1.15, yPercent: -6 },
-          { scale: 1, yPercent: 6, duration: 4 },
-          0
-        );
-      }
 
       if (topHeadlineRef.current) {
         timeline.fromTo(
@@ -116,27 +104,12 @@ export default function Story() {
         );
       }
 
-      if (dropTextRef.current) {
-        timeline
-          .fromTo(
-            dropTextRef.current,
-            { yPercent: -145, scale: 0.42, opacity: 0 },
-            { yPercent: -22, scale: 1.15, opacity: 0.28, duration: 0.9 },
-            2.65
-          )
-          .to(
-            dropTextRef.current,
-            { yPercent: 48, scale: 2.95, opacity: 0.42, duration: 1.2 },
-            3.15
-          );
-      }
-
       if (lineRef.current) {
         timeline.fromTo(
           lineRef.current,
           { opacity: 0.15 },
           { opacity: 1, duration: 0.4 },
-          3.45
+          1.2
         );
       }
     }, sectionRef);
@@ -148,46 +121,50 @@ export default function Story() {
    * Headline is built word-by-word: each word is an inline-block of char
    * spans (so the per-char drop-in animation still works), with REAL space
    * text nodes between words so the line can wrap on narrow screens.
+   * Char indices are computed from word offsets (no ref mutation in render).
    */
   const renderHeadlineWords = (
     text: string,
     italic: boolean,
-    keyPrefix: string
-  ) =>
-    text
+    keyPrefix: string,
+    startOffset: number
+  ) => {
+    let wordStart = startOffset;
+    return text
       .trim()
       .split(" ")
-      .map((word, wi) => (
-        <Fragment key={`${keyPrefix}-${wi}`}>
-          <span
-            className={`inline-block whitespace-nowrap ${
-              italic ? "font-garamond font-light italic" : "font-garamond font-light"
-            }`}
-          >
-            {word.split("").map((character, ci) => {
-              const charIndex = bottomCharCounter.current++;
-              return (
+      .map((word, wi) => {
+        const thisStart = wordStart;
+        wordStart += word.length;
+        return (
+          <Fragment key={`${keyPrefix}-${wi}`}>
+            <span
+              className={`inline-block whitespace-nowrap ${
+                italic ? "font-garamond font-light italic" : "font-garamond font-light"
+              }`}
+            >
+              {word.split("").map((character, ci) => (
                 <span
                   key={`${character}-${ci}`}
                   ref={(element) => {
-                    if (element) bottomCharRefs.current[charIndex] = element;
+                    if (element) bottomCharRefs.current[thisStart + ci] = element;
                   }}
                   className="inline-block will-change-transform"
                 >
                   {character}
                 </span>
-              );
-            })}
-          </span>{" "}
-        </Fragment>
-      ));
+              ))}
+            </span>{" "}
+          </Fragment>
+        );
+      });
+  };
 
   return (
     <section ref={sectionRef} className="relative w-full h-screen min-h-[620px] bg-bg overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[#080808]" />
-        <div ref={bgRef} className="absolute inset-0 overflow-hidden will-change-transform" />
         <div
           className="absolute inset-0"
           style={{
@@ -248,8 +225,8 @@ export default function Story() {
               "0px 0px 45.2px rgba(255,236,185,0.28), 0px 4px 24px rgba(0,0,0,0.5)",
           }}
         >
-          {renderHeadlineWords(bottomHeadlineLead, false, "lead")}
-          {renderHeadlineWords(bottomHeadlineTail, true, "tail")}
+          {renderHeadlineWords(bottomHeadlineLead, false, "lead", 0)}
+          {renderHeadlineWords(bottomHeadlineTail, true, "tail", leadCharCount)}
         </p>
       </div>
 

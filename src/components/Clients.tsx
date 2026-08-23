@@ -12,22 +12,23 @@ interface Logo {
 }
 
 // One master array of all client logos — each logo appears in EXACTLY ONE row.
+// alt="" — decorative in the marquee; the section header carries the meaning.
 const allLogos: Logo[] = [
-  { src: "/images/logo-01.png", alt: "Client 1" },
-  { src: "/images/logo-02.png", alt: "Client 2" },
-  { src: "/images/logo-03.png", alt: "Client 3" },
-  { src: "/images/logo-04.png", alt: "Client 4", blend: true },
-  { src: "/images/logo-05.png", alt: "Client 5" },
-  { src: "/images/logo-06.png", alt: "Client 6" },
-  { src: "/images/logo-07.png", alt: "Client 7" },
-  { src: "/images/logo-08.png", alt: "Client 8" },
-  { src: "/images/logo-09.png", alt: "Client 9" },
-  { src: "/images/logo-10.png", alt: "Client 10" },
-  { src: "/images/logo-11.png", alt: "Client 11" },
-  { src: "/images/logo-12.png", alt: "Client 12" },
-  { src: "/images/logo-13.png", alt: "Client 13" },
-  { src: "/images/logo-14.png", alt: "Client 14" },
-  { src: "/images/logo-15.png", alt: "Client 15" },
+  { src: "/images/logo-01.png", alt: "" },
+  { src: "/images/logo-02.png", alt: "" },
+  { src: "/images/logo-03.png", alt: "" },
+  { src: "/images/logo-04.png", alt: "", blend: true },
+  { src: "/images/logo-05.png", alt: "" },
+  { src: "/images/logo-06.png", alt: "" },
+  { src: "/images/logo-07.png", alt: "" },
+  { src: "/images/logo-08.png", alt: "" },
+  { src: "/images/logo-09.png", alt: "" },
+  { src: "/images/logo-10.png", alt: "" },
+  { src: "/images/logo-11.png", alt: "" },
+  { src: "/images/logo-12.png", alt: "" },
+  { src: "/images/logo-13.png", alt: "" },
+  { src: "/images/logo-14.png", alt: "" },
+  { src: "/images/logo-15.png", alt: "" },
 ];
 
 // Split: first carousel row = first half, second row = the rest. No overlap.
@@ -68,10 +69,6 @@ export default function Clients() {
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const currentSkew = useRef(0);
 
-  const handleAnimationComplete = () => {
-    console.log("Animation completed!");
-  };
-
   useEffect(() => {
     const triggerAnimationsOnScroll = () => {
       if (!titleRef.current || startTitleAnimation) return;
@@ -110,7 +107,8 @@ export default function Clients() {
 
   useEffect(() => {
     let lastY = window.scrollY;
-    let animationFrameId: number;
+    let animationFrameId: number | null = null;
+    let running = false;
     let scrollDir = 1; // 1 = down, -1 = up
 
     const handleScroll = () => {
@@ -125,6 +123,8 @@ export default function Clients() {
     };
 
     const animate = () => {
+      if (!running) return;
+
       rowEls.current.forEach((rowEl, i) => {
         if (!rowEl) return;
 
@@ -172,12 +172,36 @@ export default function Clients() {
       animationFrameId = requestAnimationFrame(animate);
     };
 
+    // Only burn frames while the carousel is on screen
+    const start = () => {
+      if (running) return;
+      running = true;
+      lastY = window.scrollY;
+      animationFrameId = requestAnimationFrame(animate);
+    };
+    const stop = () => {
+      running = false;
+      if (animationFrameId !== null) cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+    };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
-    animate();
+
+    let io: IntersectionObserver | null = null;
+    if (carouselRef.current && "IntersectionObserver" in window) {
+      io = new IntersectionObserver(
+        ([entry]) => (entry.isIntersecting ? start() : stop()),
+        { rootMargin: "120px" }
+      );
+      io.observe(carouselRef.current);
+    } else {
+      start();
+    }
 
     return () => {
+      stop();
+      io?.disconnect();
       window.removeEventListener("scroll", handleScroll);
-      cancelAnimationFrame(animationFrameId);
     };
   }, []);
 
@@ -293,7 +317,6 @@ export default function Clients() {
             delay={40}
             animateBy="words"
             direction="top"
-            onAnimationComplete={handleAnimationComplete}
             className="opacity-65"
           />
           ) : null}

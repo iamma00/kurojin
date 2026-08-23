@@ -10,9 +10,8 @@ export default function GlobalBackground() {
         alt=""
         fill
         className="object-cover"
-        priority
         sizes="100vw"
-        quality={80}
+        quality={75}
       />
       {/* subtle vignette so foreground text pops */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.35)_100%)]" />

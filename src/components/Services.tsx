@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import DomeGallery from "./DomeGallery";
 import ScrollFloat from "./ScrollFloat";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { ArrowUpRight } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -26,6 +27,7 @@ const services = [
 export default function Services() {
   const sectionRef = useRef<HTMLElement>(null);
   const [active, setActive] = useState<number | null>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -55,13 +57,13 @@ export default function Services() {
       id="services"
       className="relative w-full min-h-screen bg-black overflow-hidden flex flex-col"
     >
-      {/* dome backdrop */}
+      {/* dome backdrop — lighter geometry on phones */}
       <div className="absolute inset-0 opacity-70">
         <DomeGallery
           fit={0.8}
-          minRadius={600}
+          minRadius={isMobile ? 420 : 600}
           maxVerticalRotationDeg={0}
-          segments={34}
+          segments={isMobile ? 16 : 34}
           dragDampening={2}
           grayscale
         />

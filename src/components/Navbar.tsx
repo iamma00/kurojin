@@ -38,10 +38,12 @@ export default function Navbar() {
     };
   }, [menuOpen]);
 
-  // close menu on route change
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
+  // close menu on route change (adjust-state-during-render pattern)
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    if (menuOpen) setMenuOpen(false);
+  }
 
   return (
     <>
@@ -219,7 +221,7 @@ export default function Navbar() {
 
             <Link
               href="/contact"
-              className={`relative z-10 bg-white text-black rounded-[55px] font-montserrat font-extrabold italic uppercase overflow-hidden group cursor-pointer shrink-0 inline-flex items-center justify-center transition-all duration-150 hover:bg-gradient-to-r hover:from-[#00ff91] hover:to-[#00fee0] hover:text-black hover:shadow-[0_0_30px_rgba(0,255,145,0.8),0_0_60px_rgba(0,254,224,0.5)] ${
+              className={`relative z-10 bg-white text-black rounded-[55px] font-montserrat font-extrabold italic uppercase overflow-hidden group cursor-pointer shrink-0 inline-flex items-center justify-center transition-all duration-150 hover:bg-gradient-to-r hover:from-[#ff8c2b] hover:to-[#ff3c00] hover:text-black hover:shadow-[0_0_30px_rgba(255,92,26,0.6),0_0_60px_rgba(255,60,0,0.35)] ${
                 scrolled
                   ? "h-[28px] px-9 text-[12px] tracking-[0.5px]"
                   : "h-[32px] px-10 text-[14px] tracking-[0.8px] "

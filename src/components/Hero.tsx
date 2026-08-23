@@ -5,11 +5,13 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Magnetic from "@/components/Magnetic";
+import { INTRO_DONE_EVENT } from "@/components/IntroLoader";
 
 gsap.registerPlugin(ScrollTrigger);
 
+/* warm chromatic split — fire-orange family, matches brand accents */
 const glowShadow =
-  "0px 0px 25px rgba(255,189,136,0.37), -0.8px 0.8px 2.8px rgba(255,0,4,0.5), 0.8px -1.7px 1.7px rgba(0,178,255,0.53)";
+  "0px 0px 25px rgba(255,150,80,0.32), -0.8px 0.8px 2.8px rgba(255,70,10,0.45), 0.8px -1.7px 1.7px rgba(255,190,120,0.4)";
 
 const tickerItems = [
   "Brand Identity", "Web Experiences", "2D Design", "3D Content",
@@ -31,23 +33,38 @@ export default function Hero() {
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const ctx = gsap.context(() => {
-      /* ── entrance: line-mask reveals, staggered ── */
-      gsap.fromTo(
-        "[data-hero-line]",
-        { yPercent: 110 },
-        {
-          yPercent: 0,
-          duration: 1.25,
-          ease: "power4.out",
-          stagger: 0.12,
-          delay: 0.35,
-        }
-      );
-      gsap.fromTo(
-        "[data-hero-fade]",
-        { opacity: 0, y: 24 },
-        { opacity: 1, y: 0, duration: 1, ease: "power3.out", stagger: 0.1, delay: 0.9 }
-      );
+      /* ── entrance: line-mask reveals, staggered ──
+         Gated on the intro video finishing so the reveal isn't
+         wasted behind the fullscreen overlay. */
+      const play = () => {
+        gsap.fromTo(
+          "[data-hero-line]",
+          { yPercent: 110 },
+          {
+            yPercent: 0,
+            duration: 1.25,
+            ease: "power4.out",
+            stagger: 0.12,
+            delay: 0.15,
+          }
+        );
+        gsap.fromTo(
+          "[data-hero-fade]",
+          { opacity: 0, y: 24 },
+          { opacity: 1, y: 0, duration: 1, ease: "power3.out", stagger: 0.1, delay: 0.7 }
+        );
+      };
+
+      const alreadyDone =
+        (window as unknown as Record<string, unknown>).__kurojinIntroDone === true;
+
+      let onDone: (() => void) | null = null;
+      if (alreadyDone) {
+        play();
+      } else {
+        onDone = () => play();
+        window.addEventListener(INTRO_DONE_EVENT, onDone, { once: true });
+      }
 
       if (reduced) return;
 
@@ -66,6 +83,10 @@ export default function Hero() {
       tl.to(subRef.current, { yPercent: -60, opacity: 0, ease: "none" }, 0);
       // dim handoff
       tl.to(overlayRef.current, { opacity: 1, ease: "none" }, 0.2);
+
+      return () => {
+        if (onDone) window.removeEventListener(INTRO_DONE_EVENT, onDone);
+      };
     }, sectionRef);
     return () => ctx.revert();
   }, []);
@@ -93,7 +114,7 @@ export default function Hero() {
           <h1
             data-hero-line
             className="font-garamond font-bold uppercase leading-[0.85] tracking-[-0.03em] text-white text-center"
-            style={{ fontSize: "clamp(72px, 17vw, 250px)", textShadow: glowShadow }}
+            style={{ fontSize: "clamp(56px, 17vw, 250px)", textShadow: glowShadow }}
           >
             Kurojin
           </h1>
@@ -103,8 +124,8 @@ export default function Hero() {
             data-hero-line
             className="font-garamond italic uppercase leading-[0.9] tracking-[-0.02em] text-center text-transparent"
             style={{
-              fontSize: "clamp(40px, 9vw, 130px)",
-              WebkitTextStroke: "1.5px rgba(255,255,255,0.85)",
+              fontSize: "clamp(30px, 9vw, 130px)",
+              WebkitTextStroke: "1.2px rgba(255,255,255,0.85)",
             }}
           >
             Studio<span className="align-super text-[0.3em] tracking-normal">®</span>
@@ -132,7 +153,7 @@ export default function Hero() {
       {/* ══ sub block: tagline + CTAs ══ */}
       <div
         ref={subRef}
-        className="absolute bottom-[16%] md:bottom-[15%] left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-5 px-4 text-center w-full"
+        className="absolute bottom-[max(16%,110px)] md:bottom-[15%] left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-5 px-4 text-center w-full"
       >
         <p
           data-hero-fade
