@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import GlobalBackground from "@/components/GlobalBackground";
 import IntroLoader from "@/components/IntroLoader";
@@ -18,18 +17,9 @@ import CTA from "@/components/CTA";
 import Engage from "@/components/Engage";
 
 export default function Home() {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Loader is an overlay now — page stays mounted underneath,
-    // so scroll animations initialize correctly.
-    const timer = setTimeout(() => setLoading(false), 2400);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <SmoothScrollProvider>
-      <IntroLoader done={!loading} />
+      <IntroLoader />
       <GlobalBackground />
       <main className="relative">
         <Navbar />

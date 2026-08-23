@@ -1,184 +1,112 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
- * Cinematic preloader — CodeGrid "landing page reveal" pattern:
- * circular SVG progress ring fills → overlay wipe-exposes a decorative
- * interface-text backdrop → backdrop wipes away, page is handed over.
- * Renders as a fixed overlay; the page stays mounted underneath.
+ * Cinematic video preloader — plays the Kurojin intro fullscreen as a
+ * fixed overlay, then wipes out to hand over the page.
+ *
+ * Screen fitting:
+ * - Landscape / desktop: wide source, object-cover fills the viewport.
+ * - Portrait phones: compact 720px source (~178KB) + object-contain so
+ *   the full frame is always visible; letterbox bars are invisible on
+ *   the black page background.
+ *
+ * Never traps the user: muted+playsInline autoplay guarantees, autoplay-
+ * block fallback, load-error fallback and a hard time cap.
  */
 
-const RING_R = 54;
-const RING_C = 2 * Math.PI * RING_R;
+type MinimalLenis = { stop?: () => void; start?: () => void };
 
-const backdropRows = [
-  ["SCENE 01", "RENDER: OK", "黒人", "GRID 12-COL", "TYPE: GARAMOND"],
-  ["LAT 19.0760", "LON 72.8777", "EST. 2024", "MOTION: GSAP", "SCROLL: LENIS"],
-];
+function getLenis(): MinimalLenis | undefined {
+  return (window as unknown as Record<string, unknown>).__lenis as
+    | MinimalLenis
+    | undefined;
+}
 
-export default function IntroLoader({ done }: { done: boolean }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const frontRef = useRef<HTMLDivElement>(null);
-  const backdropRef = useRef<HTMLDivElement>(null);
-  const ringRef = useRef<SVGCircleElement>(null);
-  const countRef = useRef<HTMLSpanElement>(null);
-  const wordRef = useRef<HTMLDivElement>(null);
-  const exitedRef = useRef(false);
+const HARD_CAP_MS = 20000;
+const EXIT_MS = 900;
 
-  // Phase A — progress ring + counter
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const counter = { v: 0 };
-      gsap.to(counter, {
-        v: 100,
-        duration: 2.1,
-        ease: "power2.inOut",
-        onUpdate: () => {
-          const v = Math.round(counter.v);
-          if (countRef.current) countRef.current.textContent = `${v}`;
-          if (ringRef.current)
-            ringRef.current.style.strokeDashoffset = String(
-              RING_C * (1 - counter.v / 100)
-            );
-        },
-      });
+export default function IntroLoader() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const finishedRef = useRef(false);
+  const [leaving, setLeaving] = useState(false);
+  const [hidden, setHidden] = useState(false);
 
-      gsap.fromTo(
-        wordRef.current,
-        { opacity: 0, y: 24, filter: "blur(12px)" },
-        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.9, ease: "power3.out" }
-      );
-    }, containerRef);
-    return () => ctx.revert();
+  const lockScroll = useCallback(() => {
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    // SmoothScrollProvider (parent) mounts its effect after this child
+    // effect, so __lenis isn't ready yet on first paint — retry briefly.
+    let tries = 0;
+    const t = window.setInterval(() => {
+      const lenis = getLenis();
+      if (lenis?.stop) {
+        lenis.stop();
+        window.clearInterval(t);
+      } else if (++tries > 20) {
+        window.clearInterval(t);
+      }
+    }, 100);
+    return () => window.clearInterval(t);
   }, []);
 
-  // Phase B — wipe exit once the page says it's ready
+  const unlockScroll = useCallback(() => {
+    document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
+    getLenis()?.start?.();
+  }, []);
+
+  const finish = useCallback(() => {
+    if (finishedRef.current) return;
+    finishedRef.current = true;
+    unlockScroll();
+    setLeaving(true);
+    window.setTimeout(() => setHidden(true), EXIT_MS);
+  }, [unlockScroll]);
+
   useEffect(() => {
-    if (!done || exitedRef.current || !containerRef.current) return;
-    exitedRef.current = true;
+    const cancelPoll = lockScroll();
+    const cap = window.setTimeout(finish, HARD_CAP_MS);
 
-    const tl = gsap.timeline({
-      onComplete: () => {
-        if (containerRef.current) containerRef.current.style.display = "none";
-      },
-    });
+    const v = videoRef.current;
+    const play = v?.play();
+    if (play && typeof play.catch === "function") {
+      play.catch(() => finish());
+    }
 
-    // front panel wipes away to the left like a scan
-    tl.to(frontRef.current, {
-      clipPath: "inset(0 100% 0 0)",
-      duration: 0.85,
-      ease: "power4.inOut",
-    });
+    return () => {
+      cancelPoll();
+      window.clearTimeout(cap);
+    };
+  }, [lockScroll, finish]);
 
-    // decorative backdrop text arrives as the wipe passes
-    tl.fromTo(
-      "[data-backdrop-cell]",
-      { opacity: 0, y: 14 },
-      { opacity: 1, y: 0, duration: 0.5, stagger: 0.03, ease: "power2.out" },
-      0.1
-    );
+  useEffect(() => () => unlockScroll(), [unlockScroll]);
 
-    // hold the backdrop for a beat, then wipe it upward
-    tl.to(backdropRef.current, {
-      clipPath: "inset(0 0 100% 0)",
-      duration: 0.65,
-      ease: "power4.inOut",
-    }, 0.95);
-  }, [done]);
+  if (hidden) return null;
 
   return (
     <div
-      ref={containerRef}
-      className="fixed inset-0 z-[100]"
       aria-hidden="true"
+      className={`fixed inset-0 z-[100] bg-black transition-all duration-[900ms] ease-[cubic-bezier(0.76,0,0.24,1)] ${
+        leaving ? "pointer-events-none scale-[1.05] opacity-0" : "scale-100 opacity-100"
+      }`}
     >
-      {/* ── Backdrop layer: decorative interface text ── */}
-      <div
-        ref={backdropRef}
-        className="absolute inset-0 bg-[#030303] flex flex-col justify-between p-8 md:p-12"
-        style={{ clipPath: "inset(0 0 0% 0)" }}
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        playsInline
+        preload="auto"
+        controls={false}
+        disablePictureInPicture
+        onEnded={finish}
+        onError={finish}
+        className="absolute inset-0 h-full w-full object-cover object-center portrait:object-contain"
       >
-        {backdropRows.map((row, ri) => (
-          <div
-            key={ri}
-            className={`flex justify-between gap-4 font-montserrat text-[10px] md:text-xs tracking-[0.25em] uppercase text-white/25 ${
-              ri === 1 ? "items-end" : ""
-            }`}
-          >
-            {row.map((cell, ci) => (
-              <span key={ci} data-backdrop-cell className="whitespace-nowrap">
-                {cell}
-              </span>
-            ))}
-          </div>
-        ))}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span
-            data-backdrop-cell
-            className="font-garamond italic text-white/8 text-[22vw] leading-none select-none"
-          >
-            黒人
-          </span>
-        </div>
-      </div>
-
-      {/* ── Front panel: the preloader itself ── */}
-      <div
-        ref={frontRef}
-        className="absolute inset-0 bg-[#050505] flex flex-col items-center justify-center"
-        style={{ clipPath: "inset(0 0% 0 0)" }}
-      >
-        <div ref={wordRef} className="relative flex flex-col items-center">
-          <p className="font-montserrat text-white/50 text-[11px] md:text-xs tracking-[0.4em] uppercase mb-8">
-            Kurojin — Studio
-          </p>
-
-          {/* progress ring */}
-          <div className="relative w-[150px] h-[150px] md:w-[180px] md:h-[180px]">
-            <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
-              <defs>
-                <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#ff3c00" />
-                  <stop offset="100%" stopColor="#ff8c2b" />
-                </linearGradient>
-              </defs>
-              <circle
-                cx="60" cy="60" r={RING_R}
-                fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5"
-              />
-              <circle
-                ref={ringRef}
-                cx="60" cy="60" r={RING_R}
-                fill="none" stroke="url(#ringGrad)" strokeWidth="2"
-                strokeLinecap="round"
-                strokeDasharray={RING_C}
-                strokeDashoffset={RING_C}
-                style={{ filter: "drop-shadow(0 0 6px rgba(255,60,0,0.5))" }}
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="font-garamond font-bold italic text-white text-4xl md:text-5xl leading-none">
-                <span ref={countRef}>0</span>
-              </span>
-              <span className="font-montserrat text-white/40 text-[10px] tracking-[0.3em] mt-1">
-                LOADING
-              </span>
-            </div>
-          </div>
-
-          <p className="font-montserrat text-white/30 text-[10px] tracking-[0.35em] uppercase mt-8">
-            Ordinary isn&apos;t in our vocabulary
-          </p>
-        </div>
-
-        {/* corner ticks */}
-        <div className="absolute top-8 left-8 w-16 h-16 border-l border-t border-white/10" />
-        <div className="absolute top-8 right-8 w-16 h-16 border-r border-t border-white/10" />
-        <div className="absolute bottom-8 left-8 w-16 h-16 border-l border-b border-white/10" />
-        <div className="absolute bottom-8 right-8 w-16 h-16 border-r border-b border-white/10" />
-      </div>
+        <source src="/videos/kjintro-mobile.mp4" media="(max-width: 768px)" />
+        <source src="/videos/kjintro.mp4" media="(min-width: 769px)" />
+      </video>
     </div>
   );
 }
