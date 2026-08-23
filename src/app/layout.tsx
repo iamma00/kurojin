@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { EB_Garamond, Geist } from "next/font/google";
+import { EB_Garamond, Geist, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import CustomCursor from "@/components/CustomCursor";
@@ -13,6 +13,12 @@ const ebGaramond = EB_Garamond({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
   style: ["normal", "italic"],
+});
+
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -32,7 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn("font-sans", geist.variable)}>
       <body
-        className={`${ebGaramond.variable} antialiased overflow-x-hidden bg-bg text-white`}
+        className={`${ebGaramond.variable} ${plexMono.variable} antialiased overflow-x-hidden bg-bg text-white`}
       >
         <RouteTransition>
           {children}

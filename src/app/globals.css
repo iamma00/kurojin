@@ -350,3 +350,82 @@ body {
     100% { opacity: 0.4; }
   }
 }
+
+/* ══════════════════════════════════════════════════════════
+   SERVICE DOSSIER THEME — "classified dossier meets modern lab"
+   Black field, paper-redaction motifs, stamp red #ff4a1c used
+   sparingly. Type: EB Garamond display / Helvetica labels /
+   IBM Plex Mono for data & clues.
+   ══════════════════════════════════════════════════════════ */
+@theme inline {
+  --font-clue: var(--font-plex-mono);
+}
+
+/* ── Redacted-word primitive ── */
+.rd-wrap {
+  position: relative;
+  display: inline-block;
+}
+.rd-bar {
+  position: absolute;
+  top: 0.02em;
+  bottom: -0.05em;
+  left: -0.12em;
+  right: -0.16em;
+  background: linear-gradient(175deg, #ded7c6 0%, #c9c0aa 100%);
+  transform-origin: 100% 50%;
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  transition: transform 0.85s cubic-bezier(0.76, 0, 0.24, 1);
+  will-change: transform;
+}
+.is-declassified .rd-bar,
+.rd-hover:hover .rd-bar {
+  transform: scaleX(0);
+}
+
+/* ── Rubber stamp ── */
+.stamp-double {
+  border: 2px solid currentColor;
+  outline: 1px solid currentColor;
+  outline-offset: 3px;
+}
+@keyframes stamp-in {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--rot, -7deg)) scale(2.3);
+    filter: blur(3px);
+  }
+  60% {
+    opacity: 1;
+    transform: rotate(var(--rot, -7deg)) scale(0.93);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0.92;
+    transform: rotate(var(--rot, -7deg)) scale(1);
+  }
+}
+.stamp-in {
+  animation: stamp-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Scroll reveals — IntersectionObserver toggles .is-revealed ── */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.85s ease,
+    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+[data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
