@@ -17,7 +17,7 @@ const allLogos: Logo[] = [
   { src: "/images/logo-01.png", alt: "" },
   { src: "/images/logo-02.png", alt: "" },
   { src: "/images/logo-03.png", alt: "" },
-  { src: "/images/logo-04.png", alt: "", blend: true },
+  { src: "/images/logo-04.png", alt: "" },
   { src: "/images/logo-05.png", alt: "" },
   { src: "/images/logo-06.png", alt: "" },
   { src: "/images/logo-07.png", alt: "" },

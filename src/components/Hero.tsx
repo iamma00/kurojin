@@ -6,6 +6,8 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Magnetic from "@/components/Magnetic";
 import { INTRO_DONE_EVENT } from "@/components/IntroLoader";
+import Image from "next/image";
+
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -98,6 +100,7 @@ export default function Hero() {
     >
       {/* ══ corner meta — mono micro-labels ══ */}
       <div data-hero-fade className="absolute top-[88px] left-4 md:left-[4%] z-30 font-montserrat text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-white/50">
+        
         Est. 2024 — 黒人
       </div>
       <div data-hero-fade className="absolute top-[88px] right-4 md:right-[4%] z-30 font-montserrat text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-white/50 text-right">
@@ -107,48 +110,27 @@ export default function Hero() {
 
       {/* ══ giant type block ══ */}
       <div
-        ref={typeRef}
-        className="absolute inset-0 z-20 flex flex-col items-center justify-center px-4"
-      >
-        <div className="overflow-hidden">
-          <h1
-            data-hero-line
-            className="font-garamond font-bold uppercase leading-[0.85] tracking-[-0.03em] text-white text-center"
-            style={{ fontSize: "clamp(56px, 17vw, 250px)", textShadow: glowShadow }}
-          >
-            Kurojin
-          </h1>
-        </div>
-        <div className="overflow-hidden">
-          <div
-            data-hero-line
-            className="font-garamond italic uppercase leading-[0.9] tracking-[-0.02em] text-center text-transparent"
-            style={{
-              fontSize: "clamp(30px, 9vw, 130px)",
-              WebkitTextStroke: "1.2px rgba(255,255,255,0.85)",
-            }}
-          >
-            Studio<span className="align-super text-[0.3em] tracking-normal">®</span>
-          </div>
-        </div>
+  ref={typeRef}
+  className="absolute inset-0 z-20 flex items-center justify-center px-4"
+>
+  {/* PNG — BACK LAYER */}
+  <Image
+    src="/images/kurobg.png"
+    alt="Kurojin Background"
+    width={400}
+    height={400}
+    className="absolute z-0 object-contain"
+  />
 
-        {/* rotating badge — awwwards classic */}
-        <div data-hero-fade className="relative mt-6 md:mt-8 w-[92px] h-[92px] md:w-[116px] md:h-[116px]">
-          <svg viewBox="0 0 100 100" className="w-full h-full animate-[spin_14s_linear_infinite]">
-            <defs>
-              <path id="hero-badge-circle" d="M 50,50 m -37,0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" />
-            </defs>
-            <text className="fill-white/70 font-montserrat uppercase" style={{ fontSize: "8.2px", letterSpacing: "0.22em" }}>
-              <textPath href="#hero-badge-circle">
-                ordinary isn&apos;t in our vocabulary •
-              </textPath>
-            </text>
-          </svg>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-white/80 text-lg md:text-xl">✦</span>
-          </div>
-        </div>
-      </div>
+  {/* GIF — FRONT LAYER */}
+  <Image
+    src="/images/kro3.gif"
+    alt="Kurojin Animation"
+    width={1000}
+    height={1000}
+    className="absolute z-10 object-contain"
+  />
+</div>
 
       {/* ══ sub block: tagline + CTAs ══ */}
       <div
