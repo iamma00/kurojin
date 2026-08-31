@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Magnetic from "@/components/Magnetic";
 import { INTRO_DONE_EVENT } from "@/components/IntroLoader";
 import Image from "next/image";
+import HalftoneReveal from "@/components/HalftoneReveal";
 
 
 gsap.registerPlugin(ScrollTrigger);
@@ -98,6 +99,7 @@ export default function Hero() {
       ref={sectionRef}
       className="relative w-full h-screen min-h-[640px] overflow-hidden"
     >
+<HalftoneReveal/>
       {/* ══ corner meta — mono micro-labels ══ */}
       <div data-hero-fade className="absolute top-[88px] left-4 md:left-[4%] z-30 font-montserrat text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-white/50">
         
