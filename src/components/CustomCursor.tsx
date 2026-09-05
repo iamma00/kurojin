@@ -26,12 +26,21 @@ export default function CustomCursor() {
     document.body.classList.add("custom-cursor-on");
 
     const moveCursor = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const disabled = !!target.closest('[data-custom-cursor="off"]');
+
+      if (disabled) {
+        setIsVisible(false);
+        setLabel(null);
+        setIsHovering(false);
+        return;
+      }
+
       dotX.set(e.clientX);
       dotY.set(e.clientY);
       ringX.set(e.clientX);
       ringY.set(e.clientY);
 
-      const target = e.target as HTMLElement;
       const labeled = target.closest("[data-cursor]") as HTMLElement | null;
       if (labeled) {
         setLabel(labeled.dataset.cursor || "VIEW");

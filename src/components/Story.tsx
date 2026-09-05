@@ -161,7 +161,7 @@ export default function Story() {
   };
 
   return (
-    <section ref={sectionRef} className="relative w-full h-screen min-h-[620px] bg-bg overflow-hidden">
+    <section ref={sectionRef} className="relative w-full min-h-[720px] h-[100svh] md:h-screen md:min-h-[620px] bg-bg overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[#080808]" />
@@ -175,7 +175,7 @@ export default function Story() {
       </div>
 
       {/* Content */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10 px-6 md:px-[8%] gap-y-8 md:gap-y-12 lg:gap-y-15">
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10 px-5 md:px-[8%] gap-y-7 md:gap-y-12 lg:gap-y-15">
         {/* Mono label */}
         <p className="font-montserrat text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-white/50">
           The story / 物語

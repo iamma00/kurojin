@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 export default function Budget() {
   return (
-    <section className="relative w-full h-screen min-h-[620px] bg-bg overflow-hidden">
+    <section className="relative w-full min-h-[700px] h-[100svh] md:h-screen md:min-h-[620px] bg-bg overflow-hidden">
       {/* Ember glow — single warm radial, matches brand fire accents */}
       <div className="absolute top-1/2 left-[8%] right-[8%] -translate-y-1/2 h-[74vh] max-h-[802px] rounded-lg overflow-hidden">
         <div
@@ -18,13 +18,13 @@ export default function Budget() {
       </div>
 
       {/* Center orb */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[37.5vw] max-w-[720px] aspect-square rounded-full mix-blend-screen overflow-hidden">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[62vw] max-w-[720px] aspect-square rounded-full mix-blend-screen overflow-hidden md:w-[37.5vw]">
         <div className="w-full h-full bg-gradient-to-br from-white/5 via-white/2 to-transparent rounded-full" />
       </div>
 
       {/* Text content */}
       <motion.div
-        className="absolute top-[40%] left-1/2 -translate-x-1/2 text-center max-w-[768px] w-[80%] z-10"
+        className="absolute top-[34%] left-1/2 -translate-x-1/2 text-center max-w-[768px] w-[90%] z-10 md:top-[40%] md:w-[80%]"
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.5 }}
@@ -42,7 +42,7 @@ export default function Budget() {
 
       {/* CTA Button */}
       <motion.div
-        className="absolute top-[72%] left-1/2 -translate-x-1/2 z-10"
+        className="absolute top-[70%] left-1/2 -translate-x-1/2 z-10 md:top-[72%]"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.5 }}

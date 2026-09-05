@@ -52,10 +52,10 @@ export default function Work() {
     <section
       ref={sectionRef}
       id="work"
-      className="relative w-full h-screen min-h-[620px] bg-bg overflow-hidden"
+      className="relative w-full min-h-[680px] h-[100svh] md:h-screen md:min-h-[620px] bg-bg overflow-hidden"
     >
       {/* Background image container */}
-      <div className="absolute top-[13%] left-[8%] right-[8%] h-[74vh] max-h-[802px] shadow-[0px_0px_20px_0px_rgba(255,255,255,0.11)] overflow-hidden rounded-lg">
+      <div className="absolute top-[10%] left-[4%] right-[4%] h-[62vh] max-h-[802px] shadow-[0px_0px_20px_0px_rgba(255,255,255,0.11)] overflow-hidden rounded-lg md:top-[13%] md:left-[8%] md:right-[8%] md:h-[74vh]">
         <div data-work-bg className="absolute inset-0 will-change-transform">
           <Image
             src="/images/hero-bg.jpg"
@@ -70,7 +70,7 @@ export default function Work() {
       </div>
 
       {/* Center text */}
-      <div className="absolute top-[41%] left-1/2 -translate-x-1/2 text-center max-w-[768px] w-[80%] z-10">
+      <div className="absolute top-[36%] left-1/2 -translate-x-1/2 text-center max-w-[768px] w-[92%] z-10 md:top-[41%] md:w-[80%]">
         <p
           data-work-reveal
           className="font-garamond text-[36px] lg:text-[42px] xl:text-[48px] text-near-white uppercase"
@@ -85,7 +85,7 @@ export default function Work() {
       </div>
 
       {/* CTA — quiet editorial link (solid pill reserved for final CTA) */}
-      <div data-work-reveal className="absolute top-[56%] left-1/2 -translate-x-1/2 z-10">
+      <div data-work-reveal className="absolute top-[57%] left-1/2 -translate-x-1/2 z-10 md:top-[56%]">
         <Link
           href="/work"
           data-cursor="VIEW"

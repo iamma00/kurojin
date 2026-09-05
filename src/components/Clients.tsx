@@ -211,7 +211,7 @@ export default function Clients() {
     return (
       <div
         key={rowIndex}
-        className={`border-t border-white/15 overflow-hidden ${rowIndex === 1 ? "border-b border-white/15" : ""}`}
+        className={`flex h-full min-h-[265px] flex-none snap-start items-center border-t border-white/15 overflow-hidden ${rowIndex === 1 ? "border-b border-white/15" : ""}`}
         onMouseEnter={() => setHoveredRow(rowIndex)}
         onMouseLeave={() => {
           setHoveredRow(null);
@@ -227,7 +227,7 @@ export default function Clients() {
           {items.map((logo, i) => (
             <div
               key={i}
-              className={`group relative w-[136px] h-[64px] sm:w-[168px] sm:h-[77px] md:w-[208px] md:h-[93px] lg:w-[256px] lg:h-[112px] xl:w-[304px] xl:h-[128px] shrink-0 border-r border-white/15 px-5 sm:px-6 md:px-8 lg:px-10 py-3 md:py-4 transition-opacity duration-300 cursor-pointer ${
+              className={`group relative w-[168px] h-[82px] sm:w-[208px] sm:h-[96px] md:w-[252px] md:h-[112px] lg:w-[304px] lg:h-[132px] xl:w-[360px] xl:h-[152px] shrink-0 border-r border-white/15 px-6 sm:px-7 md:px-9 lg:px-11 py-4 md:py-5 transition-opacity duration-300 cursor-pointer ${
                 logo.blend ? "mix-blend-plus-lighter" : ""
               } ${
                 hoveredRow === rowIndex && hoveredLogo !== `${rowIndex}-${i}`
@@ -253,12 +253,12 @@ export default function Clients() {
   };
 
   return (
-    <section className="relative w-full min-h-screen bg-transparent backdrop-blur-md overflow-hidden flex flex-col">
+    <section className="relative w-full min-h-[900px] md:min-h-screen bg-transparent backdrop-blur-md overflow-hidden flex flex-col">
       {/* Background */}
       <div className="absolute inset-0" />
 
       {/* Header block — generous top spacing so navbar clears */}
-      <div className="relative z-10 pt-[110px] md:pt-[140px] px-4 md:px-[8%]">
+      <div className="relative z-10 pt-[110px] md:pt-[140px] px-5 md:px-[8%]">
         <p className="font-montserrat text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-white/50 mb-5">
           Trusted by / 15+ brands
         </p>
@@ -336,12 +336,12 @@ export default function Clients() {
       {/* Carousel — full-bleed across the whole section, no card, no margin */}
       <div
         ref={carouselRef}
-        className="relative z-10 flex-1 min-h-[300px] mt-10 md:mt-14 overflow-hidden will-change-transform"
+          className="relative z-10 mt-12 md:mt-16 h-[62vh] min-h-[400px] max-h-[680px] snap-y snap-mandatory overflow-y-auto overscroll-contain will-change-transform"
       >
-        <div className="absolute inset-0" style={{ perspective: "900px" }}>
+          <div className="relative min-h-full" style={{ perspective: "900px" }}>
           {/* Rows */}
           <div
-            className="flex flex-col h-full justify-center"
+              className="flex min-h-full flex-col justify-center"
             style={{ transform: "rotateX(20deg)", transformOrigin: "10% 20%" }}
           >
             {renderedRows.map((row, i) => renderRow(row, i))}

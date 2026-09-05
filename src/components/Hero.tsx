@@ -97,9 +97,10 @@ export default function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full h-screen min-h-[640px] overflow-hidden"
+      data-custom-cursor="off"
+      className="relative w-full min-h-[640px] h-[100svh] overflow-hidden cursor-none"
     >
-<HalftoneReveal/>
+      <HalftoneReveal className="z-10" />
       {/* ══ corner meta — mono micro-labels ══ */}
       <div data-hero-fade className="absolute top-[88px] left-4 md:left-[4%] z-30 font-montserrat text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-white/50">
         
@@ -113,7 +114,7 @@ export default function Hero() {
       {/* ══ giant type block ══ */}
       <div
   ref={typeRef}
-  className="absolute inset-0 z-20 flex items-center justify-center px-4"
+  className="absolute inset-0 z-20 flex items-center justify-center px-4 pb-20 md:pb-0"
 >
   {/* PNG — BACK LAYER */}
   <Image
@@ -121,7 +122,8 @@ export default function Hero() {
     alt="Kurojin Background"
     width={400}
     height={400}
-    className="absolute z-0 object-contain"
+    sizes="40vw"
+    className="absolute z-0 h-auto w-[58vw] max-w-[400px] object-contain md:w-[400px]"
   />
 
   {/* GIF — FRONT LAYER */}
@@ -130,14 +132,15 @@ export default function Hero() {
     alt="Kurojin Animation"
     width={1000}
     height={1000}
-    className="absolute z-10 object-contain"
+    sizes="72vw"
+    className="absolute z-10 h-auto w-[92vw] max-w-[1000px] object-contain md:w-[1000px]"
   />
 </div>
 
       {/* ══ sub block: tagline + CTAs ══ */}
       <div
         ref={subRef}
-        className="absolute bottom-[max(16%,110px)] md:bottom-[15%] left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-5 px-4 text-center w-full"
+        className="absolute bottom-[max(12%,96px)] md:bottom-[15%] left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-5 px-4 text-center w-full"
       >
         <p
           data-hero-fade
@@ -147,7 +150,7 @@ export default function Hero() {
           A full-spectrum creative partner for modern brands —
           identity, web, 2D, 3D &amp; motion under one roof.
         </p>
-        <div data-hero-fade className="flex items-center gap-4">
+        <div data-hero-fade className="flex w-full max-w-[360px] flex-col items-stretch gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:gap-4">
           <Magnetic strength={0.3}>
             <Link
               href="/work"
