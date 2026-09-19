@@ -15,8 +15,11 @@ import Watermark from "@/components/Watermark";
 import TextVideo from "@/components/TextVideo";
 import CTA from "@/components/CTA";
 import Engage from "@/components/Engage";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 export default function Home() {
+  const isMobile = useIsMobile();
+
   return (
     <SmoothScrollProvider>
       <IntroLoader />
@@ -28,8 +31,8 @@ export default function Home() {
           <Hero />
           <Clients />
           <Story />
-          <Services />
-          <TextVideo />
+          {!isMobile && <Services />}
+          {!isMobile && <TextVideo />}
           <CTA />
           <Engage />
           <Work />

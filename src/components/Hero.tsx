@@ -99,7 +99,7 @@ export default function Hero() {
       ref={sectionRef}
       className="relative w-full min-h-[640px] h-[100svh] overflow-hidden cursor-none"
     >
-      <HalftoneReveal className="z-10" />
+      <HalftoneReveal className="z-10 hidden md:block" />
       {/* ══ corner meta — mono micro-labels ══ */}
       <div data-hero-fade className="absolute top-[88px] left-4 md:left-[4%] z-30 font-montserrat text-[10px] md:text-[11px] uppercase tracking-[0.35em] text-white/50">
         
@@ -188,7 +188,7 @@ export default function Hero() {
       {/* dim overlay — scroll handoff */}
       <div
         ref={overlayRef}
-        className="absolute inset-0 z-40 bg-black pointer-events-none opacity-0"
+        className="absolute inset-0 z-40 hidden bg-black pointer-events-none opacity-0 md:block"
       />
     </section>
   );

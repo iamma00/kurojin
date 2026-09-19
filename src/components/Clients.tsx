@@ -132,7 +132,7 @@ export default function Clients() {
         if (!center) return;
         const distance = Math.hypot(x - center.x, y - center.y);
         const proximity = Math.max(0, 1 - distance / maxDistance);
-        logo.style.transform = `translateZ(0) scale(${1 + proximity * 0.28})`;
+        logo.style.transform = `translateZ(0) scale(${1 + proximity * 0.5})`;
       });
     };
 
@@ -178,14 +178,16 @@ export default function Clients() {
     return (
       <div
         key={logo.src}
-        ref={(element) => {
-          logoEls.current[index] = element;
-        }}
-        className={`group relative min-h-[120px] min-w-0 border-r border-b border-white/15 px-5 py-6 transition-[transform,opacity] duration-150 will-change-transform sm:min-h-[150px] sm:px-7 sm:py-8 md:min-h-[190px] md:px-9 md:py-10 ${
+        className={`group relative min-h-[120px] min-w-0 border-r border-b border-white/15 px-5 py-6 sm:min-h-[150px] sm:px-7 sm:py-8 md:min-h-[190px] md:px-9 md:py-10 ${
           logo.blend ? "mix-blend-plus-lighter" : ""
         }`}
       >
-        <div className="relative h-full w-full">
+        <div
+          ref={(element) => {
+            logoEls.current[index] = element;
+          }}
+          className="relative h-full w-full origin-center transform-gpu transition-transform duration-150 will-change-transform"
+        >
           <Image
             src={logo.src}
             alt={logo.alt}

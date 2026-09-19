@@ -103,6 +103,8 @@ const HalftoneReveal = ({
       if (!previousPosition || previousPosition === "static") parent.style.position = "relative";
 
       const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+      const isMobileViewport = window.matchMedia("(max-width: 767px)").matches;
+      if (isMobileViewport) return;
 
       const renderer = new THREE.WebGLRenderer({
         antialias: !isTouch,
