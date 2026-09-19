@@ -21,6 +21,7 @@ export default function Story() {
   const bottomHeadlineRef = useRef<HTMLParagraphElement | null>(null);
   const bottomCharRefs = useRef<HTMLSpanElement[]>([]);
   const lineRef = useRef<HTMLDivElement | null>(null);
+  const visualRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -42,6 +43,7 @@ export default function Story() {
       gsap.set(bottomHeadlineRef.current, { opacity: 1 });
       gsap.set(bottomCharRefs.current, { opacity: 0, y: -65, filter: "blur(8px)" });
       gsap.set(lineRef.current, { opacity: 0.15 });
+      gsap.set(visualRef.current, { opacity: 0, y: 32 });
 
       const computeEnd = () => {
         const el = sectionRef.current;
@@ -112,6 +114,15 @@ export default function Story() {
           1.2
         );
       }
+
+      if (visualRef.current) {
+        timeline.fromTo(
+          visualRef.current,
+          { opacity: 0, y: 32 },
+          { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" },
+          0.45
+        );
+      }
     }, sectionRef);
 
     return () => ctx.revert();
@@ -161,7 +172,7 @@ export default function Story() {
   };
 
   return (
-    <section ref={sectionRef} className="relative w-full min-h-[720px] h-[100svh] md:h-screen md:min-h-[620px] bg-bg overflow-hidden">
+    <section ref={sectionRef} className="relative w-full min-h-[780px] h-[100svh] md:h-screen md:min-h-[620px] bg-bg overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[#080808]" />
@@ -174,8 +185,31 @@ export default function Story() {
         />
       </div>
 
+      {/* A measured visual register: editorial data, not a decorative card. */}
+      <div
+        ref={visualRef}
+        aria-hidden="true"
+        className="story-register pointer-events-none absolute right-5 top-[50%] z-[1] block h-[22%] w-[calc(100%-2.5rem)] max-w-none opacity-40 md:right-[6%] md:top-[18%] md:h-[58%] md:w-[24%] md:max-w-[330px] md:opacity-100"
+      >
+        <div className="story-register__grid absolute inset-0" />
+        <div className="story-register__axis absolute bottom-0 left-1/2 top-0" />
+        <div className="story-register__scan absolute left-0 right-0 top-[27%]" />
+        <div className="absolute left-0 top-0 font-montserrat text-[9px] uppercase tracking-[0.32em] text-white/40">
+          Register / 01
+        </div>
+        <div className="absolute bottom-0 right-0 font-montserrat text-[9px] uppercase tracking-[0.32em] text-white/40">
+          KJ—STORY
+        </div>
+        <div className="absolute left-[9%] top-[13%] font-garamond text-[clamp(64px,10vw,148px)] leading-none text-white/[0.08]">
+          01
+        </div>
+        <div className="absolute bottom-[17%] right-[7%] max-w-[110px] text-right font-montserrat text-[9px] uppercase leading-[1.7] tracking-[0.18em] text-white/45">
+          Form follows<br />meaning
+        </div>
+      </div>
+
       {/* Content */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10 px-5 md:px-[8%] gap-y-7 md:gap-y-12 lg:gap-y-15">
+      <div className="relative z-10 flex min-h-full flex-col items-center justify-start px-5 pt-[150px] text-center md:absolute md:inset-0 md:justify-center md:px-[8%] md:pt-0 lg:gap-y-15">
         {/* Mono label */}
         <p className="font-montserrat text-[10px] md:text-[11px] uppercase tracking-[0.4em] text-white/50">
           The story / 物語
@@ -196,7 +230,7 @@ export default function Story() {
         {/* Body Text */}
         <p
           ref={bodyTextRef}
-          className="text-white text-[14px] sm:text-[15px] md:text-[16px] font-light leading-[1.45] max-w-[680px] blur-[0.5px] px-2"
+          className="text-white text-[14px] sm:text-[15px] md:text-[16px] font-light leading-[1.45] max-w-[680px] px-2"
           style={{
             textShadow: "0px 0px 33px rgba(255,255,255,0.3)",
           }}
@@ -217,7 +251,7 @@ export default function Story() {
         {/* Bottom Headline — anchored low, wraps gracefully on mobile */}
         <p
           ref={bottomHeadlineRef}
-          className="absolute bottom-[10%] md:bottom-[12%] left-1/2 -translate-x-1/2 w-[92%] md:w-[86%] text-white uppercase text-center leading-[0.95]"
+          className="mt-auto mb-[12%] w-[92%] text-white uppercase text-center leading-[0.95] md:absolute md:bottom-[12%] md:left-1/2 md:mb-0 md:w-[86%] md:-translate-x-1/2"
           style={{
             fontSize: "clamp(34px, 7.5vw, 92px)",
             letterSpacing: "-0.02em",

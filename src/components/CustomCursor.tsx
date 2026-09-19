@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 /**
@@ -18,6 +18,9 @@ export default function CustomCursor() {
   const dotY = useMotionValue(-100);
   const ringX = useSpring(-100, { stiffness: 350, damping: 28 });
   const ringY = useSpring(-100, { stiffness: 350, damping: 28 });
+  const frameRef = useRef<number | null>(null);
+  const pendingPositionRef = useRef({ x: -100, y: -100 });
+  const lastModeRef = useRef({ label: null as string | null, hovering: false, disabled: false });
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -25,30 +28,52 @@ export default function CustomCursor() {
     setEnabled(true);
     document.body.classList.add("custom-cursor-on");
 
-    const moveCursor = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const disabled = !!target.closest('[data-custom-cursor="off"]');
+    const updateMode = (target: Element | null) => {
+      const disabled = !!target?.closest('[data-custom-cursor="off"]');
 
       if (disabled) {
-        setIsVisible(false);
-        setLabel(null);
-        setIsHovering(false);
+        if (!lastModeRef.current.disabled) {
+          lastModeRef.current = { label: null, hovering: false, disabled: true };
+          setIsVisible(false);
+          setLabel(null);
+          setIsHovering(false);
+        }
         return;
       }
 
-      dotX.set(e.clientX);
-      dotY.set(e.clientY);
-      ringX.set(e.clientX);
-      ringY.set(e.clientY);
+      const labeled = target?.closest("[data-cursor]") as HTMLElement | null;
+      const nextLabel = labeled?.dataset.cursor || null;
+      const nextHovering = !nextLabel && !!target?.closest("a, button, [data-cursor-hover]");
 
-      const labeled = target.closest("[data-cursor]") as HTMLElement | null;
-      if (labeled) {
-        setLabel(labeled.dataset.cursor || "VIEW");
-        setIsHovering(false);
-        return;
+      if (
+        lastModeRef.current.disabled ||
+        lastModeRef.current.label !== nextLabel ||
+        lastModeRef.current.hovering !== nextHovering
+      ) {
+        lastModeRef.current = { label: nextLabel, hovering: nextHovering, disabled: false };
+        setLabel(nextLabel);
+        setIsHovering(nextHovering);
       }
-      setLabel(null);
-      setIsHovering(!!target.closest("a, button, [data-cursor-hover]"));
+    };
+
+    const applyPointerFrame = () => {
+      frameRef.current = null;
+      const { x, y } = pendingPositionRef.current;
+      dotX.set(x);
+      dotY.set(y);
+      ringX.set(x);
+      ringY.set(y);
+    };
+
+    const moveCursor = (e: MouseEvent) => {
+      pendingPositionRef.current.x = e.clientX;
+      pendingPositionRef.current.y = e.clientY;
+
+      if (frameRef.current === null) {
+        frameRef.current = requestAnimationFrame(applyPointerFrame);
+      }
+
+      updateMode(e.target as Element | null);
     };
 
     const handleEnter = () => setIsVisible(true);
@@ -58,9 +83,11 @@ export default function CustomCursor() {
     document.addEventListener("mouseenter", handleEnter);
     document.addEventListener("mouseleave", handleLeave);
     return () => {
+      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
       window.removeEventListener("mousemove", moveCursor);
       document.removeEventListener("mouseenter", handleEnter);
       document.removeEventListener("mouseleave", handleLeave);
+      document.body.classList.remove("custom-cursor-on");
     };
   }, [dotX, dotY, ringX, ringY]);
 

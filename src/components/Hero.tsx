@@ -97,7 +97,6 @@ export default function Hero() {
   return (
     <section
       ref={sectionRef}
-      data-custom-cursor="off"
       className="relative w-full min-h-[640px] h-[100svh] overflow-hidden cursor-none"
     >
       <HalftoneReveal className="z-10" />

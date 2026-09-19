@@ -221,6 +221,33 @@ body {
   object-fit: cover;
 }
 
+/* Story's register visual: a quiet instrument panel built from hairlines. */
+.story-register {
+  border-left: 1px solid rgba(255, 250, 238, 0.18);
+  border-right: 1px solid rgba(255, 250, 238, 0.08);
+  background: linear-gradient(90deg, rgba(255, 250, 238, 0.025), transparent 45%, rgba(255, 92, 26, 0.035));
+}
+.story-register__grid {
+  background-image: linear-gradient(rgba(255, 250, 238, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 250, 238, 0.1) 1px, transparent 1px);
+  background-size: 25% 20%;
+  mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+}
+.story-register__axis {
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, rgba(255, 250, 238, 0.55) 18%, rgba(255, 92, 26, 0.8) 50%, rgba(255, 250, 238, 0.25) 82%, transparent);
+}
+.story-register__scan {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 92, 26, 0.9) 48%, transparent);
+  box-shadow: 0 0 18px rgba(255, 92, 26, 0.55);
+  animation: storyScan 5s ease-in-out infinite;
+}
+
+@keyframes storyScan {
+  0%, 100% { transform: translateY(-12px); opacity: 0.35; }
+  50% { transform: translateY(180px); opacity: 1; }
+}
+
 /* ── CTA Button (shared) ── */
 .cta-button {
   position: relative;
@@ -274,6 +301,7 @@ body {
   body.custom-cursor-on [data-cursor-hover] {
     cursor: none;
   }
+  .story-register__scan { animation: none; }
 }
 
 /* ── Fire wordmark — the one flame in a black & white footer ── */

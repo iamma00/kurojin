@@ -31,13 +31,6 @@ const allLogos: Logo[] = [
   { src: "/images/logo-15.png", alt: "" },
 ];
 
-// Split: first carousel row = first half, second row = the rest. No overlap.
-const splitAt = Math.ceil(allLogos.length / 2);
-const row1: Logo[] = allLogos.slice(0, splitAt); // logos 01–08
-const row2: Logo[] = allLogos.slice(splitAt); // logos 09–15
-
-// Only 2 rows rendered; each row tripled inside renderRow for seamless wrap.
-const renderedRows = [row1, row2];
 const titleTypingSpeed = 19;
 const titleSegments = [
   { text: "Because ", initialDelay: 0 },
@@ -53,21 +46,18 @@ const titleAnimationDuration =
   ) + 60;
 
 export default function Clients() {
-  const rowEls = useRef<(HTMLDivElement | null)[]>([null, null]);
+  const logoEls = useRef<(HTMLDivElement | null)[]>([]);
   const titleRef = useRef<HTMLParagraphElement | null>(null);
   const descriptionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
 
-  const [hoveredRow, setHoveredRow] = useState<number | null>(null);
-  const [hoveredLogo, setHoveredLogo] = useState<string | null>(null);
   const [startTitleAnimation, setStartTitleAnimation] = useState(false);
   const [showDescription, setShowDescription] = useState(false);
-  const positions = useRef<number[]>([]);
-  const initialized = useRef(false);
-  const scrollVelocity = useRef(0);
-  const carouselRef = useRef<HTMLDivElement | null>(null);
-  const currentSkew = useRef(0);
+  const gridRef = useRef<HTMLDivElement | null>(null);
+  const pointerRef = useRef({ x: 0, y: 0, active: false });
+  const logoCentersRef = useRef<{ x: number; y: number }[]>([]);
+  const pointerFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
     const triggerAnimationsOnScroll = () => {
@@ -106,147 +96,103 @@ export default function Clients() {
   }, []);
 
   useEffect(() => {
-    let lastY = window.scrollY;
-    let animationFrameId: number | null = null;
-    let running = false;
-    let scrollDir = 1; // 1 = down, -1 = up
+    const grid = gridRef.current;
+    if (!grid || window.matchMedia("(pointer: coarse)").matches) return;
 
-    const handleScroll = () => {
-      const currentY = window.scrollY;
-      scrollVelocity.current = currentY - lastY;
-      if (currentY > lastY) {
-        scrollDir = 1; // scrolling down
-      } else if (currentY < lastY) {
-        scrollDir = -1; // scrolling up
-      }
-      lastY = currentY;
-    };
+    let maxDistance = 180;
 
-    const animate = () => {
-      if (!running) return;
-
-      rowEls.current.forEach((rowEl, i) => {
-        if (!rowEl) return;
-
-        const cycleWidth = rowEl.scrollWidth / 3;
-
-        // Initialize position to -cycleWidth (start on the middle copy)
-        if (!initialized.current || positions.current.length <= i) {
-          if (positions.current.length <= i)
-            positions.current.push(-cycleWidth);
-          else positions.current[i] = -cycleWidth;
-        }
-
-        // alternate row direction, but reverse on scroll up
-        const baseDirection = i % 2 === 0 ? 1 : -1;
-        const effectiveDirection = baseDirection * scrollDir;
-        const speed = 1.2;
-        positions.current[i] += speed * effectiveDirection;
-
-        // Seamless wrap
-        if (positions.current[i] > 0) {
-          positions.current[i] -= cycleWidth;
-        } else if (positions.current[i] < -2 * cycleWidth) {
-          positions.current[i] += cycleWidth;
-        }
-
-        rowEl.style.transform = `translateX(${positions.current[i]}px)`;
+    const refreshGeometry = () => {
+      const gridRect = grid.getBoundingClientRect();
+      maxDistance = Math.max(180, Math.min(gridRect.width, gridRect.height) * 0.3);
+      logoCentersRef.current = logoEls.current.map((logo) => {
+        if (!logo) return { x: 0, y: 0 };
+        const rect = logo.getBoundingClientRect();
+        return {
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2,
+        };
       });
+    };
 
-      // CodeGrid-style velocity skew: fast scroll skews the whole carousel,
-      // then it eases back to 0. Clamped so it never looks broken.
-      if (carouselRef.current) {
-        const targetSkew = Math.max(
-          -8,
-          Math.min(8, scrollVelocity.current * 0.22)
-        );
-        currentSkew.current += (targetSkew - currentSkew.current) * 0.08;
-        if (Math.abs(currentSkew.current) > 0.01) {
-          carouselRef.current.style.transform = `skewX(${currentSkew.current}deg)`;
-        } else {
-          carouselRef.current.style.transform = "skewX(0deg)";
-        }
+    const resetScales = () => {
+      pointerRef.current.active = false;
+      logoEls.current.forEach((logo) => {
+        if (logo) logo.style.transform = "scale(1)";
+      });
+    };
+
+    const updateScales = () => {
+      pointerFrameRef.current = null;
+      if (!pointerRef.current.active) return;
+
+      const { x, y } = pointerRef.current;
+      logoEls.current.forEach((logo, index) => {
+        if (!logo) return;
+        const center = logoCentersRef.current[index];
+        if (!center) return;
+        const distance = Math.hypot(x - center.x, y - center.y);
+        const proximity = Math.max(0, 1 - distance / maxDistance);
+        logo.style.transform = `translateZ(0) scale(${1 + proximity * 0.28})`;
+      });
+    };
+
+    const scheduleScaleUpdate = () => {
+      if (pointerFrameRef.current === null) {
+        pointerFrameRef.current = requestAnimationFrame(updateScales);
       }
-
-      initialized.current = true;
-      animationFrameId = requestAnimationFrame(animate);
     };
 
-    // Only burn frames while the carousel is on screen
-    const start = () => {
-      if (running) return;
-      running = true;
-      lastY = window.scrollY;
-      animationFrameId = requestAnimationFrame(animate);
-    };
-    const stop = () => {
-      running = false;
-      if (animationFrameId !== null) cancelAnimationFrame(animationFrameId);
-      animationFrameId = null;
+    const onPointerMove = (event: PointerEvent) => {
+      pointerRef.current.x = event.clientX;
+      pointerRef.current.y = event.clientY;
+      pointerRef.current.active = true;
+      scheduleScaleUpdate();
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    const onLayoutChange = () => {
+      refreshGeometry();
+      scheduleScaleUpdate();
+    };
 
-    let io: IntersectionObserver | null = null;
-    if (carouselRef.current && "IntersectionObserver" in window) {
-      io = new IntersectionObserver(
-        ([entry]) => (entry.isIntersecting ? start() : stop()),
-        { rootMargin: "120px" }
-      );
-      io.observe(carouselRef.current);
-    } else {
-      start();
-    }
+    refreshGeometry();
+    grid.addEventListener("pointermove", onPointerMove, { passive: true });
+    grid.addEventListener("pointerleave", resetScales, { passive: true });
+    window.addEventListener("resize", onLayoutChange, { passive: true });
+    window.addEventListener("scroll", onLayoutChange, { passive: true });
+    const resizeObserver = new ResizeObserver(onLayoutChange);
+    resizeObserver.observe(grid);
 
     return () => {
-      stop();
-      io?.disconnect();
-      window.removeEventListener("scroll", handleScroll);
+      if (pointerFrameRef.current !== null) {
+        cancelAnimationFrame(pointerFrameRef.current);
+      }
+      grid.removeEventListener("pointermove", onPointerMove);
+      grid.removeEventListener("pointerleave", resetScales);
+      window.removeEventListener("resize", onLayoutChange);
+      window.removeEventListener("scroll", onLayoutChange);
+      resizeObserver.disconnect();
     };
   }, []);
 
-  const renderRow = (logos: Logo[], rowIndex: number) => {
-    const items = [...logos, ...logos, ...logos];
-
+  const renderLogo = (logo: Logo, index: number) => {
     return (
       <div
-        key={rowIndex}
-        className={`flex h-full min-h-[265px] flex-none snap-start items-center border-t border-white/15 overflow-hidden ${rowIndex === 1 ? "border-b border-white/15" : ""}`}
-        onMouseEnter={() => setHoveredRow(rowIndex)}
-        onMouseLeave={() => {
-          setHoveredRow(null);
-          setHoveredLogo(null);
+        key={logo.src}
+        ref={(element) => {
+          logoEls.current[index] = element;
         }}
+        className={`group relative min-h-[120px] min-w-0 border-r border-b border-white/15 px-5 py-6 transition-[transform,opacity] duration-150 will-change-transform sm:min-h-[150px] sm:px-7 sm:py-8 md:min-h-[190px] md:px-9 md:py-10 ${
+          logo.blend ? "mix-blend-plus-lighter" : ""
+        }`}
       >
-        <div
-          ref={(el) => {
-            rowEls.current[rowIndex] = el;
-          }}
-          className="flex w-max"
-        >
-          {items.map((logo, i) => (
-            <div
-              key={i}
-              className={`group relative w-[168px] h-[82px] sm:w-[208px] sm:h-[96px] md:w-[252px] md:h-[112px] lg:w-[304px] lg:h-[132px] xl:w-[360px] xl:h-[152px] shrink-0 border-r border-white/15 px-6 sm:px-7 md:px-9 lg:px-11 py-4 md:py-5 transition-opacity duration-300 cursor-pointer ${
-                logo.blend ? "mix-blend-plus-lighter" : ""
-              } ${
-                hoveredRow === rowIndex && hoveredLogo !== `${rowIndex}-${i}`
-                  ? "opacity-30"
-                  : "opacity-100"
-              }`}
-              onMouseEnter={() => setHoveredLogo(`${rowIndex}-${i}`)}
-              onMouseLeave={() => setHoveredLogo(null)}
-            >
-              <div className="relative w-full h-full">
-                <Image
-                  src={logo.src}
-                  alt={logo.alt}
-                  fill
-                  className="object-contain grayscale group-hover:grayscale-0 transition-all duration-500"
-                />
-              </div>
-            </div>
-          ))}
+        <div className="relative h-full w-full">
+          <Image
+            src={logo.src}
+            alt={logo.alt}
+            fill
+            sizes="(max-width: 767px) 50vw, 20vw"
+            className="object-contain grayscale transition-all duration-500 group-hover:grayscale-0"
+          />
         </div>
       </div>
     );
@@ -333,20 +279,12 @@ export default function Clients() {
         />
       </div>
 
-      {/* Carousel — full-bleed across the whole section, no card, no margin */}
+      {/* Static 5 x 3 logo grid with cursor proximity scaling */}
       <div
-        ref={carouselRef}
-          className="relative z-10 mt-12 md:mt-16 h-[62vh] min-h-[400px] max-h-[680px] snap-y snap-mandatory overflow-y-auto overscroll-contain will-change-transform"
+        ref={gridRef}
+        className="relative z-10 mt-12 grid grid-cols-2 border-t border-white/15 sm:grid-cols-3 md:mt-16 md:grid-cols-5"
       >
-          <div className="relative min-h-full" style={{ perspective: "900px" }}>
-          {/* Rows */}
-          <div
-              className="flex min-h-full flex-col justify-center"
-            style={{ transform: "rotateX(20deg)", transformOrigin: "10% 20%" }}
-          >
-            {renderedRows.map((row, i) => renderRow(row, i))}
-          </div>
-        </div>
+        {allLogos.map(renderLogo)}
       </div>
     </section>
   );
